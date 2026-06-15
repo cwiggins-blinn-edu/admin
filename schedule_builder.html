@@ -389,6 +389,37 @@
     </div>
   </div>
 
+  <!-- EDIT ROOM MODAL -->
+  <div id="edit-room-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-sm w-full p-6 animate-scaleIn">
+      <div class="flex items-start space-x-3 mb-4">
+        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-full">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Change Classroom</h3>
+          <p class="text-xs text-slate-500">Update assigned room for <span id="edit-room-course-code" class="font-bold text-slate-700"></span>.</p>
+        </div>
+      </div>
+      
+      <div class="mb-5">
+        <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Classroom Name / ID</label>
+        <input type="text" id="edit-room-input" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. Turing Lab A" />
+      </div>
+
+      <div class="flex space-x-3 justify-end">
+        <button onclick="closeEditRoomModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition">
+          Cancel
+        </button>
+        <button onclick="saveClassRoom()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition shadow-sm">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ADMIN WORKSPACE FOOTER -->
   <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center text-xs text-slate-400">
     <p>© 2026 Academia Schedule Pro. All rights reserved. Real-time scheduling rules processed natively in-browser.</p>
@@ -412,6 +443,7 @@
     let selectedEntity = '';
     let pendingUpdate = null;
     let importFormat = 'csv';
+    let editingCourseId = null;
 
     const colorsList = ["indigo", "blue", "emerald", "amber", "purple", "rose", "cyan", "violet", "orange"];
     const weekDays = [
@@ -580,10 +612,11 @@
     };
 
     // MOVEMENT EXANTE ANALYZER
-    const evaluateMoveConflict = (courseId, targetDays, targetStart, targetEnd) => {
+    const evaluateMoveConflict = (courseId, targetDays, targetStart, targetEnd, overrideRoom = null) => {
       const courseObj = courses.find(c => c.id === courseId);
       if (!courseObj) return null;
 
+      const targetRoom = overrideRoom !== null ? overrideRoom : courseObj.room;
       const startMinutes = timeToMinutes(targetStart);
       const endMinutes = timeToMinutes(targetEnd);
 
@@ -608,15 +641,70 @@
         };
       }
 
-      const roomConflict = conflictingCourses.find(c => c.room === courseObj.room);
+      const roomConflict = conflictingCourses.find(c => c.room === targetRoom);
       if (roomConflict) {
         return {
           type: 'room',
-          message: `Classroom Warning: ${courseObj.room} is occupied by "${roomConflict.name}" (${roomConflict.code}) during this proposed time.`
+          message: `Classroom Warning: ${targetRoom} is occupied by "${roomConflict.name}" (${roomConflict.code}) during this proposed time.`
         };
       }
 
       return null;
+    };
+
+    // CLASSROOM ASSIGNMENT MANAGER
+    const openEditRoomModal = (courseId) => {
+      editingCourseId = courseId;
+      const course = courses.find(c => c.id === courseId);
+      if (!course) return;
+      document.getElementById('edit-room-course-code').innerText = course.code;
+      document.getElementById('edit-room-input').value = course.room || '';
+      document.getElementById('edit-room-modal').classList.remove('hidden');
+    };
+
+    const closeEditRoomModal = () => {
+      document.getElementById('edit-room-modal').classList.add('hidden');
+      editingCourseId = null;
+    };
+
+    const saveClassRoom = () => {
+      if (!editingCourseId) return;
+      const newRoom = document.getElementById('edit-room-input').value.trim() || 'Unassigned';
+      const courseObj = courses.find(c => c.id === editingCourseId);
+      if (!courseObj) return;
+
+      if (courseObj.days && courseObj.days.length > 0 && courseObj.startTime && courseObj.endTime) {
+        const conflict = evaluateMoveConflict(editingCourseId, courseObj.days, courseObj.startTime, courseObj.endTime, newRoom);
+        
+        const applyRoomChange = () => {
+          courses = courses.map(c => {
+            if (c.id === editingCourseId) {
+              return { ...c, room: newRoom };
+            }
+            return c;
+          });
+          closeEditRoomModal();
+          renderAll();
+        };
+
+        if (conflict && conflict.type === 'room') {
+          pendingUpdate = { apply: applyRoomChange };
+          closeEditRoomModal();
+          showOverrideModal(conflict.message);
+          return;
+        } else {
+          applyRoomChange();
+        }
+      } else {
+        courses = courses.map(c => {
+          if (c.id === editingCourseId) {
+            return { ...c, room: newRoom };
+          }
+          return c;
+        });
+        closeEditRoomModal();
+        renderAll();
+      }
     };
 
     // SYSTEM SCHEDULING WRITERS
@@ -901,7 +989,14 @@
               <h4 class="text-xs font-semibold mt-1 line-clamp-1">${course.name}</h4>
               <div class="mt-2 flex flex-col space-y-0.5 text-[10px] opacity-90">
                 <div>🧑‍🏫 ${course.professor}</div>
-                <div>🚪 Room: ${course.room || "TBD"}</div>
+                <div class="flex items-center justify-between mt-1">
+                  <span>🚪 Room: ${course.room || "TBD"}</span>
+                  <button onclick="openEditRoomModal('${course.id}')" class="p-1 text-slate-400 hover:text-indigo-600 rounded transition" title="Change Classroom">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -1012,7 +1107,14 @@
               <div class="mt-2 pt-1.5 border-t border-slate-200/50 flex flex-col space-y-0.5 text-[10px] text-slate-500 font-medium">
                 <div>⏰ ${course.startTime} - ${course.endTime}</div>
                 <div>👨‍🏫 ${course.professor}</div>
-                <div>🚪 Room: ${course.room}</div>
+                <div class="flex items-center justify-between mt-1 pt-0.5 border-t border-dashed border-slate-200">
+                  <span>🚪 Room: ${course.room}</span>
+                  <button onclick="openEditRoomModal('${course.id}')" class="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition" title="Change Classroom">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             `;
             cell.appendChild(courseCard);
@@ -1026,9 +1128,4 @@
     };
 
     // Initialize application values on startup
-    window.onload = () => {
-      renderAll();
-    };
-  </script>
-</body>
-</html>
+// ... existing code ... -->
