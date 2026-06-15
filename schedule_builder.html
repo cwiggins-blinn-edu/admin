@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Schedule Builder</title>
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #4caf50;
+            --conflict: #f44336;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 { margin: 0 0 10px 0; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .class-modifier {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .class-modifier:last-child { border: none; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #e0e0e0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        /* Schedule Graphic Layout */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .grid-header-row {
+            display: contents;
+            background-color: #eaeaea;
+            font-weight: bold;
+        }
+
+        .grid-cell {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            border-right: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .axis-label {
+            background-color: #f9f9f9;
+            font-weight: bold;
+            color: var(--primary);
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+        .timeline {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .course-card {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 10px;
+            border-radius: 4px;
+            min-width: 200px;
+            flex: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .course-card h4 { margin: 0 0 5px 0; color: var(--primary); }
+        .course-card p { margin: 2px 0; font-size: 0.85em; color: #555; }
+        
+        .alert {
+            background-color: #ffebee;
+            color: var(--conflict);
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: bold;
+            border: 1px solid var(--conflict);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Academic Schedule Master Builder</h1>
+    <p>College Administration Portal | Real-time Conflict Resolution</p>
+</header>
+
+<div class="container">
+    <div class="panel">
+        <h2>Modify Schedule</h2>
+        <div id="error-alert" class="alert"></div>
+        <div id="controls-container"></div>
+    </div>
+
+    <div class="panel">
+        <div class="view-controls">
+            <button class="btn active" onclick="switchView('professor', this)">View by Professor</button>
+            <button class="btn" onclick="switchView('classroom', this)">View by Classroom</button>
+            <button class="btn" onclick="switchView('time', this)">View by Day/Time</button>
+        </div>
+
+        <div id="schedule-display" class="schedule-grid">
+            </div>
+    </div>
+</div>
+
+<script>
+    // Sample Raw Master Data List
+    let courses = [
+        { id: 1, code: "CIT-1305", name: "Introduction to Cloud Computing", professor: "Dr. C. Wiggins", room: "Tech Center 102", days: "MW", startTime: "09:00", endTime: "10:30" },
+        { id: 2, code: "CIT-2410", name: "Advanced Java Programming", professor: "Dr. C. Wiggins", room: "Tech Center 102", days: "MW", startTime: "11:00", endTime: "12:30" },
+        { id: 3, code: "CYBR-1102", name: "Network Security Fundamentals", professor: "Prof. A. Smith", room: "Virtual Lab A", days: "TR", startTime: "09:00", endTime: "10:30" },
+        { id: 4, code: "CIT-1305", name: "Introduction to Cloud Computing", professor: "Prof. A. Smith", room: "Tech Center 104", days: "MW", startTime: "11:00", endTime: "12:30" },
+        { id: 5, code: "BUSI-2301", name: "AI Applications in Business", professor: "Dr. J. Davis", room: "Academic Hall 201", days: "TR", startTime: "13:00", endTime: "14:30" }
+    ];
+
+    let currentView = 'professor';
+
+    // Helper: Convert time string to minutes for math operations
+    function timeToMins(timeStr) {
+        const [hrs, mins] = timeStr.split(':').map(Number);
+        return hrs * 60 + mins;
+    }
+
+    // Strict Conflict Checker Engine
+    function checkProfessorConflict(courseId, newDays, newStart, newEnd, targetProf) {
+        const newStartMins = timeToMins(newStart);
+        const newEndMins = timeToMins(newEnd);
+
+        // Check against all other courses assigned to this professor
+        for (let course of courses) {
+            if (course.id === courseId) continue; // Skip comparing to itself
+            if (course.professor === targetProf) {
+                // Check if days overlap (e.g., "MW" shares days with "MW", "M", or "W")
+                const dayOverlap = [...newDays].some(day => course.days.includes(day));
+                
+                if (dayOverlap) {
+                    const exStartMins = timeToMins(course.startTime);
+                    const exEndMins = timeToMins(course.endTime);
+
+                    // Math condition for overlapping times
+                    if (newStartMins < exEndMins && newEndMins > exStartMins) {
+                        return course; // Return the conflicting course
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // Handle updates requested from UI inputs
+    function updateCourseField(id, field, value) {
+        const course = courses.find(c => c.id === id);
+        if (!course) return;
+
+        let testDays = field === 'days' ? value : course.days;
+        let testStart = field === 'startTime' ? value : course.startTime;
+        let testEnd = field === 'endTime' ? value : course.endTime;
+
+        // If time or days change, run validation check
+        if (field === 'days' || field === 'startTime' || field === 'endTime') {
+            if (timeToMins(testStart) >= timeToMins(testEnd)) {
+                showAlert("Error: Start time must be earlier than End time.");
+                renderControls();
+                return;
+            }
+
+            const conflict = checkProfessorConflict(id, testDays, testStart, testEnd, course.professor);
+            if (conflict) {
+                showAlert(`Scheduling Conflict! ${course.professor} is already teaching ${conflict.code} at that time.`);
+                renderControls(); // Reset values in UI
+                return;
+            }
+        }
+
+        // Apply changes if safe
+        course[field] = value;
+        clearAlert();
+        renderSchedule();
+    }
+
+    function showAlert(msg) {
+        const alertDiv = document.getElementById('error-alert');
+        alertDiv.innerText = msg;
+        alertDiv.style.display = 'block';
+    }
+
+    function clearAlert() {
+        document.getElementById('error-alert').style.display = 'none';
+    }
+
+    // Render left panel course settings controls
+    function renderControls() {
+        const container = document.getElementById('controls-container');
+        container.innerHTML = '';
+
+        courses.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'class-modifier';
+            div.innerHTML = `
+                <h3>${c.code}: ${c.name}</h3>
+                <p><small>Instructor: ${c.professor} | Room: ${c.room}</small></p>
+                
+                <label>Days</label>
+                <select onchange="updateCourseField(${c.id}, 'days', this.value)">
+                    <option value="MW" ${c.days === 'MW' ? 'selected' : ''}>Monday / Wednesday (MW)</option>
+                    <option value="TR" ${c.days === 'TR' ? 'selected' : ''}>Tuesday / Thursday (TR)</option>
+                    <option value="F" ${c.days === 'F' ? 'selected' : ''}>Friday Only (F)</option>
+                </select>
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Start Time</label>
+                        <input type="time" value="${c.startTime}" onchange="updateCourseField(${c.id}, 'startTime', this.value)">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>End Time</label>
+                        <input type="time" value="${c.endTime}" onchange="updateCourseField(${c.id}, 'endTime', this.value)">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function switchView(view, btn) {
+        currentView = view;
+        document.querySelectorAll('.view-controls .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSchedule();
+    }
+
+    // Render the graphic matrix layout
+    function renderSchedule() {
+        const display = document.getElementById('schedule-display');
+        display.innerHTML = '';
+
+        let groupings = {};
+
+        // Sort data based on selected graphical grouping rule
+        courses.forEach(c => {
+            let key = '';
+            if (currentView === 'professor') key = c.professor;
+            else if (currentView === 'classroom') key = c.room;
+            else if (currentView === 'time') key = `${c.days} ${c.startTime}-${c.endTime}`;
+
+            if (!groupings[key]) groupings[key] = [];
+            groupings[key].push(c);
+        });
+
+        // Set up graphical table headers
+        display.innerHTML += `
+            <div class="grid-header-row">
+                <div class="grid-cell axis-label" style="background: #eaeaea">${currentView.toUpperCase()}</div>
+                <div class="grid-cell" style="background: #eaeaea; font-weight: bold;">Scheduled Classes Timeline</div>
+            </div>
+        `;
+
+        // Populate rows with visual cards
+        for (let group in groupings) {
+            let timelineHtml = '<div class="timeline">';
+            groupings[group].forEach(c => {
+                timelineHtml += `
+                    <div class="course-card">
+                        <h4>${c.code}</h4>
+                        <p><strong>${c.name}</strong></p>
+                        <p>🗓️ Days: ${c.days} | ⏰ ${c.startTime} - ${c.endTime}</p>
+                        <p>👨‍🏫 Prof: ${c.professor}</p>
+                        <p>📍 Room: ${c.room}</p>
+                    </div>
+                `;
+            });
+            timelineHtml += '</div>';
+
+            display.innerHTML += `
+                <div class="grid-cell axis-label">${group}</div>
+                <div class="grid-cell">${timelineHtml}</div>
+            `;
+        }
+    }
+
+    // Initial Launch
+    renderControls();
+    renderSchedule();
+</script>
+
+</body>
+</html>
