@@ -65,7 +65,7 @@
   </div>
 
   <!-- APPLICATION CORE HEADER -->
-  <header class="bg-slate-900 text-white shadow-md py-4 px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+  <header class="bg-slate-900 text-white shadow-md py-4 px-6 flex flex-col lg:flex-row items-center justify-between gap-4">
     <div class="flex items-center space-x-3">
       <span class="p-2 bg-indigo-600 rounded-lg text-white font-black text-xl tracking-tight">Ω</span>
       <div>
@@ -75,26 +75,36 @@
     </div>
     
     <!-- NAVIGATION BAR CONTROLS -->
-    <div class="flex items-center gap-2 sm:gap-3">
-      <button id="nav-btn-calendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-indigo-600 text-white">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+      <button id="nav-btn-calendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-indigo-600 text-white shadow-sm">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         <span>Interactive Calendar</span>
       </button>
       
-      <button id="nav-btn-upload" onclick="switchTab('upload')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700">
+      <button id="nav-btn-upload" onclick="switchTab('upload')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
         </svg>
         <span>Upload Data File</span>
       </button>
 
-      <button id="nav-btn-manual" onclick="switchTab('manual')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700">
+      <button id="nav-btn-manual" onclick="switchTab('manual')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
         <span>Add Class</span>
+      </button>
+
+      <div class="h-6 w-[1px] bg-slate-700 hidden lg:block"></div>
+
+      <!-- EXPORT TO CSV BUTTON -->
+      <button onclick="downloadCSVExport()" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md" title="Download schedule spreadsheet compatible with Banner imports">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span>Export CSV</span>
       </button>
     </div>
   </header>
@@ -226,7 +236,7 @@
       <div id="tab-upload" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <h2 class="text-lg font-bold text-slate-800 mb-2">Import Course Registry File</h2>
         <p class="text-sm text-slate-500 mb-6">
-          Paste structured course and professor lists below. Perfect for transferring departmental schedule sheets.
+          Paste structured course and professor lists below. Fully compatible with multi-column schedule CSV and JSON files.
         </p>
 
         <!-- FORMAT TOGGLE -->
@@ -252,7 +262,7 @@
               Load Sample Template
             </button>
           </div>
-          <textarea id="import-text" rows="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Course Code,Course Name,Professor,Classroom,Days,Start Time,End Time&#10;CS-205,Object Oriented Design,Dr. Alan Turing,Turing Lab A,TR,09:00,10:30"></textarea>
+          <textarea id="import-text" rows="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Paste CSV or JSON here..."></textarea>
         </div>
 
         <!-- ACTIONS -->
@@ -276,7 +286,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Course Code*</label>
-              <input type="text" id="manual-code" required placeholder="e.g. CS-312" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+              <input type="text" id="manual-code" required placeholder="e.g. ITSY ITSY1342-102" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
             </div>
             <div>
               <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Course Title*</label>
@@ -420,23 +430,28 @@
     </div>
   </div>
 
-  <!-- ADMIN WORKSPACE FOOTER -->
-  <footer class="bg-white border-t border-slate-200 py-4 px-6 text-center text-xs text-slate-400">
-    <p>© 2026 Academia Schedule Pro. All rights reserved. Real-time scheduling rules processed natively in-browser.</p>
-  </footer>
-
   <!-- CLIENT-SIDE EMBEDDED CONTROLLER LOGIC -->
   <script>
-    // State initialization
-    let courses = [
-      { id: "1", code: "CS-101", name: "Intro to Computer Science", professor: "Dr. Alan Turing", room: "Turing Lab A", days: ["M", "W"], startTime: "09:00", endTime: "10:30", color: "indigo" },
-      { id: "2", code: "CS-202", name: "Data Structures & Algorithms", professor: "Dr. Alan Turing", room: "Turing Lab A", days: ["M", "W"], startTime: "11:00", endTime: "12:30", color: "blue" },
-      { id: "3", code: "MATH-310", name: "Linear Algebra", professor: "Prof. Emmy Noether", room: "Hilbert Hall 202", days: ["T", "R"], startTime: "09:00", endTime: "10:30", color: "emerald" },
-      { id: "4", code: "PHYS-201", name: "Quantum Mechanics I", professor: "Dr. Richard Feynman", room: "Planck Room 10", days: ["T", "R"], startTime: "11:00", endTime: "12:30", color: "amber" },
-      { id: "5", code: "CS-499", name: "Distributed Systems Capstone", professor: "Dr. Leslie Lamport", room: "Turing Lab A", days: ["F"], startTime: "14:00", endTime: "17:00", color: "purple" },
-      { id: "6", code: "CS-305", name: "Operating Systems Principles", professor: "Dr. Leslie Lamport", room: "Turing Lab A", days: [], startTime: "", endTime: "", color: "rose" },
-      { id: "7", code: "MATH-101", name: "Calculus I", professor: "Prof. Emmy Noether", room: "Hilbert Hall 202", days: [], startTime: "", endTime: "", color: "cyan" }
+    // Standard Banner/Luminis Multi-column Headers definition
+    const DEFAULT_HEADERS = [
+      "TERM", "TERM_DESC", "SUB_TERM", "SUB_TERM_DESC", "START_DATE", "END_DATE", 
+      "CAMPUS", "CAMPUS_DESC", "DIVISION", "DIVISION_DESC", "SUBJECT", "COURSE_ID", 
+      "SECTION", "COURSE_REFERENCE_NUMBER", "COURSE_TITLE", "SECTION_CROSS_LIST", 
+      "STATUS", "VISIBLE_TO_STUDENT", "GRADABLE_IND", "CREDIT_HOURS", "COURSE_CONTACT_HOURS", 
+      "GENERATED_CONTACT_HOURS", "MAX_ENROLLMENT", "ACTUAL_ENROLLMENT", "SEATS_AVAILABLE", 
+      "FILL_RATE", "SEAT_COUNT_GOAL", "SEAT_COUNT_GOAL_FILL_RATE", "WAITLIST_MAX", 
+      "WAITLIST_ENROLL", "WAITLIST_AVAILABLE", "INSTRUCTION_METHOD", "INSTRUCTOR_ID", 
+      "INSTRUCTOR_NAME", "SCHEDULE1", "MEETING_DAY_1", "MEETING_TIME_1", "MEETING_ROOM_1", 
+      "SCHEDULE2", "MEETING_DAY_2", "MEETING_TIME_2", "MEETING_ROOM_2", "SCHEDULE3", 
+      "MEETING_DAY_3", "MEETING_TIME_3", "MEETING_ROOM_3", "SCHEDULE4", "MEETING_DAY_4", 
+      "MEETING_TIME_4", "MEETING_ROOM_4", "INTEGRATION_CODE", "CAMPUS_RESTRICTION", 
+      "SECTION_TEXT", "LINK_IDENTIFIER", "SSASYLB_section_long_text", "LECTURE_HOURS", "LAB_HOURS"
     ];
+
+    let importedHeaders = []; // Stored upon CSV upload to maintain exact order and column casing
+
+    // Standard default scheduler state populated using Banner structures
+    let courses = [];
 
     let activeTab = 'calendar';
     let viewPerspective = 'master';
@@ -455,13 +470,14 @@
     ];
     const hourGrid = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
-    // Helper utilities
+    // Helper: Convert "12:30 PM" or "13:00" formats to Minutes of the Day
     const timeToMinutes = (timeStr) => {
       if (!timeStr) return 0;
       const [h, m] = timeStr.split(':').map(Number);
       return h * 60 + m;
     };
 
+    // Helper: Format minutes into 24H string "HH:MM"
     const minutesToTimeStr = (totalMins) => {
       const hoursNum = Math.floor(totalMins / 60);
       const minsNum = totalMins % 60;
@@ -469,6 +485,56 @@
       return `${pad(hoursNum)}:${pad(minsNum)}`;
     };
 
+    // Helper: Format standard 24H hours ("14:00", "15:30") to readable CSV time "02:00 PM - 03:30 PM"
+    const formatMinutesToCSVTime = (startStr, endStr) => {
+      if (!startStr || !endStr) return " - ";
+      
+      function to12Hour(time24) {
+        const [hStr, mStr] = time24.split(':');
+        let h = parseInt(hStr, 10);
+        const m = mStr;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        if (h === 0) h = 12;
+        return `${String(h).padStart(2, '0')}:${m} ${ampm}`;
+      }
+      
+      return `${to12Hour(startStr)} - ${to12Hour(endStr)}`;
+    };
+
+    // Helper: Parse AM/PM ranges (e.g., "09:00 AM - 10:20 AM") back to 24H start and end strings
+    const parseTimeField = (timeStr) => {
+      if (!timeStr || timeStr.trim() === "" || timeStr.includes("- -") || timeStr === "-") {
+        return { start: "", end: "" };
+      }
+      timeStr = timeStr.replace(/\s+/g, ' ');
+      const regex = /(\d{1,2})[.:]?(\d{2})\s*(AM|PM)?\s*-\s*(\d{1,2})[.:]?(\d{2})\s*(AM|PM)?/i;
+      const match = timeStr.match(regex);
+      if (match) {
+        let sh = parseInt(match[1], 10);
+        let sm = parseInt(match[2], 10);
+        let sa = match[3];
+        let eh = parseInt(match[4], 10);
+        let em = parseInt(match[5], 10);
+        let ea = match[6];
+
+        if (sa) {
+          if (sa.toUpperCase() === 'PM' && sh < 12) sh += 12;
+          if (sa.toUpperCase() === 'AM' && sh === 12) sh = 0;
+        }
+        if (ea) {
+          if (ea.toUpperCase() === 'PM' && eh < 12) eh += 12;
+          if (ea.toUpperCase() === 'AM' && eh === 12) eh = 0;
+        }
+
+        const startStr = `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}`;
+        const endStr = `${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
+        return { start: startStr, end: endStr };
+      }
+      return { start: "", end: "" };
+    };
+
+    // Standard CSS classes generator
     const getColorClass = (color) => {
       switch (color) {
         case 'indigo': return 'bg-indigo-50 border-indigo-500 text-indigo-700 hover:bg-indigo-100';
@@ -482,6 +548,147 @@
         case 'orange': return 'bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100';
         default: return 'bg-gray-50 border-gray-500 text-gray-700 hover:bg-gray-100';
       }
+    };
+
+    // Helper: RFC 4180 parsing logic for processing csv cell contents
+    const parseCSV = (text) => {
+      const lines = [];
+      let row = [""];
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        const next = text[i+1];
+
+        if (c === '"') {
+          if (inQuotes && next === '"') {
+            row[row.length - 1] += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === ',') {
+          if (inQuotes) {
+            row[row.length - 1] += c;
+          } else {
+            row.push("");
+          }
+        } else if (c === '\r' || c === '\n') {
+          if (inQuotes) {
+            row[row.length - 1] += c;
+          } else {
+            if (c === '\r' && next === '\n') {
+              i++;
+            }
+            lines.push(row);
+            row = [""];
+          }
+        } else {
+          row[row.length - 1] += c;
+        }
+      }
+      if (row.length > 1 || row[0] !== "") {
+        lines.push(row);
+      }
+      return lines;
+    };
+
+    // Helper: CSV cell escape tool
+    const escapeCSVField = (val) => {
+      if (val === null || val === undefined) return "";
+      let str = String(val);
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        str = '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    };
+
+    // Default Seed state builder
+    const buildDefaultRawRow = (subject, courseId, section, title, instructor, room, days, startTime, endTime) => {
+      const row = {};
+      DEFAULT_HEADERS.forEach(h => {
+        row[h] = "";
+      });
+      row["SUBJECT"] = subject;
+      row["COURSE_ID"] = courseId;
+      row["SECTION"] = section;
+      row["COURSE_TITLE"] = title;
+      row["INSTRUCTOR_NAME"] = instructor;
+      row["MEETING_ROOM_1"] = room;
+      days.forEach((day, idx) => {
+        if (idx < 4) {
+          row[`MEETING_DAY_${idx+1}`] = day;
+          row[`MEETING_TIME_${idx+1}`] = startTime && endTime ? formatMinutesToCSVTime(startTime, endTime) : " - ";
+          row[`MEETING_ROOM_${idx+1}`] = room;
+        }
+      });
+      return row;
+    };
+
+    // Initial default schedules load-in
+    const initializeDefaultState = () => {
+      courses = [
+        {
+          id: "1",
+          code: "CS ITSY1342-102",
+          name: "Information Tech. Security",
+          professor: "Dr. Alan Turing",
+          room: "Turing Lab A",
+          days: ["M", "W"],
+          startTime: "09:00",
+          endTime: "10:30",
+          color: "indigo",
+          rawRow: buildDefaultRawRow("CS", "ITSY1342", "102", "Information Tech. Security", "Dr. Alan Turing", "Turing Lab A", ["M", "W"], "09:00", "10:30")
+        },
+        {
+          id: "2",
+          code: "CS ITSY2401-101",
+          name: "Data Structures & Algorithms",
+          professor: "Dr. Alan Turing",
+          room: "Turing Lab A",
+          days: ["M", "W"],
+          startTime: "11:00",
+          endTime: "12:30",
+          color: "blue",
+          rawRow: buildDefaultRawRow("CS", "ITSY2401", "101", "Data Structures & Algorithms", "Dr. Alan Turing", "Turing Lab A", ["M", "W"], "11:00", "12:30")
+        },
+        {
+          id: "3",
+          code: "MATH MATH1314-101",
+          name: "Linear Algebra",
+          professor: "Prof. Emmy Noether",
+          room: "Hilbert Hall 202",
+          days: ["T", "R"],
+          startTime: "09:00",
+          endTime: "10:30",
+          color: "emerald",
+          rawRow: buildDefaultRawRow("MATH", "MATH1314", "101", "Linear Algebra", "Prof. Emmy Noether", "Hilbert Hall 202", ["T", "R"], "09:00", "10:30")
+        },
+        {
+          id: "4",
+          code: "PHYS PHYS2425-201",
+          name: "Quantum Mechanics I",
+          professor: "Dr. Richard Feynman",
+          room: "Planck Room 10",
+          days: ["T", "R"],
+          startTime: "11:00",
+          endTime: "12:30",
+          color: "amber",
+          rawRow: buildDefaultRawRow("PHYS", "PHYS2425", "201", "Quantum Mechanics I", "Dr. Richard Feynman", "Planck Room 10", ["T", "R"], "11:00", "12:30")
+        },
+        {
+          id: "5",
+          code: "CS COSC4301-401",
+          name: "Distributed Systems Capstone",
+          professor: "Dr. Leslie Lamport",
+          room: "Turing Lab A",
+          days: ["F"],
+          startTime: "14:00",
+          endTime: "17:00",
+          color: "purple",
+          rawRow: buildDefaultRawRow("CS", "COSC4301", "401", "Distributed Systems Capstone", "Dr. Leslie Lamport", "Turing Lab A", ["F"], "14:00", "17:00")
+        }
+      ];
     };
 
     // Global Scroll to validation anchors
@@ -834,16 +1041,15 @@
       const textarea = document.getElementById('import-text');
       if (importFormat === 'csv') {
         textarea.value = 
-          "Course Code,Course Name,Professor,Classroom,Days,Start Time,End Time\n" +
-          "CS-320,Database Systems,Dr. Edgar Codd,Turing Lab A,MW,14:00,15:30\n" +
-          "LIT-110,World Literature,Prof. Mary Shelley,Academic Hall 201,TR,13:00,14:30\n" +
-          "HIST-204,Modern History,Dr. Howard Zinn,Academic Hall 201,M,10:00,12:00\n" +
-          "CS-480,Artificial Intelligence,Dr. Alan Turing,Turing Lab A,,,\n" +
-          "MATH-121,Calculus II,Prof. Emmy Noether,Hilbert Hall 202,,,";
+          "SUBJECT,COURSE_ID,SECTION,COURSE_TITLE,INSTRUCTOR_NAME,MEETING_DAY_1,MEETING_TIME_1,MEETING_ROOM_1,MEETING_DAY_2,MEETING_TIME_2,MEETING_ROOM_2\n" +
+          "ITSY,ITSY1342,102,Information Tech. Security,Dr. Alan Turing,M,09:00 AM - 10:30 AM,Turing Lab A,W,09:00 AM - 10:30 AM,Turing Lab A\n" +
+          "ITAI,ITAI1370,1,Intro to AI,Dr. Alan Turing,M,11:00 AM - 12:30 PM,Turing Lab A,W,11:00 AM - 12:30 PM,Turing Lab A\n" +
+          "MATH,MATH1314,101,College Algebra,Prof. Emmy Noether,T,09:00 AM - 10:30 AM,Hilbert Hall 202,R,09:00 AM - 10:30 AM,Hilbert Hall 202\n" +
+          "PHYS,PHYS2425,201,University Physics I,Dr. Richard Feynman,, - ,Planck Room 10,, - , Planck Room 10";
       } else {
         textarea.value = JSON.stringify([
-          { "code": "CS-320", "name": "Database Systems", "professor": "Dr. Edgar Codd", "room": "Turing Lab A", "days": ["M", "W"], "startTime": "14:00", "endTime": "15:30" },
-          { "code": "HIST-204", "name": "Modern History", "professor": "Dr. Howard Zinn", "room": "Academic Hall 201", "days": ["M"], "startTime": "10:00", "endTime": "12:00" }
+          { "code": "ITSY ITSY1342-102", "name": "Information Tech. Security", "professor": "Dr. Alan Turing", "room": "Turing Lab A", "days": ["M", "W"], "startTime": "09:00", "endTime": "10:30" },
+          { "code": "MATH MATH1314-101", "name": "College Algebra", "professor": "Prof. Emmy Noether", "room": "Hilbert Hall 202", "days": ["T", "R"], "startTime": "09:00", "endTime": "10:30" }
         ], null, 2);
       }
     };
@@ -859,55 +1065,115 @@
         if (importFormat === 'json') {
           const parsed = JSON.parse(text);
           if (Array.isArray(parsed)) {
-            const sanitized = parsed.map((item, idx) => ({
-              id: (Date.now() + idx).toString(),
-              code: item.code || "COURSE",
-              name: item.name || "Untitled",
-              professor: item.professor || "Unassigned",
-              room: item.room || "TBD",
-              days: Array.isArray(item.days) ? item.days : (item.days ? item.days.split('') : []),
-              startTime: item.startTime || "",
-              endTime: item.endTime || "",
-              color: item.color || colorsList[idx % colorsList.length]
-            }));
+            const sanitized = parsed.map((item, idx) => {
+              const rawRow = {};
+              DEFAULT_HEADERS.forEach(h => {
+                rawRow[h] = "";
+              });
+              rawRow["SUBJECT"] = item.code ? item.code.split(' ')[0] || "CS" : "CS";
+              rawRow["COURSE_ID"] = item.code ? (item.code.split(' ')[1] || "COURSE").split('-')[0] || "COURSE" : "COURSE";
+              rawRow["SECTION"] = item.code ? (item.code.split('-')[1] || "101") : "101";
+              rawRow["COURSE_TITLE"] = item.name || "Untitled";
+              rawRow["INSTRUCTOR_NAME"] = item.professor || "Unassigned";
+              rawRow["MEETING_ROOM_1"] = item.room || "TBD";
+
+              return {
+                id: (Date.now() + idx).toString(),
+                code: item.code || "COURSE",
+                name: item.name || "Untitled",
+                professor: item.professor || "Unassigned",
+                room: item.room || "TBD",
+                days: Array.isArray(item.days) ? item.days : (item.days ? item.days.split('') : []),
+                startTime: item.startTime || "",
+                endTime: item.endTime || "",
+                color: item.color || colorsList[idx % colorsList.length],
+                rawRow: rawRow
+              };
+            });
             courses = [...courses, ...sanitized];
           } else {
             alert("Invalid format: Root level of JSON must be an Array.");
             return;
           }
         } else {
-          // CSV Parser engine
-          const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
-          if (lines.length <= 1) {
+          // Robust RFC 4180 parsing for Banner CSV
+          const parsedLines = parseCSV(text);
+          if (parsedLines.length <= 1) {
             alert("CSV must contain headers and at least 1 row.");
             return;
           }
 
-          const newEntries = [];
-          const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+          const rawHeaders = parsedLines[0].map(h => h.trim().toUpperCase());
+          importedHeaders = rawHeaders; // Stash columns config to preserve user schema on export
 
-          for (let i = 1; i < lines.length; i++) {
-            const cells = lines[i].split(',').map(c => c.trim());
+          const newEntries = [];
+          for (let i = 1; i < parsedLines.length; i++) {
+            const cells = parsedLines[i];
+            if (cells.length === 0 || (cells.length === 1 && cells[0] === "")) continue;
+
             const rowData = {};
-            headers.forEach((header, index) => {
-              rowData[header] = cells[index] || "";
+            rawHeaders.forEach((header, index) => {
+              rowData[header] = cells[index] !== undefined ? cells[index].trim() : "";
             });
 
-            let parsedDays = [];
-            if (rowData.days) {
-              parsedDays = rowData.days.replace(/[^MTRWFmtrwf]/g, '').toUpperCase().split('');
+            // Handle mappings corresponding to schedule.csv template schema
+            const subject = rowData["SUBJECT"] || "CS";
+            const courseId = rowData["COURSE_ID"] || "COURSE";
+            const section = rowData["SECTION"] || "101";
+            const courseTitle = rowData["COURSE_TITLE"] || "Imported Course";
+            const instructorName = rowData["INSTRUCTOR_NAME"] || "Staff";
+
+            // Consolidate days from MEETING_DAY_1 through MEETING_DAY_4
+            const daysSet = new Set();
+            for (let d = 1; d <= 4; d++) {
+              const mDay = rowData[`MEETING_DAY_${d}`];
+              if (mDay && mDay.trim() !== "" && mDay.trim() !== "-") {
+                mDay.trim().replace(/\s+/g, '').split('').forEach(char => {
+                  if ("MTRWFmtrwf".includes(char)) {
+                    daysSet.add(char.toUpperCase());
+                  }
+                });
+              }
             }
+
+            // Extract daily hours
+            let startTime = "";
+            let endTime = "";
+            for (let t = 1; t <= 4; t++) {
+              const mTime = rowData[`MEETING_TIME_${t}`];
+              if (mTime && mTime.trim() !== "" && mTime.trim() !== "-" && !mTime.includes("- -")) {
+                const parsedTimes = parseTimeField(mTime);
+                if (parsedTimes.start && parsedTimes.end) {
+                  startTime = parsedTimes.start;
+                  endTime = parsedTimes.end;
+                  break;
+                }
+              }
+            }
+
+            // Extract space resource allocation
+            let room = "TBD";
+            for (let r = 1; r <= 4; r++) {
+              const mRoom = rowData[`MEETING_ROOM_${r}`];
+              if (mRoom && mRoom.trim() !== "" && mRoom.trim() !== "-") {
+                room = mRoom.trim();
+                break;
+              }
+            }
+
+            const courseCode = `${subject} ${courseId}-${section}`;
 
             newEntries.push({
               id: (Date.now() + i).toString(),
-              code: rowData.code || rowData['course code'] || "CS-NEW",
-              name: rowData.name || rowData['course name'] || "Imported Course",
-              professor: rowData.professor || rowData.instructor || "Staff",
-              room: rowData.room || rowData.classroom || "TBD",
-              days: parsedDays,
-              startTime: rowData.starttime || rowData['start time'] || "",
-              endTime: rowData.endtime || rowData['end time'] || "",
-              color: colorsList[i % colorsList.length]
+              code: courseCode,
+              name: courseTitle,
+              professor: instructorName,
+              room: room,
+              days: Array.from(daysSet),
+              startTime: startTime,
+              endTime: endTime,
+              color: colorsList[i % colorsList.length],
+              rawRow: rowData
             });
           }
           courses = [...courses, ...newEntries];
@@ -916,8 +1182,77 @@
         document.getElementById('import-text').value = "";
         switchTab('calendar');
       } catch (e) {
-        alert("Error parsing file. Please double check formatting structure.");
+        console.error(e);
+        alert("Error parsing file: " + e.message + ". Please verify csv parameters.");
       }
+    };
+
+    // SYSTEM CSV EXPORTER LOGIC
+    const downloadCSVExport = () => {
+      // Prioritize the columns list parsed during upload, fallback to standard Banner layout
+      const outputHeaders = importedHeaders && importedHeaders.length > 0 ? importedHeaders : DEFAULT_HEADERS;
+
+      const csvRows = [];
+      // Headers Line
+      csvRows.push(outputHeaders.join(','));
+
+      courses.forEach(course => {
+        const rowData = {};
+
+        if (course.rawRow) {
+          Object.assign(rowData, course.rawRow);
+        } else {
+          // Initialize empty keys for manually introduced entries
+          outputHeaders.forEach(h => {
+            rowData[h] = "";
+          });
+          const codeParts = course.code.split(' ');
+          const subject = codeParts[0] || "CS";
+          const idAndSec = codeParts[1] || "101-101";
+          const idParts = idAndSec.split('-');
+          const courseId = idParts[0] || "101";
+          const section = idParts[1] || "101";
+
+          rowData["SUBJECT"] = subject;
+          rowData["COURSE_ID"] = courseId;
+          rowData["SECTION"] = section;
+          rowData["COURSE_TITLE"] = course.name;
+        }
+
+        // Apply visual scheduling changes directly onto CSV rows structure
+        rowData["INSTRUCTOR_NAME"] = course.professor;
+        
+        const activeDays = course.days || [];
+        const csvTimeStr = course.startTime && course.endTime ? formatMinutesToCSVTime(course.startTime, course.endTime) : " - ";
+
+        // Standard distribution across maximum of 4 daily sessions columns
+        for (let idx = 1; idx <= 4; idx++) {
+          const dayVal = activeDays[idx - 1];
+          if (dayVal) {
+            rowData[`MEETING_DAY_${idx}`] = dayVal;
+            rowData[`MEETING_TIME_${idx}`] = csvTimeStr;
+            rowData[`MEETING_ROOM_${idx}`] = course.room || "TBD";
+          } else {
+            rowData[`MEETING_DAY_${idx}`] = "";
+            rowData[`MEETING_TIME_${idx}`] = " - ";
+            rowData[`MEETING_ROOM_${idx}`] = "";
+          }
+        }
+
+        // Build cleanly structured escaped cells row
+        const line = outputHeaders.map(h => escapeCSVField(rowData[h])).join(',');
+        csvRows.push(line);
+      });
+
+      const csvString = csvRows.join('\r\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Banner_Academic_Schedule_${new Date().getFullYear()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     // SYSTEM INTEGRATED RENDER ENGINE
@@ -1129,6 +1464,8 @@
 
     // Initialize application values on startup
     window.onload = () => {
+      initializeDefaultState();
+      loadSampleTemplate();
       renderAll();
     };
   </script>
