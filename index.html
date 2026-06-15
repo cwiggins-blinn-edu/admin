@@ -276,9 +276,9 @@
               <div class="col-span-2 py-3">Friday</div>
             </div>
 
-            <!-- Hour Row Matrix -->
-            <div id="calendar-rows-container" class="divide-y divide-slate-100">
-              <!-- Populated dynamically via JavaScript matrix loop -->
+            <!-- Hour Row Matrix (Now acts as highly flexible timeline grid) -->
+            <div id="calendar-rows-container" class="relative">
+              <!-- Populated dynamically via JS with exact relative hour offsets -->
             </div>
 
           </div>
@@ -479,7 +479,7 @@
 
   <!-- LOCATION AND CAMPUS EDITING MODAL -->
   <div id="edit-room-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-sm w-full p-6 animate-scaleIn">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-sm-w-full p-6 animate-scaleIn">
       <div class="flex items-start space-x-3 mb-4">
         <div class="p-2 bg-indigo-100 text-indigo-600 rounded-full">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -563,6 +563,11 @@
     let importFormat = 'csv';
     let editingCourseId = null;
 
+    // High fidelity global timeline offsets
+    const hourHeight = 85; // height factor per hour (px)
+    let minHour = 8;
+    let maxHour = 18;
+
     const colorsList = ["indigo", "blue", "emerald", "amber", "purple", "rose", "cyan", "violet", "orange"];
     const weekDays = [
       { label: "Monday", key: "M" },
@@ -571,7 +576,6 @@
       { label: "Thursday", key: "R" },
       { label: "Friday", key: "F" }
     ];
-    const hourGrid = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
 
     // Helper: Convert "12:30 PM" or "13:00" formats to Minutes of the Day
     const timeToMinutes = (timeStr) => {
@@ -815,7 +819,6 @@
           selectedEntity = classrooms[0] || '';
         } else if (perspective === 'campus') {
           dropdownLabel.innerText = 'Select Campus:';
-          // Consolidate list of distinct campuses
           const campusMap = {};
           courses.forEach(c => {
             if (c.campus) {
@@ -893,7 +896,6 @@
           // Rule 3: Multi-Campus Same-Day Faculty Travel check
           if (c1.professor && c1.professor === c2.professor) {
             if (c1.campus && c2.campus && c1.campus !== c2.campus) {
-              // Bypassing online courses from physical campus travel restrictions
               if (c1.campus !== 'DE' && c2.campus !== 'DE') {
                 list.push({
                   type: 'multi-campus',
@@ -1088,7 +1090,9 @@
     };
 
     const deleteCourse = (id) => {
-      courses = courses.filter(c => c.id !== id);
+      courses = courses.filter(c => {
+        return c.id !== id;
+      });
       renderAll();
       triggerAutoSave();
     };
@@ -1101,7 +1105,8 @@
       }
     };
 
-    const handleDropOnCell = (e, targetDay, targetHour) => {
+    // Drop handler directly bound on unified relative day columns
+    const handleDayColDrop = (e, targetDay) => {
       e.preventDefault();
       const courseId = e.dataTransfer.getData("courseId");
       const sourceDay = e.dataTransfer.getData("sourceDay");
@@ -1109,12 +1114,26 @@
       const courseObj = courses.find(c => c.id === courseId);
       if (!courseObj) return;
 
+      const dayColEl = e.currentTarget;
+      const rect = dayColEl.getBoundingClientRect();
+      const dropY = e.clientY - rect.top;
+
+      // Translate Y pixels to minutes offset based on current minHour
+      const minutesFromStart = (dropY / hourHeight) * 60;
+      let targetTimeMins = minHour * 60 + minutesFromStart;
+
+      // Snap dropped coordinates to clean 15-minute grids
+      let snappedMins = Math.round(targetTimeMins / 15) * 15;
+      snappedMins = Math.max(0, Math.min(1425, snappedMins));
+
+      const newStart = minutesToTimeStr(snappedMins);
+
+      // Preserve original course length
       const startMins = timeToMinutes(courseObj.startTime || "09:00");
       const endMins = timeToMinutes(courseObj.endTime || "10:30");
       const duration = (courseObj.startTime && courseObj.endTime) ? (endMins - startMins) : 90;
 
-      const newStart = targetHour;
-      const newEnd = minutesToTimeStr(timeToMinutes(newStart) + duration);
+      const newEnd = minutesToTimeStr(snappedMins + duration);
 
       let targetDays = [...courseObj.days];
       if (sourceDay) {
@@ -1230,7 +1249,7 @@
         textarea.value = 
           "SUBJECT,COURSE_ID,SECTION,COURSE_TITLE,INSTRUCTOR_NAME,CAMPUS,CAMPUS_DESC,MEETING_DAY_1,MEETING_TIME_1,MEETING_ROOM_1,MEETING_DAY_2,MEETING_TIME_2,MEETING_ROOM_2\n" +
           "ITSY,ITSY1342,102,Information Tech. Security,Dr. Alan Turing,BN,Brenham Campus,M,09:00 AM - 10:30 AM,Tech Center 102,W,09:00 AM - 10:30 AM,Tech Center 102\n" +
-          "ITSY,ITSY1342,103,Information Tech. Security,Dr. Alan Turing,RL,RELLIS Campus,M,11:00 AM - 12:30 PM,TRA,W,11:00 AM - 12:30 PM,TRA\n" +
+          "ITSY,ITSY1342,103,Information Tech. Security,Dr. Alan Turing,RL,RELLIS Campus,M,11:00 AM - 12:40 PM,TRA,W,11:00 AM - 12:40 PM,TRA\n" +
           "ITAI,ITAI1370,1,Intro to AI,Prof. Emmy Noether,BN,Brenham Campus,M,11:00 AM - 12:30 PM,Tech Center 102,W,11:00 AM - 12:30 PM,Tech Center 102\n" +
           "MATH,MATH1314,101,College Algebra,Prof. Emmy Noether,BN,Brenham Campus,T,09:00 AM - 10:30 AM,Hilbert Hall 202,R,09:00 AM - 10:30 AM,Hilbert Hall 202\n" +
           "PHYS,PHYS2425,201,University Physics I,Dr. Richard Feynman,RL,RELLIS Campus,T,11:00 AM - 12:30 PM,Planck Room 10,R,11:00 AM - 12:30 PM,Planck Room 10\n" +
@@ -1289,7 +1308,7 @@
                 rawRow: rawRow
               };
             });
-            courses = [...courses, ...sanitized];
+            courses = [...sanitized];
           }
         } else {
           // Robust RFC 4180 parsing for Banner CSV
@@ -1375,7 +1394,7 @@
               rawRow: rowData
             });
           }
-          courses = [...courses, ...newEntries];
+          courses = [...newEntries];
         }
 
         showToast(`Successfully loaded ${courses.length} courses!`);
@@ -1634,14 +1653,14 @@
                   ${conflictLabel}
                 </span>
               </div>
-              <p class="leading-relaxed">{${conflict.message}}</p>
+              <p class="leading-relaxed">${conflict.message}</p>
             </div>
           `;
         });
         dock.appendChild(wrap);
       }
 
-      // Render Active Calendar Placements
+      // Filter active calendar placements
       const filteredCalendarCourses = courses.filter(c => {
         if (!c.days || c.days.length === 0 || !c.startTime || !c.endTime) return false;
         if (viewPerspective === 'professor' && selectedEntity) {
@@ -1658,86 +1677,195 @@
 
       document.getElementById('visible-placements-counter').innerText = filteredCalendarCourses.length;
 
+      // DYNAMIC GRAPHICAL BOUNDS DETECTOR
+      minHour = 8;
+      maxHour = 18;
+      if (filteredCalendarCourses.length > 0) {
+        let absoluteMin = 24;
+        let absoluteMax = 0;
+        filteredCalendarCourses.forEach(c => {
+          const startH = parseInt(c.startTime.split(':')[0], 10);
+          const endH = Math.ceil(timeToMinutes(c.endTime) / 60);
+          if (startH < absoluteMin) absoluteMin = startH;
+          if (endH > absoluteMax) absoluteMax = endH;
+        });
+        // Pad with one extra hour for layout breathing room
+        minHour = Math.max(0, absoluteMin - 1);
+        maxHour = Math.min(24, absoluteMax + 1);
+      }
+
+      const totalHours = maxHour - minHour;
+      const totalHeight = totalHours * hourHeight;
+
       // Populate Table Rows for Calendar Day Grid
       const calendarRows = document.getElementById('calendar-rows-container');
       calendarRows.innerHTML = '';
+      calendarRows.className = "grid grid-cols-11 items-stretch relative bg-white border-t border-slate-200";
+      calendarRows.style.height = `${totalHeight}px`;
 
-      hourGrid.forEach(hour => {
-        const row = document.createElement('div');
-        row.className = "grid grid-cols-11 items-stretch divide-x divide-slate-100 min-h-[95px]";
+      // Render Left Hour Labels Column Axis
+      const axisCol = document.createElement('div');
+      axisCol.className = "col-span-1 border-r border-slate-200 relative bg-slate-50 select-none";
+      axisCol.style.height = `${totalHeight}px`;
 
-        // Render hour column axis
-        const axisCol = document.createElement('div');
-        axisCol.className = "col-span-1 bg-slate-50 p-2 text-center text-[11px] text-slate-500 flex flex-col justify-between font-mono";
-        const hourEndLabel = minutesToTimeStr(timeToMinutes(hour) + 30);
-        axisCol.innerHTML = `
-          <span class="font-semibold">${hour}</span>
-          <span class="text-[9px] opacity-60">${hourEndLabel}</span>
+      for (let i = 0; i < totalHours; i++) {
+        const currentHourVal = minHour + i;
+        const labelDiv = document.createElement('div');
+        labelDiv.className = "absolute left-0 right-0 text-center font-mono text-[11px] font-semibold text-slate-500 flex items-center justify-center border-b border-slate-100";
+        labelDiv.style.top = `${i * hourHeight}px`;
+        labelDiv.style.height = `${hourHeight}px`;
+        labelDiv.innerHTML = `
+          <div class="flex flex-col">
+            <span>${String(currentHourVal).padStart(2, '0')}:00</span>
+            <span class="text-[9px] text-slate-400 font-normal mt-0.5">${String(currentHourVal).padStart(2, '0')}:30</span>
+          </div>
         `;
-        row.appendChild(axisCol);
+        axisCol.appendChild(labelDiv);
+      }
+      calendarRows.appendChild(axisCol);
 
-        // Render Day Cell Columns
-        weekDays.forEach(day => {
-          const hourStart = timeToMinutes(hour);
-          const hourEnd = hourStart + 60;
+      // Render Day Columns
+      weekDays.forEach(day => {
+        const dayCol = document.createElement('div');
+        dayCol.className = "col-span-2 border-r border-slate-100 relative bg-slate-50/10 hover:bg-slate-50/30 transition duration-150";
+        dayCol.style.height = `${totalHeight}px`;
+        dayCol.setAttribute('ondragover', 'event.preventDefault()');
+        dayCol.setAttribute('ondrop', `handleDayColDrop(event, '${day.key}')`);
 
-          // Gather cell courses fitting this interval
-          const cellCourses = filteredCalendarCourses.filter(course => {
-            if (!course.days.includes(day.key)) return false;
-            const courseStart = timeToMinutes(course.startTime);
-            return (courseStart >= hourStart && courseStart < hourEnd);
+        // Draw hour solid lines and half-hour dashed lines
+        for (let i = 0; i < totalHours; i++) {
+          const hrLine = document.createElement('div');
+          hrLine.className = "absolute left-0 right-0 border-b border-slate-100 pointer-events-none";
+          hrLine.style.top = `${i * hourHeight}px`;
+          dayCol.appendChild(hrLine);
+
+          const halfLine = document.createElement('div');
+          halfLine.className = "absolute left-0 right-0 border-b border-dashed border-slate-100/50 pointer-events-none";
+          halfLine.style.top = `${i * hourHeight + (hourHeight / 2)}px`;
+          dayCol.appendChild(halfLine);
+        }
+
+        // Filter and map courses for this weekday column
+        const dayCourses = filteredCalendarCourses.filter(c => c.days.includes(day.key));
+        const mappedDayCourses = dayCourses.map(c => ({
+          ...c,
+          startMins: timeToMinutes(c.startTime),
+          endMins: timeToMinutes(c.endTime)
+        }));
+
+        // Sort primarily by start times
+        mappedDayCourses.sort((a, b) => a.startMins - b.startMins);
+
+        // Group into overlapping clusters
+        const clusters = [];
+        mappedDayCourses.forEach(course => {
+          let matchedCluster = null;
+          for (let cluster of clusters) {
+            const overlaps = cluster.some(c => {
+              return (course.startMins < c.endMins && course.endMins > c.startMins);
+            });
+            if (overlaps) {
+              matchedCluster = cluster;
+              break;
+            }
+          }
+          if (matchedCluster) {
+            matchedCluster.push(course);
+          } else {
+            clusters.push([course]);
+          }
+        });
+
+        // Pack each cluster into side-by-side columns
+        clusters.forEach(cluster => {
+          const columns = [];
+          cluster.forEach(course => {
+            let placed = false;
+            for (let i = 0; i < columns.length; i++) {
+              const hasOverlap = columns[i].some(c => {
+                return (course.startMins < c.endMins && course.endMins > c.startMins);
+              });
+              if (!hasOverlap) {
+                columns[i].push(course);
+                course.colIdx = i;
+                placed = true;
+                break;
+              }
+            }
+            if (!placed) {
+              columns.push([course]);
+              course.colIdx = columns.length - 1;
+            }
           });
 
-          const cell = document.createElement('div');
-          cell.className = "col-span-2 p-1.5 bg-slate-50/20 hover:bg-slate-50/60 transition relative flex flex-col gap-1.5";
-          cell.setAttribute('ondragover', 'event.preventDefault()');
-          cell.setAttribute('ondrop', `handleDropOnCell(event, '${day.key}', '${hour}')`);
+          const colCount = columns.length;
+          cluster.forEach(course => {
+            course.colWidth = 100 / colCount;
+            course.colLeft = course.colIdx * (100 / colCount);
+          });
+        });
 
-          cellCourses.forEach(course => {
-            const hasConflict = conflicts.some(conf => 
-              conf.courseA.id === course.id || conf.courseB.id === course.id
-            );
+        // Render each packed course block card
+        mappedDayCourses.forEach(course => {
+          const hasConflict = conflicts.some(conf => 
+            conf.courseA.id === course.id || conf.courseB.id === course.id
+          );
 
-            const courseCard = document.createElement('div');
-            courseCard.setAttribute('draggable', 'true');
-            courseCard.setAttribute('ondragstart', `handleDragStart(event, '${course.id}', '${day.key}')`);
-            courseCard.className = `p-2.5 rounded-lg border-l-4 shadow-sm relative transition cursor-grab active:cursor-grabbing text-xs flex flex-col justify-between h-full ${getColorClass(course.color)} ${hasConflict ? 'ring-2 ring-rose-500 border-rose-600 bg-rose-50/90' : ''}`;
+          // Calculate precise vertical offset and height
+          const topPx = ((course.startMins - (minHour * 60)) / 60) * hourHeight;
+          const heightPx = ((course.endMins - course.startMins) / 60) * hourHeight;
 
-            courseCard.innerHTML = `
+          const cardDiv = document.createElement('div');
+          cardDiv.setAttribute('draggable', 'true');
+          cardDiv.setAttribute('ondragstart', `handleDragStart(event, '${course.id}', '${day.key}')`);
+          cardDiv.className = `absolute rounded-lg border-l-4 shadow-sm p-2 transition cursor-grab active:cursor-grabbing text-[11px] flex flex-col justify-between overflow-hidden group/card ${getColorClass(course.color)} ${hasConflict ? 'ring-2 ring-rose-500 border-rose-600 bg-rose-50/90' : ''}`;
+          
+          cardDiv.style.top = `${topPx}px`;
+          cardDiv.style.height = `${heightPx}px`;
+          cardDiv.style.left = `${course.colLeft}%`;
+          cardDiv.style.width = `calc(${course.colWidth}% - 2px)`; // subtle column margin
+          cardDiv.style.zIndex = "10";
+
+          cardDiv.innerHTML = `
+            <div class="h-full flex flex-col justify-between">
               <div>
                 <div class="flex justify-between items-start">
-                  <span class="font-mono font-bold tracking-tight">${course.code}</span>
-                  <div class="flex items-center space-x-1">
-                    ${hasConflict ? `<span class="w-2 h-2 rounded-full bg-rose-600 animate-ping" title="Conflict Warning"></span>` : ''}
-                    <button onclick="unscheduleCourse('${course.id}')" class="text-slate-400 hover:text-slate-700 font-extrabold text-[10px]" title="Remove from schedule">✕</button>
+                  <span class="font-mono font-bold tracking-tight text-[10px] bg-white/60 px-1 rounded truncate max-w-[80%]">${course.code}</span>
+                  <div class="flex items-center space-x-1 shrink-0">
+                    ${hasConflict ? `<span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping" title="Conflict Warning"></span>` : ''}
+                    <button onclick="unscheduleCourse('${course.id}')" class="text-slate-400 hover:text-slate-700 font-extrabold text-[9px] leading-none" title="Remove from schedule">✕</button>
                   </div>
                 </div>
-                <p class="font-semibold text-slate-800 mt-1 line-clamp-1">${course.name}</p>
+                <p class="font-bold text-slate-800 mt-1 line-clamp-2 leading-tight">${course.name}</p>
               </div>
 
-              <div class="mt-2 pt-1.5 border-t border-slate-200/50 flex flex-col space-y-0.5 text-[10px] text-slate-500 font-medium">
-                <div>⏰ ${course.startTime} - ${course.endTime}</div>
-                <div>👨‍🏫 ${course.professor}</div>
-                <div class="flex items-center justify-between mt-1 pt-0.5 border-t border-dashed border-slate-200">
+              <div class="mt-1 pt-1 border-t border-slate-200/50 flex flex-col space-y-0.5 text-[9px] text-slate-500 font-medium shrink-0">
+                <div class="flex items-center space-x-1">
+                  <span>⏰</span>
+                  <span class="truncate">${course.startTime} - ${course.endTime}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <span>👨‍🏫</span>
+                  <span class="truncate">${course.professor}</span>
+                </div>
+                <div class="flex items-center justify-between pt-0.5 border-t border-dashed border-slate-200">
                   <div class="flex flex-col">
-                    <span class="text-[9px] text-slate-400 font-bold uppercase">Campus: ${course.campus || "BN"}</span>
-                    <span>🚪 Room: ${course.room}</span>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase leading-none">Campus: ${course.campus || "BN"}</span>
+                    <span class="mt-0.5 text-slate-700 font-bold">🚪 ${course.room}</span>
                   </div>
-                  <button onclick="openEditRoomModal('${course.id}')" class="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition" title="Change Classroom & Campus">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <button onclick="openEditRoomModal('${course.id}')" class="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition opacity-0 group-hover/card:opacity-100" title="Change Classroom & Campus">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </button>
                 </div>
               </div>
-            `;
-            cell.appendChild(courseCard);
-          });
-
-          row.appendChild(cell);
+            </div>
+          `;
+          dayCol.appendChild(cardDiv);
         });
 
-        calendarRows.appendChild(row);
+        calendarRows.appendChild(dayCol);
       });
     };
 
