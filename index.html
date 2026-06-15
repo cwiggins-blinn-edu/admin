@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academia Schedule Pro - Administrative Workspace</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.2s ease-out forwards',
+            scaleIn: 'scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            scaleIn: {
+              '0%': { transform: 'scale(0.95)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar behaviors for desktop administration */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 flex flex-col antialiased">
+
+  <!-- DYNAMIC RUNTIME BANNER (COLLAPSED BY DEFAULT) -->
+  <div id="conflict-banner" class="hidden bg-rose-50 border-b border-rose-200 py-2.5 px-4 flex items-center justify-between text-xs sm:text-sm text-rose-700 font-medium">
+    <div class="flex items-center space-x-2">
+      <!-- Alert Triangle Icon -->
+      <svg class="w-5 h-5 text-rose-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>
+        <strong>Schedule Constraints Broken:</strong> <span id="banner-conflict-count">0</span> Active Conflict(s) detected. Adjust professor days/hours/campus to resolve.
+      </span>
+    </div>
+    <button onclick="scrollToConflicts()" class="underline hover:text-rose-900 cursor-pointer text-xs">
+      Review Issues
+    </button>
+  </div>
+
+  <!-- APPLICATION CORE HEADER -->
+  <header class="bg-slate-900 text-white shadow-md py-4 px-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+    <div class="flex items-center space-x-3">
+      <span class="p-2 bg-indigo-600 rounded-lg text-white font-black text-xl tracking-tight">Ω</span>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">Academia Schedule Pro</h1>
+        <p class="text-xs text-slate-400">Office of the Registrar & Academic Scheduling</p>
+      </div>
+    </div>
+    
+    <!-- NAVIGATION BAR CONTROLS -->
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+      <button id="nav-btn-calendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-indigo-600 text-white shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span>Interactive Calendar</span>
+      </button>
+      
+      <button id="nav-btn-upload" onclick="switchTab('upload')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        <span>Upload Data File</span>
+      </button>
+
+      <button id="nav-btn-manual" onclick="switchTab('manual')" class="px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Add Class</span>
+      </button>
+
+      <div class="h-6 w-[1px] bg-slate-700 hidden lg:block"></div>
+
+      <!-- EXPORT TO CSV BUTTON -->
+      <button id="export-header-btn" onclick="downloadCSVExport()" class="hidden px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md" title="Download schedule spreadsheet compatible with Banner imports">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span>Export CSV</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- STARTUP GATE / SPLASH SCREEN -->
+  <div id="startup-splash" class="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-xl mx-auto my-16 bg-white border border-slate-200 shadow-xl rounded-2xl animate-scaleIn">
+    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 mb-6 mx-auto">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+    </div>
+    
+    <h2 class="text-2xl font-bold text-slate-800 mb-2">Connect Your Schedule Spreadsheet</h2>
+    <p class="text-slate-500 text-sm mb-6 leading-relaxed">
+      No schedule is currently loaded. Open or upload your <code class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-600 font-bold">schedule.csv</code> spreadsheet containing Banner schedule columns to begin editing and managing classes.
+    </p>
+
+    <!-- INTERACTIVE FILE API BUTTONS -->
+    <div class="flex flex-col gap-3 w-full">
+      <!-- File System Access Direct-Edit Option -->
+      <button id="btn-fs-picker" onclick="openFileWithSystemPicker()" class="hidden w-full px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition shadow-md flex items-center justify-center space-x-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+        </svg>
+        <span>Open schedule.csv (Enable Direct Auto-Save)</span>
+      </button>
+
+      <!-- Standard Manual upload Option -->
+      <div class="relative w-full">
+        <label for="splash-file-uploader" class="w-full px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition border border-slate-200 flex items-center justify-center space-x-2 cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          <span id="splash-uploader-text">Upload schedule.csv File (Manual Save)</span>
+        </label>
+        <input type="file" id="splash-file-uploader" accept=".csv" onchange="handleSplashFileSelect(event)" class="absolute inset-0 opacity-0 w-full cursor-pointer h-full hidden" />
+      </div>
+    </div>
+
+    <div class="mt-8 text-left border-t border-slate-100 pt-6 w-full">
+      <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Technical Information</h4>
+      <ul class="text-xs text-slate-500 space-y-1.5 list-disc list-inside">
+        <li>The system parses SUBJECT, COURSE_ID, and MEETING_DAY slots.</li>
+        <li>Your file will retain all 57 original Banner columns upon saving.</li>
+        <li>Direct Auto-Save updates your original file instantly on every drop action!</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MAIN WORKSPACE LAYOUT -->
+  <main id="main-workspace" class="hidden flex-1 grid grid-cols-1 xl:grid-cols-4 gap-6 p-6">
+    
+    <!-- LEFT SIDEBAR: HEALTH, UNSCHEDULED POOL, CONFLICT MONITOR -->
+    <div class="xl:col-span-1 flex flex-col space-y-6">
+      
+      <!-- SCHEDULING HEALTH INDEX -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Scheduling Health Index</h2>
+          <span id="autosave-indicator" class="hidden px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-100 flex items-center space-x-1 animate-pulse">
+            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+            <span>Autosave On</span>
+          </span>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-slate-50 p-3 rounded-lg text-center border border-slate-100">
+            <span id="stat-total-courses" class="block text-2xl font-bold text-slate-800">0</span>
+            <span class="text-xs text-slate-500">Total Courses</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg text-center border border-slate-100">
+            <span id="stat-scheduled-courses" class="block text-2xl font-bold text-indigo-600">0</span>
+            <span class="text-xs text-slate-500">Scheduled</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg text-center border border-slate-100">
+            <span id="stat-unscheduled-courses" class="block text-2xl font-bold text-amber-600">0</span>
+            <span class="text-xs text-slate-500">In Pool (TBD)</span>
+          </div>
+          <div id="stat-conflicts-container" class="bg-slate-50 p-3 rounded-lg text-center border border-slate-100">
+            <span id="stat-conflicts-count" class="block text-2xl font-bold text-emerald-600">0</span>
+            <span class="text-xs text-slate-500">Conflict Flags</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE COURSE PLACEMENT POOL -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col flex-1 max-h-[450px] xl:max-h-[500px]">
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm">Course Placement Pool</h3>
+            <p class="text-xs text-slate-500">Drag items from here onto the Calendar</p>
+          </div>
+          <span id="pool-counter-pill" class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full">
+            0
+          </span>
+        </div>
+
+        <div id="unscheduled-pool" class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- LIVE SECURITY VALIDATION CENTER -->
+      <div id="conflict-dock" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <h3 class="font-bold text-slate-800 text-sm mb-2 flex items-center space-x-1.5">
+          <span>Security Validation Center</span>
+          <span id="conflict-terminal-ping" class="hidden w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+        </h3>
+        
+        <div id="conflict-list-container">
+          <!-- Dynamically populated conflict notifications -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT MAIN WORKSPACE WINDOW -->
+    <div class="xl:col-span-3 flex flex-col space-y-6">
+      
+      <!-- INTERACTIVE CALENDAR CONTAINER -->
+      <div id="tab-calendar" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-full">
+        
+        <!-- TOOLBAR CONTROLS -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+          
+          <!-- VISUAL PERSPECTIVE CONTROL TABS -->
+          <div class="flex flex-wrap items-center gap-1 bg-slate-100 p-1 rounded-lg">
+            <button onclick="changePerspective('master')" id="perspective-master" class="px-3.5 py-1.5 rounded-md text-xs font-medium transition bg-white text-slate-800 shadow-sm">
+              Master Schedule
+            </button>
+            <button onclick="changePerspective('professor')" id="perspective-professor" class="px-3.5 py-1.5 rounded-md text-xs font-medium transition text-slate-600 hover:text-slate-900">
+              By Professor
+            </button>
+            <button onclick="changePerspective('classroom')" id="perspective-classroom" class="px-3.5 py-1.5 rounded-md text-xs font-medium transition text-slate-600 hover:text-slate-900">
+              By Room
+            </button>
+            <button onclick="changePerspective('campus')" id="perspective-campus" class="px-3.5 py-1.5 rounded-md text-xs font-medium transition text-slate-600 hover:text-slate-900">
+              By Campus
+            </button>
+          </div>
+
+          <!-- DYNAMIC FILTER BOXES -->
+          <div id="perspective-filter-section" class="hidden flex items-center space-x-2 animate-fadeIn">
+            <label id="filter-dropdown-label" class="text-xs font-bold text-slate-500 uppercase">
+              Select:
+            </label>
+            <select id="perspective-filter-dropdown" onchange="handleFilterDropdownChange()" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <!-- Dynamically populated based on perspective option -->
+            </select>
+          </div>
+
+          <div class="text-right">
+            <p class="text-xs text-slate-400">
+              Showing <strong id="visible-placements-counter" class="text-slate-700">0</strong> active course placements
+            </p>
+          </div>
+        </div>
+
+        <!-- CALENDAR GRID WORKSPACE -->
+        <div class="overflow-x-auto mt-6">
+          <div class="min-w-[800px] border border-slate-200 rounded-xl overflow-hidden bg-white">
+            
+            <!-- Weekday Table Headers -->
+            <div class="grid grid-cols-11 bg-slate-900 text-white text-center text-xs font-bold divide-x divide-slate-700">
+              <div class="col-span-1 py-3 text-slate-400 font-medium">Hour</div>
+              <div class="col-span-2 py-3">Monday</div>
+              <div class="col-span-2 py-3">Tuesday</div>
+              <div class="col-span-2 py-3">Wednesday</div>
+              <div class="col-span-2 py-3">Thursday</div>
+              <div class="col-span-2 py-3">Friday</div>
+            </div>
+
+            <!-- Hour Row Matrix -->
+            <div id="calendar-rows-container" class="divide-y divide-slate-100">
+              <!-- Populated dynamically via JavaScript matrix loop -->
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FILE UPLOAD CONSOLE VIEW -->
+      <div id="tab-upload" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h2 class="text-lg font-bold text-slate-800 mb-2">Import Course Registry File</h2>
+        <p class="text-sm text-slate-500 mb-6">
+          Paste structured course and professor lists below. Fully compatible with multi-column schedule CSV and JSON files.
+        </p>
+
+        <!-- FORMAT TOGGLE -->
+        <div class="mb-4">
+          <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Select Input Format</label>
+          <div class="flex space-x-4">
+            <label class="flex items-center space-x-2 text-sm font-medium cursor-pointer">
+              <input type="radio" name="format" value="csv" checked onclick="toggleImportFormat('csv')" class="text-indigo-600 focus:ring-indigo-500" />
+              <span>CSV Format (Comma-Separated)</span>
+            </label>
+            <label class="flex items-center space-x-2 text-sm font-medium cursor-pointer">
+              <input type="radio" name="format" value="json" onclick="toggleImportFormat('json')" class="text-indigo-600 focus:ring-indigo-500" />
+              <span>JSON Array</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- INPUT TEXTAREA & SEED DATA TEMPLATE TOOL -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-bold text-slate-500 uppercase">Input Registry Code</label>
+            <button onclick="loadSampleTemplate()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer underline">
+              Load Sample Template
+            </button>
+          </div>
+          <textarea id="import-text" rows="10" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Paste CSV or JSON here..."></textarea>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="flex space-x-3">
+          <button onclick="executeFileImport()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">
+            Apply Importer Update
+          </button>
+          <button onclick="switchTab('calendar')" class="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200 transition">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- CREATE SINGLE COURSE BLOCK VIEW -->
+      <div id="tab-manual" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 max-w-2xl">
+        <h2 class="text-lg font-bold text-slate-800 mb-2">Create Single Course Block</h2>
+        <p class="text-sm text-slate-500 mb-6">Manually introduce a course entry into the system inventory.</p>
+
+        <form id="manual-course-form" onsubmit="handleManualCourseSubmission(event)" class="space-y-4">
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Course Code*</label>
+              <input type="text" id="manual-code" required placeholder="e.g. ITSY ITSY1342-102" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Course Title*</label>
+              <input type="text" id="manual-name" required placeholder="e.g. Advanced Operating Systems" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Instructor / Professor Name*</label>
+              <input type="text" id="manual-professor" required placeholder="e.g. Dr. Alan Turing" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Target Room / Classroom</label>
+              <input type="text" id="manual-room" placeholder="e.g. Turing Lab A" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+          </div>
+
+          <!-- CAMPUS ASSIGNMENT FOR MANUAL ADDITION -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Campus Assignment</label>
+              <select id="manual-campus" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option value="BN|Brenham Campus">Brenham Campus (BN)</option>
+                <option value="RL|RELLIS Campus">RELLIS Campus (RL)</option>
+                <option value="DE|Distance Education">Distance Education (DE)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Color Indicator</label>
+              <select id="manual-color" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option value="indigo">Indigo</option>
+                <option value="blue">Blue</option>
+                <option value="emerald">Emerald</option>
+                <option value="amber">Amber</option>
+                <option value="purple">Purple</option>
+                <option value="rose">Rose</option>
+                <option value="cyan">Cyan</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- DAYS CHECKBOXES -->
+          <div>
+            <label class="text-xs font-bold text-slate-500 uppercase block mb-1.5">Weekly Days Pattern (Optional)</label>
+            <div class="flex flex-wrap gap-4">
+              <label class="flex items-center space-x-1.5 text-sm font-semibold cursor-pointer">
+                <input type="checkbox" name="manual-days" value="M" onclick="toggleManualTimeFieldsVisibility()" class="rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Monday</span>
+              </label>
+              <label class="flex items-center space-x-1.5 text-sm font-semibold cursor-pointer">
+                <input type="checkbox" name="manual-days" value="T" onclick="toggleManualTimeFieldsVisibility()" class="rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Tuesday</span>
+              </label>
+              <label class="flex items-center space-x-1.5 text-sm font-semibold cursor-pointer">
+                <input type="checkbox" name="manual-days" value="W" onclick="toggleManualTimeFieldsVisibility()" class="rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Wednesday</span>
+              </label>
+              <label class="flex items-center space-x-1.5 text-sm font-semibold cursor-pointer">
+                <input type="checkbox" name="manual-days" value="R" onclick="toggleManualTimeFieldsVisibility()" class="rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Thursday</span>
+              </label>
+              <label class="flex items-center space-x-1.5 text-sm font-semibold cursor-pointer">
+                <input type="checkbox" name="manual-days" value="F" onclick="toggleManualTimeFieldsVisibility()" class="rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Friday</span>
+              </label>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">If zero days are selected, the course starts inside the "Course Placement Pool".</p>
+          </div>
+
+          <!-- CONDITIONAL TIME FORM CONFIGURATOR -->
+          <div id="manual-time-container" class="hidden grid grid-cols-2 gap-4 animate-fadeIn">
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Daily Start Time</label>
+              <input type="time" id="manual-starttime" value="09:00" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Class Duration</label>
+              <select id="manual-duration" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option value="50">50 mins</option>
+                <option value="60">60 mins</option>
+                <option value="75">75 mins</option>
+                <option value="90" selected>90 mins</option>
+                <option value="120">120 mins</option>
+                <option value="180">180 mins</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="pt-4 flex space-x-3">
+            <button type="submit" class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">
+              Commit New Course Block
+            </button>
+            <button type="button" onclick="switchTab('calendar')" class="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200 transition">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- INTERACTIVE SYSTEM OVERRIDE ALERT MODAL -->
+  <div id="conflict-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 animate-scaleIn">
+      <div class="flex items-start space-x-3">
+        <!-- System Alert SVG -->
+        <div class="p-2 bg-rose-100 text-rose-600 rounded-full">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Constraint Violation Warning</h3>
+          <p id="modal-alert-message" class="text-sm text-slate-500 mt-2 leading-relaxed">
+            Conflict detected details...
+          </p>
+          <p class="text-xs text-rose-600 font-medium mt-3 bg-rose-50 p-2 rounded border border-rose-100">
+            ⚠️ Real-world schedulers sometimes require staging tentative overlapping times. Would you like to force this placement anyway, or cancel the change?
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex space-x-3 justify-end">
+        <button onclick="confirmOverrideConflict()" class="px-4 py-2 bg-rose-600 text-white text-xs font-semibold rounded-lg hover:bg-rose-700 transition">
+          Force Placement Anyway
+        </button>
+        <button onclick="closeOverrideModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition">
+          Cancel and Revert
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCATION AND CAMPUS EDITING MODAL -->
+  <div id="edit-room-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-sm w-full p-6 animate-scaleIn">
+      <div class="flex items-start space-x-3 mb-4">
+        <div class="p-2 bg-indigo-100 text-indigo-600 rounded-full">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Configure Class Location</h3>
+          <p class="text-xs text-slate-500">Update classroom & campus values for <span id="edit-room-course-code" class="font-bold text-slate-700"></span>.</p>
+        </div>
+      </div>
+      
+      <div class="space-y-4 mb-5">
+        <div>
+          <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Classroom Name / ID</label>
+          <input type="text" id="edit-room-input" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. Turing Lab A" />
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Campus Allocation</label>
+          <select id="edit-campus-select" onchange="toggleCustomCampusFields()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <option value="BN|Brenham Campus">BN - Brenham Campus</option>
+            <option value="RL|RELLIS Campus">RL - RELLIS Campus</option>
+            <option value="DE|Distance Education">DE - Distance Education</option>
+            <option value="CUSTOM">Other (Specify Custom Code/Desc)</option>
+          </select>
+        </div>
+
+        <div id="custom-campus-wrapper" class="hidden space-y-2 animate-fadeIn bg-slate-50 p-3 rounded-lg border border-slate-100">
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase block">Custom Campus Code</label>
+            <input type="text" id="edit-custom-campus-code" class="w-full bg-white border border-slate-200 rounded-md p-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. TRA" />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-400 uppercase block">Custom Campus Description</label>
+            <input type="text" id="edit-custom-campus-desc" class="w-full bg-white border border-slate-200 rounded-md p-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. Travis Science Center" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex space-x-3 justify-end">
+        <button onclick="closeEditRoomModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition">
+          Cancel
+        </button>
+        <button onclick="saveClassRoom()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition shadow-sm">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- CLIENT-SIDE EMBEDDED CONTROLLER LOGIC -->
+  <script>
+    // Standard Banner/Luminis Multi-column Headers definition matching schedule.csv format
+    const DEFAULT_HEADERS = [
+      "TERM", "TERM_DESC", "SUB_TERM", "SUB_TERM_DESC", "START_DATE", "END_DATE", 
+      "CAMPUS", "CAMPUS_DESC", "DIVISION", "DIVISION_DESC", "SUBJECT", "COURSE_ID", 
+      "SECTION", "COURSE_REFERENCE_NUMBER", "COURSE_TITLE", "SECTION_CROSS_LIST", 
+      "STATUS", "VISIBLE_TO_STUDENT", "GRADABLE_IND", "CREDIT_HOURS", "COURSE_CONTACT_HOURS", 
+      "GENERATED_CONTACT_HOURS", "MAX_ENROLLMENT", "ACTUAL_ENROLLMENT", "SEATS_AVAILABLE", 
+      "FILL_RATE", "SEAT_COUNT_GOAL", "SEAT_COUNT_GOAL_FILL_RATE", "WAITLIST_MAX", 
+      "WAITLIST_ENROLL", "WAITLIST_AVAILABLE", "INSTRUCTION_METHOD", "INSTRUCTOR_ID", 
+      "INSTRUCTOR_NAME", "SCHEDULE1", "MEETING_DAY_1", "MEETING_TIME_1", "MEETING_ROOM_1", 
+      "SCHEDULE2", "MEETING_DAY_2", "MEETING_TIME_2", "MEETING_ROOM_2", "SCHEDULE3", 
+      "MEETING_DAY_3", "MEETING_TIME_3", "MEETING_ROOM_3", "SCHEDULE4", "MEETING_DAY_4", 
+      "MEETING_TIME_4", "MEETING_ROOM_4", "INTEGRATION_CODE", "CAMPUS_RESTRICTION", 
+      "SECTION_TEXT", "LINK_IDENTIFIER", "SSASYLB_section_long_text", "LECTURE_HOURS", "LAB_HOURS"
+    ];
+
+    let importedHeaders = []; // Holds the user's specific CSV columns layout upon upload
+    let courses = []; // No sample data by default. Fully loaded from file.
+    let fileHandle = null; // Stored if user opens via File System Access API
+
+    let activeTab = 'calendar';
+    let viewPerspective = 'master';
+    let selectedEntity = '';
+    let pendingUpdate = null;
+    let importFormat = 'csv';
+    let editingCourseId = null;
+
+    const colorsList = ["indigo", "blue", "emerald", "amber", "purple", "rose", "cyan", "violet", "orange"];
+    const weekDays = [
+      { label: "Monday", key: "M" },
+      { label: "Tuesday", key: "T" },
+      { label: "Wednesday", key: "W" },
+      { label: "Thursday", key: "R" },
+      { label: "Friday", key: "F" }
+    ];
+    const hourGrid = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
+
+    // Helper: Convert "12:30 PM" or "13:00" formats to Minutes of the Day
+    const timeToMinutes = (timeStr) => {
+      if (!timeStr) return 0;
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    // Helper: Format minutes into 24H string "HH:MM"
+    const minutesToTimeStr = (totalMins) => {
+      const hoursNum = Math.floor(totalMins / 60);
+      const minsNum = totalMins % 60;
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(hoursNum)}:${pad(minsNum)}`;
+    };
+
+    // Helper: Format standard 24H hours ("14:00", "15:30") to readable CSV time "02:00 PM - 03:30 PM"
+    const formatMinutesToCSVTime = (startStr, endStr) => {
+      if (!startStr || !endStr) return " - ";
+      
+      function to12Hour(time24) {
+        const [hStr, mStr] = time24.split(':');
+        let h = parseInt(hStr, 10);
+        const m = mStr;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        h = h % 12;
+        if (h === 0) h = 12;
+        return `${String(h).padStart(2, '0')}:${m} ${ampm}`;
+      }
+      
+      return `${to12Hour(startStr)} - ${to12Hour(endStr)}`;
+    };
+
+    // Helper: Parse AM/PM ranges (e.g., "09:00 AM - 10:20 AM") back to 24H start and end strings
+    const parseTimeField = (timeStr) => {
+      if (!timeStr || timeStr.trim() === "" || timeStr.includes("- -") || timeStr === "-") {
+        return { start: "", end: "" };
+      }
+      timeStr = timeStr.replace(/\s+/g, ' ');
+      const regex = /(\d{1,2})[.:]?(\d{2})\s*(AM|PM)?\s*-\s*(\d{1,2})[.:]?(\d{2})\s*(AM|PM)?/i;
+      const match = timeStr.match(regex);
+      if (match) {
+        let sh = parseInt(match[1], 10);
+        let sm = parseInt(match[2], 10);
+        let sa = match[3];
+        let eh = parseInt(match[4], 10);
+        let em = parseInt(match[5], 10);
+        let ea = match[6];
+
+        if (sa) {
+          if (sa.toUpperCase() === 'PM' && sh < 12) sh += 12;
+          if (sa.toUpperCase() === 'AM' && sh === 12) sh = 0;
+        }
+        if (ea) {
+          if (ea.toUpperCase() === 'PM' && eh < 12) eh += 12;
+          if (ea.toUpperCase() === 'AM' && eh === 12) eh = 0;
+        }
+
+        const startStr = `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')}`;
+        const endStr = `${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
+        return { start: startStr, end: endStr };
+      }
+      return { start: "", end: "" };
+    };
+
+    // Standard CSS classes generator
+    const getColorClass = (color) => {
+      switch (color) {
+        case 'indigo': return 'bg-indigo-50 border-indigo-500 text-indigo-700 hover:bg-indigo-100';
+        case 'blue': return 'bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100';
+        case 'emerald': return 'bg-emerald-50 border-emerald-500 text-emerald-700 hover:bg-emerald-100';
+        case 'amber': return 'bg-amber-50 border-amber-500 text-amber-700 hover:bg-amber-100';
+        case 'purple': return 'bg-purple-50 border-purple-500 text-purple-700 hover:bg-purple-100';
+        case 'rose': return 'bg-rose-50 border-rose-500 text-rose-700 hover:bg-rose-100';
+        case 'cyan': return 'bg-cyan-50 border-cyan-500 text-cyan-700 hover:bg-cyan-100';
+        case 'violet': return 'bg-violet-50 border-violet-500 text-violet-700 hover:bg-violet-100';
+        case 'orange': return 'bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100';
+        default: return 'bg-gray-50 border-gray-500 text-gray-700 hover:bg-gray-100';
+      }
+    };
+
+    // Helper: RFC 4180 parsing logic for processing csv cell contents
+    const parseCSV = (text) => {
+      const lines = [];
+      let row = [""];
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        const next = text[i+1];
+
+        if (c === '"') {
+          if (inQuotes && next === '"') {
+            row[row.length - 1] += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === ',') {
+          if (inQuotes) {
+            row[row.length - 1] += c;
+          } else {
+            row.push("");
+          }
+        } else if (c === '\r' || c === '\n') {
+          if (inQuotes) {
+            row[row.length - 1] += c;
+          } else {
+            if (c === '\r' && next === '\n') {
+              i++;
+            }
+            lines.push(row);
+            row = [""];
+          }
+        } else {
+          row[row.length - 1] += c;
+        }
+      }
+      if (row.length > 1 || row[0] !== "") {
+        lines.push(row);
+      }
+      return lines;
+    };
+
+    // Helper: CSV cell escape tool
+    const escapeCSVField = (val) => {
+      if (val === null || val === undefined) return "";
+      let str = String(val);
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        str = '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    };
+
+    // Helper: Show non-intrusive popup toast notification
+    const showToast = (message, type = 'success') => {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-3 rounded-xl shadow-lg text-xs font-semibold text-white transition-all transform duration-300 translate-y-10 opacity-0 flex items-center space-x-2 pointer-events-auto ${
+        type === 'success' ? 'bg-emerald-600 shadow-emerald-600/10' : type === 'error' ? 'bg-rose-600 shadow-rose-600/10' : 'bg-slate-800'
+      }`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+      
+      // Animate In
+      setTimeout(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+      }, 10);
+      
+      // Animate Out
+      setTimeout(() => {
+        toast.classList.add('translate-y-10', 'opacity-0');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3500);
+    };
+
+    // Default Seed state builder
+    const buildDefaultRawRow = (subject, courseId, section, title, instructor, room, days, startTime, endTime, campus = "BN", campusDesc = "Brenham Campus") => {
+      const row = {};
+      DEFAULT_HEADERS.forEach(h => {
+        row[h] = "";
+      });
+      row["SUBJECT"] = subject;
+      row["COURSE_ID"] = courseId;
+      row["SECTION"] = section;
+      row["COURSE_TITLE"] = title;
+      row["INSTRUCTOR_NAME"] = instructor;
+      row["CAMPUS"] = campus;
+      row["CAMPUS_DESC"] = campusDesc;
+      row["MEETING_ROOM_1"] = room;
+      days.forEach((day, idx) => {
+        if (idx < 4) {
+          row[`MEETING_DAY_${idx+1}`] = day;
+          row[`MEETING_TIME_${idx+1}`] = startTime && endTime ? formatMinutesToCSVTime(startTime, endTime) : " - ";
+          row[`MEETING_ROOM_${idx+1}`] = room;
+        }
+      });
+      return row;
+    };
+
+    // Global Scroll to validation anchors
+    const scrollToConflicts = () => {
+      document.getElementById('conflict-dock').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // TAB MANAGEMENT
+    const switchTab = (tabName) => {
+      activeTab = tabName;
+      ['calendar', 'upload', 'manual'].forEach(tab => {
+        const pane = document.getElementById(`tab-${tab}`);
+        const navBtn = document.getElementById(`nav-btn-${tab}`);
+        if (tab === tabName) {
+          pane.classList.remove('hidden');
+          navBtn.className = "px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-indigo-600 text-white shadow-sm";
+        } else {
+          pane.classList.add('hidden');
+          navBtn.className = "px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm";
+        }
+      });
+      renderAll();
+    };
+
+    // PERSPECTIVE VIEW CONTROLLER
+    const changePerspective = (perspective) => {
+      viewPerspective = perspective;
+      ['master', 'professor', 'classroom', 'campus'].forEach(p => {
+        const btn = document.getElementById(`perspective-${p}`);
+        if (p === perspective) {
+          btn.className = "px-3.5 py-1.5 rounded-md text-xs font-medium transition bg-white text-slate-800 shadow-sm";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-md text-xs font-medium transition text-slate-600 hover:text-slate-900";
+        }
+      });
+
+      // Show/Hide dropdown based on perspective choice
+      const filterSection = document.getElementById('perspective-filter-section');
+      const dropdownLabel = document.getElementById('filter-dropdown-label');
+      const dropdown = document.getElementById('perspective-filter-dropdown');
+
+      if (perspective === 'master') {
+        filterSection.classList.add('hidden');
+        selectedEntity = '';
+      } else {
+        filterSection.classList.remove('hidden');
+        dropdown.innerHTML = '';
+        if (perspective === 'professor') {
+          dropdownLabel.innerText = 'Select Instructor:';
+          const professors = Array.from(new Set(courses.map(c => c.professor).filter(Boolean)));
+          professors.forEach(prof => {
+            dropdown.innerHTML += `<option value="${prof}">${prof}</option>`;
+          });
+          selectedEntity = professors[0] || '';
+        } else if (perspective === 'classroom') {
+          dropdownLabel.innerText = 'Select Classroom:';
+          const classrooms = Array.from(new Set(courses.map(c => c.room).filter(Boolean)));
+          classrooms.forEach(room => {
+            dropdown.innerHTML += `<option value="${room}">${room}</option>`;
+          });
+          selectedEntity = classrooms[0] || '';
+        } else if (perspective === 'campus') {
+          dropdownLabel.innerText = 'Select Campus:';
+          // Consolidate list of distinct campuses
+          const campusMap = {};
+          courses.forEach(c => {
+            if (c.campus) {
+              campusMap[c.campus] = c.campusDesc || c.campus;
+            }
+          });
+          Object.keys(campusMap).forEach(code => {
+            dropdown.innerHTML += `<option value="${code}">${campusMap[code]} (${code})</option>`;
+          });
+          selectedEntity = Object.keys(campusMap)[0] || '';
+        }
+      }
+      renderAll();
+    };
+
+    const handleFilterDropdownChange = () => {
+      selectedEntity = document.getElementById('perspective-filter-dropdown').value;
+      renderAll();
+    };
+
+    // FORM VISIBILITY CONTROL
+    const toggleManualTimeFieldsVisibility = () => {
+      const checkedDays = Array.from(document.querySelectorAll('input[name="manual-days"]:checked')).map(el => el.value);
+      const timeContainer = document.getElementById('manual-time-container');
+      if (checkedDays.length > 0) {
+        timeContainer.classList.remove('hidden');
+      } else {
+        timeContainer.classList.add('hidden');
+      }
+    };
+
+    // CORE SYSTEM RULES ENGINE (CONFLICT AUDIT)
+    const runGlobalConflictCheck = () => {
+      const list = [];
+      const scheduled = courses.filter(c => c.days && c.days.length > 0 && c.startTime && c.endTime);
+
+      for (let i = 0; i < scheduled.length; i++) {
+        for (let j = i + 1; j < scheduled.length; j++) {
+          const c1 = scheduled[i];
+          const c2 = scheduled[j];
+
+          const sharedDays = c1.days.filter(d => c2.days.includes(d));
+          if (sharedDays.length === 0) continue;
+
+          const start1 = timeToMinutes(c1.startTime);
+          const end1 = timeToMinutes(c1.endTime);
+          const start2 = timeToMinutes(c2.startTime);
+          const end2 = timeToMinutes(c2.endTime);
+
+          const overlaps = start1 < end2 && start2 < end1;
+
+          if (overlaps) {
+            // Rule 1: Double-Booked Professor check
+            if (c1.professor && c1.professor === c2.professor) {
+              list.push({
+                type: 'professor',
+                entity: c1.professor,
+                message: `${c1.professor} is double-booked on ${sharedDays.join('/')} between ${c1.startTime}-${c1.endTime} (${c1.code}) and ${c2.startTime}-${c2.endTime} (${c2.code})`,
+                courseA: c1,
+                courseB: c2
+              });
+            }
+            // Rule 2: Double-Booked Classroom check
+            if (c1.room && c1.room === c2.room) {
+              list.push({
+                type: 'room',
+                entity: c1.room,
+                message: `${c1.room} is double-booked on ${sharedDays.join('/')} between ${c1.startTime}-${c1.endTime} (${c1.code}) and ${c2.startTime}-${c2.endTime} (${c2.code})`,
+                courseA: c1,
+                courseB: c2
+              });
+            }
+          }
+
+          // Rule 3: Multi-Campus Same-Day Faculty Travel check
+          if (c1.professor && c1.professor === c2.professor) {
+            if (c1.campus && c2.campus && c1.campus !== c2.campus) {
+              // Bypassing online courses from physical campus travel restrictions
+              if (c1.campus !== 'DE' && c2.campus !== 'DE') {
+                list.push({
+                  type: 'multi-campus',
+                  entity: c1.professor,
+                  message: `Multi-Campus Travel Conflict: ${c1.professor} is scheduled on multiple physical campuses (${c1.campusDesc || c1.campus} and ${c2.campusDesc || c2.campus}) on ${sharedDays.join('/')}.`,
+                  courseA: c1,
+                  courseB: c2
+                });
+              }
+            }
+          }
+        }
+      }
+      return list;
+    };
+
+    // MOVEMENT EXANTE ANALYZER
+    const evaluateMoveConflict = (courseId, targetDays, targetStart, targetEnd, overrideRoom = null, overrideCampus = null) => {
+      const courseObj = courses.find(c => c.id === courseId);
+      if (!courseObj) return null;
+
+      const targetRoom = overrideRoom !== null ? overrideRoom : courseObj.room;
+      const targetCampus = overrideCampus !== null ? overrideCampus : courseObj.campus;
+      const startMinutes = timeToMinutes(targetStart);
+      const endMinutes = timeToMinutes(targetEnd);
+
+      const conflictingCourses = courses.filter(c => {
+        if (c.id === courseId) return false;
+        return true;
+      });
+
+      // 1. Check direct time overlaps
+      const overlapCourses = conflictingCourses.filter(c => {
+        if (!c.days || c.days.length === 0 || !c.startTime || !c.endTime) return false;
+        const dayIntersection = c.days.filter(d => targetDays.includes(d));
+        if (dayIntersection.length === 0) return false;
+
+        const existingStart = timeToMinutes(c.startTime);
+        const existingEnd = timeToMinutes(c.endTime);
+
+        return startMinutes < existingEnd && endMinutes > existingStart;
+      });
+
+      const profConflict = overlapCourses.find(c => c.professor === courseObj.professor);
+      if (profConflict) {
+        return {
+          type: 'professor',
+          message: `Conflict Detected: ${courseObj.professor} is already teaching "${profConflict.name}" (${profConflict.code}) at this time on ${targetDays.join(',')}.`
+        };
+      }
+
+      const roomConflict = overlapCourses.find(c => c.room === targetRoom);
+      if (roomConflict) {
+        return {
+          type: 'room',
+          message: `Classroom Warning: ${targetRoom} is occupied by "${roomConflict.name}" (${roomConflict.code}) during this proposed time.`
+        };
+      }
+
+      // 2. Check same-day multi-campus travel overlaps (BN vs RL vs DE)
+      if (targetCampus && targetCampus !== 'DE') {
+        const sameDayCourses = conflictingCourses.filter(c => {
+          if (!c.days || c.days.length === 0) return false;
+          if (c.professor !== courseObj.professor) return false;
+          const dayIntersection = c.days.filter(d => targetDays.includes(d));
+          return dayIntersection.length > 0;
+        });
+
+        const campusConflict = sameDayCourses.find(c => c.campus && c.campus !== targetCampus && c.campus !== 'DE');
+        if (campusConflict) {
+          return {
+            type: 'multi-campus',
+            message: `Multi-Campus Travel Warning: ${courseObj.professor} is scheduled to teach on multiple physical campuses (${courseObj.campusDesc || targetCampus} and ${campusConflict.campusDesc || campusConflict.campus}) on the same day (${targetDays.join(',')}).`
+          };
+        }
+      }
+
+      return null;
+    };
+
+    // CLASSROOM AND CAMPUS ASSIGNMENT MANAGER
+    const toggleCustomCampusFields = () => {
+      const select = document.getElementById('edit-campus-select');
+      const customWrapper = document.getElementById('custom-campus-wrapper');
+      if (select.value === 'CUSTOM') {
+        customWrapper.classList.remove('hidden');
+      } else {
+        customWrapper.classList.add('hidden');
+      }
+    };
+
+    const openEditRoomModal = (courseId) => {
+      editingCourseId = courseId;
+      const course = courses.find(c => c.id === courseId);
+      if (!course) return;
+
+      document.getElementById('edit-room-course-code').innerText = course.code;
+      document.getElementById('edit-room-input').value = course.room || '';
+
+      const select = document.getElementById('edit-campus-select');
+      const customWrapper = document.getElementById('custom-campus-wrapper');
+      document.getElementById('edit-custom-campus-code').value = '';
+      document.getElementById('edit-custom-campus-desc').value = '';
+
+      if (['BN', 'RL', 'DE'].includes(course.campus)) {
+        select.value = `${course.campus}|${course.campusDesc}`;
+        customWrapper.classList.add('hidden');
+      } else if (course.campus) {
+        select.value = 'CUSTOM';
+        customWrapper.classList.remove('hidden');
+        document.getElementById('edit-custom-campus-code').value = course.campus;
+        document.getElementById('edit-custom-campus-desc').value = course.campusDesc || '';
+      } else {
+        select.value = 'BN|Brenham Campus';
+        customWrapper.classList.add('hidden');
+      }
+
+      document.getElementById('edit-room-modal').classList.remove('hidden');
+    };
+
+    const closeEditRoomModal = () => {
+      document.getElementById('edit-room-modal').classList.add('hidden');
+      editingCourseId = null;
+    };
+
+    const saveClassRoom = () => {
+      if (!editingCourseId) return;
+      const newRoom = document.getElementById('edit-room-input').value.trim() || 'Unassigned';
+      
+      const select = document.getElementById('edit-campus-select');
+      let targetCampus = '';
+      let targetCampusDesc = '';
+
+      if (select.value === 'CUSTOM') {
+        targetCampus = document.getElementById('edit-custom-campus-code').value.trim().toUpperCase() || 'CUSTOM';
+        targetCampusDesc = document.getElementById('edit-custom-campus-desc').value.trim() || 'Custom Campus';
+      } else {
+        const parts = select.value.split('|');
+        targetCampus = parts[0];
+        targetCampusDesc = parts[1];
+      }
+
+      const courseObj = courses.find(c => c.id === editingCourseId);
+      if (!courseObj) return;
+
+      if (courseObj.days && courseObj.days.length > 0 && courseObj.startTime && courseObj.endTime) {
+        const conflict = evaluateMoveConflict(editingCourseId, courseObj.days, courseObj.startTime, courseObj.endTime, newRoom, targetCampus);
+        
+        const applyRoomChange = () => {
+          courses = courses.map(c => {
+            if (c.id === editingCourseId) {
+              return { ...c, room: newRoom, campus: targetCampus, campusDesc: targetCampusDesc };
+            }
+            return c;
+          });
+          closeEditRoomModal();
+          renderAll();
+          triggerAutoSave();
+        };
+
+        if (conflict) {
+          pendingUpdate = { apply: applyRoomChange };
+          closeEditRoomModal();
+          showOverrideModal(conflict.message);
+          return;
+        } else {
+          applyRoomChange();
+        }
+      } else {
+        courses = courses.map(c => {
+          if (c.id === editingCourseId) {
+            return { ...c, room: newRoom, campus: targetCampus, campusDesc: targetCampusDesc };
+          }
+          return c;
+        });
+        closeEditRoomModal();
+        renderAll();
+        triggerAutoSave();
+      }
+    };
+
+    // SYSTEM SCHEDULING WRITERS
+    const unscheduleCourse = (id) => {
+      courses = courses.map(c => {
+        if (c.id === id) {
+          return { ...c, days: [], startTime: "", endTime: "" };
+        }
+        return c;
+      });
+      renderAll();
+      triggerAutoSave();
+    };
+
+    const deleteCourse = (id) => {
+      courses = courses.filter(c => c.id !== id);
+      renderAll();
+      triggerAutoSave();
+    };
+
+    // DRAG AND DROP HANDLERS
+    const handleDragStart = (e, courseId, sourceDay = null) => {
+      e.dataTransfer.setData("courseId", courseId);
+      if (sourceDay) {
+        e.dataTransfer.setData("sourceDay", sourceDay);
+      }
+    };
+
+    const handleDropOnCell = (e, targetDay, targetHour) => {
+      e.preventDefault();
+      const courseId = e.dataTransfer.getData("courseId");
+      const sourceDay = e.dataTransfer.getData("sourceDay");
+
+      const courseObj = courses.find(c => c.id === courseId);
+      if (!courseObj) return;
+
+      const startMins = timeToMinutes(courseObj.startTime || "09:00");
+      const endMins = timeToMinutes(courseObj.endTime || "10:30");
+      const duration = (courseObj.startTime && courseObj.endTime) ? (endMins - startMins) : 90;
+
+      const newStart = targetHour;
+      const newEnd = minutesToTimeStr(timeToMinutes(newStart) + duration);
+
+      let targetDays = [...courseObj.days];
+      if (sourceDay) {
+        targetDays = targetDays.map(d => d === sourceDay ? targetDay : d);
+      } else {
+        targetDays = [targetDay];
+      }
+
+      targetDays = Array.from(new Set(targetDays));
+
+      const conflict = evaluateMoveConflict(courseId, targetDays, newStart, newEnd);
+
+      const applyMove = () => {
+        courses = courses.map(c => {
+          if (c.id === courseId) {
+            return { ...c, days: targetDays, startTime: newStart, endTime: newEnd };
+          }
+          return c;
+        });
+        renderAll();
+        triggerAutoSave();
+      };
+
+      if (conflict) {
+        pendingUpdate = { apply: applyMove };
+        showOverrideModal(conflict.message);
+      } else {
+        applyMove();
+      }
+    };
+
+    // OVERRIDE CONTROL MODAL
+    const showOverrideModal = (msg) => {
+      document.getElementById('modal-alert-message').innerText = msg;
+      document.getElementById('conflict-modal').classList.remove('hidden');
+    };
+
+    const closeOverrideModal = () => {
+      document.getElementById('conflict-modal').classList.add('hidden');
+      pendingUpdate = null;
+    };
+
+    const confirmOverrideConflict = () => {
+      if (pendingUpdate && pendingUpdate.apply) {
+        pendingUpdate.apply();
+      }
+      closeOverrideModal();
+    };
+
+    // SINGLE COURSE FORM COMMISSIONER
+    const handleManualCourseSubmission = (e) => {
+      e.preventDefault();
+      const code = document.getElementById('manual-code').value.trim();
+      const name = document.getElementById('manual-name').value.trim();
+      const professor = document.getElementById('manual-professor').value.trim();
+      const room = document.getElementById('manual-room').value.trim() || 'TBD';
+      
+      const campusValue = document.getElementById('manual-campus').value;
+      const campusParts = campusValue.split('|');
+      const campusCode = campusParts[0];
+      const campusDesc = campusParts[1];
+
+      const checkedDays = Array.from(document.querySelectorAll('input[name="manual-days"]:checked')).map(el => el.value);
+      
+      const startTime = document.getElementById('manual-starttime').value;
+      const duration = parseInt(document.getElementById('manual-duration').value);
+
+      const computedEnd = minutesToTimeStr(timeToMinutes(startTime) + duration);
+      const selectedColor = document.getElementById('manual-color').value;
+
+      const newCourse = {
+        id: Date.now().toString(),
+        code: code.toUpperCase(),
+        name: name,
+        professor: professor,
+        room: room,
+        campus: campusCode,
+        campusDesc: campusDesc,
+        days: checkedDays,
+        startTime: checkedDays.length > 0 ? startTime : "",
+        endTime: checkedDays.length > 0 ? computedEnd : "",
+        color: selectedColor,
+        rawRow: buildDefaultRawRow(
+          code.split(' ')[0] || "CS",
+          (code.split(' ')[1] || "COURSE").split('-')[0] || "COURSE",
+          code.split('-')[1] || "101",
+          name,
+          professor,
+          room,
+          checkedDays,
+          checkedDays.length > 0 ? startTime : "",
+          checkedDays.length > 0 ? computedEnd : "",
+          campusCode,
+          campusDesc
+        )
+      };
+
+      courses.push(newCourse);
+      document.getElementById('manual-course-form').reset();
+      toggleManualTimeFieldsVisibility();
+      switchTab('calendar');
+      triggerAutoSave();
+    };
+
+    // IMPORTER UTILITIES
+    const toggleImportFormat = (format) => {
+      importFormat = format;
+    };
+
+    const loadSampleTemplate = () => {
+      const textarea = document.getElementById('import-text');
+      if (importFormat === 'csv') {
+        textarea.value = 
+          "SUBJECT,COURSE_ID,SECTION,COURSE_TITLE,INSTRUCTOR_NAME,CAMPUS,CAMPUS_DESC,MEETING_DAY_1,MEETING_TIME_1,MEETING_ROOM_1,MEETING_DAY_2,MEETING_TIME_2,MEETING_ROOM_2\n" +
+          "ITSY,ITSY1342,102,Information Tech. Security,Dr. Alan Turing,BN,Brenham Campus,M,09:00 AM - 10:30 AM,Tech Center 102,W,09:00 AM - 10:30 AM,Tech Center 102\n" +
+          "ITSY,ITSY1342,103,Information Tech. Security,Dr. Alan Turing,RL,RELLIS Campus,M,11:00 AM - 12:30 PM,TRA,W,11:00 AM - 12:30 PM,TRA\n" +
+          "ITAI,ITAI1370,1,Intro to AI,Prof. Emmy Noether,BN,Brenham Campus,M,11:00 AM - 12:30 PM,Tech Center 102,W,11:00 AM - 12:30 PM,Tech Center 102\n" +
+          "MATH,MATH1314,101,College Algebra,Prof. Emmy Noether,BN,Brenham Campus,T,09:00 AM - 10:30 AM,Hilbert Hall 202,R,09:00 AM - 10:30 AM,Hilbert Hall 202\n" +
+          "PHYS,PHYS2425,201,University Physics I,Dr. Richard Feynman,RL,RELLIS Campus,T,11:00 AM - 12:30 PM,Planck Room 10,R,11:00 AM - 12:30 PM,Planck Room 10\n" +
+          "COSC,COSC4301,401,Distributed Systems,Dr. Leslie Lamport,DE,Distance Education,, - ,INET,, - ,INET";
+      } else {
+        textarea.value = JSON.stringify([
+          { "code": "ITSY ITSY1342-102", "name": "Information Tech. Security", "professor": "Dr. Alan Turing", "room": "Tech Center 102", "campus": "BN", "campusDesc": "Brenham Campus", "days": ["M", "W"], "startTime": "09:00", "endTime": "10:30" },
+          { "code": "ITSY ITSY1342-103", "name": "Information Tech. Security", "professor": "Dr. Alan Turing", "room": "TRA", "campus": "RL", "campusDesc": "RELLIS Campus", "days": ["M", "W"], "startTime": "11:00", "endTime": "12:30" }
+        ], null, 2);
+      }
+    };
+
+    const executeFileImport = () => {
+      const text = document.getElementById('import-text').value.trim();
+      if (!text) {
+        alert("Please enter structured data content first.");
+        return;
+      }
+      parseAndLoadCSVText(text);
+      switchTab('calendar');
+    };
+
+    // SYSTEM FILE READER INTEGRATOR
+    const parseAndLoadCSVText = (text) => {
+      try {
+        if (text.trim().startsWith('[')) {
+          // JSON Fallback
+          const parsed = JSON.parse(text);
+          if (Array.isArray(parsed)) {
+            const sanitized = parsed.map((item, idx) => {
+              const rawRow = {};
+              DEFAULT_HEADERS.forEach(h => {
+                rawRow[h] = "";
+              });
+              rawRow["SUBJECT"] = item.code ? item.code.split(' ')[0] || "CS" : "CS";
+              rawRow["COURSE_ID"] = item.code ? (item.code.split(' ')[1] || "COURSE").split('-')[0] || "COURSE" : "COURSE";
+              rawRow["SECTION"] = item.code ? (item.code.split('-')[1] || "101") : "101";
+              rawRow["COURSE_TITLE"] = item.name || "Untitled";
+              rawRow["INSTRUCTOR_NAME"] = item.professor || "Unassigned";
+              rawRow["CAMPUS"] = item.campus || "BN";
+              rawRow["CAMPUS_DESC"] = item.campusDesc || "Brenham Campus";
+              rawRow["MEETING_ROOM_1"] = item.room || "TBD";
+
+              return {
+                id: (Date.now() + idx).toString(),
+                code: item.code || "COURSE",
+                name: item.name || "Untitled",
+                professor: item.professor || "Unassigned",
+                room: item.room || "TBD",
+                campus: item.campus || "BN",
+                campusDesc: item.campusDesc || "Brenham Campus",
+                days: Array.isArray(item.days) ? item.days : (item.days ? item.days.split('') : []),
+                startTime: item.startTime || "",
+                endTime: item.endTime || "",
+                color: item.color || colorsList[idx % colorsList.length],
+                rawRow: rawRow
+              };
+            });
+            courses = [...courses, ...sanitized];
+          }
+        } else {
+          // Robust RFC 4180 parsing for Banner CSV
+          const parsedLines = parseCSV(text);
+          if (parsedLines.length <= 1) {
+            alert("CSV must contain headers and at least 1 row.");
+            return;
+          }
+
+          const rawHeaders = parsedLines[0].map(h => h.trim().toUpperCase());
+          importedHeaders = rawHeaders; // Stash columns config to preserve user schema on export
+
+          const newEntries = [];
+          for (let i = 1; i < parsedLines.length; i++) {
+            const cells = parsedLines[i];
+            if (cells.length === 0 || (cells.length === 1 && cells[0] === "")) continue;
+
+            const rowData = {};
+            rawHeaders.forEach((header, index) => {
+              rowData[header] = cells[index] !== undefined ? cells[index].trim() : "";
+            });
+
+            const subject = rowData["SUBJECT"] || "CS";
+            const courseId = rowData["COURSE_ID"] || "COURSE";
+            const section = rowData["SECTION"] || "101";
+            const courseTitle = rowData["COURSE_TITLE"] || "Imported Course";
+            const instructorName = rowData["INSTRUCTOR_NAME"] || "Staff";
+            const campus = rowData["CAMPUS"] || "BN";
+            const campusDesc = rowData["CAMPUS_DESC"] || "Brenham Campus";
+
+            // Consolidate days from MEETING_DAY_1 through MEETING_DAY_4
+            const daysSet = new Set();
+            for (let d = 1; d <= 4; d++) {
+              const mDay = rowData[`MEETING_DAY_${d}`];
+              if (mDay && mDay.trim() !== "" && mDay.trim() !== "-") {
+                mDay.trim().replace(/\s+/g, '').split('').forEach(char => {
+                  if ("MTRWFmtrwf".includes(char)) {
+                    daysSet.add(char.toUpperCase());
+                  }
+                });
+              }
+            }
+
+            // Extract daily hours
+            let startTime = "";
+            let endTime = "";
+            for (let t = 1; t <= 4; t++) {
+              const mTime = rowData[`MEETING_TIME_${t}`];
+              if (mTime && mTime.trim() !== "" && mTime.trim() !== "-" && !mTime.includes("- -")) {
+                const parsedTimes = parseTimeField(mTime);
+                if (parsedTimes.start && parsedTimes.end) {
+                  startTime = parsedTimes.start;
+                  endTime = parsedTimes.end;
+                  break;
+                }
+              }
+            }
+
+            // Extract space resource allocation
+            let room = "TBD";
+            for (let r = 1; r <= 4; r++) {
+              const mRoom = rowData[`MEETING_ROOM_${r}`];
+              if (mRoom && mRoom.trim() !== "" && mRoom.trim() !== "-") {
+                room = mRoom.trim();
+                break;
+              }
+            }
+
+            const courseCode = `${subject} ${courseId}-${section}`;
+
+            newEntries.push({
+              id: (Date.now() + i).toString(),
+              code: courseCode,
+              name: courseTitle,
+              professor: instructorName,
+              room: room,
+              campus: campus,
+              campusDesc: campusDesc,
+              days: Array.from(daysSet),
+              startTime: startTime,
+              endTime: endTime,
+              color: colorsList[i % colorsList.length],
+              rawRow: rowData
+            });
+          }
+          courses = [...courses, ...newEntries];
+        }
+
+        showToast(`Successfully loaded ${courses.length} courses!`);
+        renderAll();
+        triggerAutoSave();
+      } catch (e) {
+        console.error(e);
+        alert("Error parsing file structure. Verify parameters are aligned.");
+      }
+    };
+
+    // STARTUP SPLASH LOADERS
+    const handleSplashFileSelect = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        parseAndLoadCSVText(e.target.result);
+      };
+      reader.readAsText(file);
+    };
+
+    // FILE SYSTEM ACCESS PICKER IMPLEMENTATION (CHROME/EDGE DIRECT SAVE-BACK)
+    const openFileWithSystemPicker = async () => {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{
+            description: 'CSV Files',
+            accept: { 'text/csv': ['.csv'] }
+          }],
+          multiple: false
+        });
+        
+        fileHandle = handle;
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        
+        document.getElementById('autosave-indicator').classList.remove('hidden');
+        parseAndLoadCSVText(text);
+      } catch (err) {
+        console.warn("Direct File access picker declined or failed.", err);
+      }
+    };
+
+    // EXPORT RE-COMPILER FOR RAW TEXT GENERATION
+    const generateCSVString = () => {
+      const outputHeaders = importedHeaders && importedHeaders.length > 0 ? importedHeaders : DEFAULT_HEADERS;
+
+      const csvRows = [];
+      // Headers Line
+      csvRows.push(outputHeaders.join(','));
+
+      courses.forEach(course => {
+        const rowData = {};
+
+        if (course.rawRow) {
+          Object.assign(rowData, course.rawRow);
+        } else {
+          outputHeaders.forEach(h => {
+            rowData[h] = "";
+          });
+          const codeParts = course.code.split(' ');
+          const subject = codeParts[0] || "CS";
+          const idAndSec = codeParts[1] || "101-101";
+          const idParts = idAndSec.split('-');
+          const courseId = idParts[0] || "101";
+          const section = idParts[1] || "101";
+
+          rowData["SUBJECT"] = subject;
+          rowData["COURSE_ID"] = courseId;
+          rowData["SECTION"] = section;
+          rowData["COURSE_TITLE"] = course.name;
+        }
+
+        // Apply physical configurations back directly onto raw row data
+        rowData["INSTRUCTOR_NAME"] = course.professor;
+        rowData["CAMPUS"] = course.campus || "BN";
+        rowData["CAMPUS_DESC"] = course.campusDesc || "Brenham Campus";
+        
+        const activeDays = course.days || [];
+        const csvTimeStr = course.startTime && course.endTime ? formatMinutesToCSVTime(course.startTime, course.endTime) : " - ";
+
+        // Standard distribution across maximum of 4 daily sessions columns
+        for (let idx = 1; idx <= 4; idx++) {
+          const dayVal = activeDays[idx - 1];
+          if (dayVal) {
+            rowData[`MEETING_DAY_${idx}`] = dayVal;
+            rowData[`MEETING_TIME_${idx}`] = csvTimeStr;
+            rowData[`MEETING_ROOM_${idx}`] = course.room || "TBD";
+          } else {
+            rowData[`MEETING_DAY_${idx}`] = "";
+            rowData[`MEETING_TIME_${idx}`] = " - ";
+            rowData[`MEETING_ROOM_${idx}`] = "";
+          }
+        }
+
+        // Build cleanly structured escaped cells row
+        const line = outputHeaders.map(h => escapeCSVField(rowData[h])).join(',');
+        csvRows.push(line);
+      });
+
+      return csvRows.join('\r\n');
+    };
+
+    // TRIGGER COMPONENT AUTO-SAVING (SILENT DIRECT WRITES)
+    const triggerAutoSave = async () => {
+      if (!fileHandle) return;
+      try {
+        const csvContent = generateCSVString();
+        const writable = await fileHandle.createWritable();
+        await writable.write(csvContent);
+        await writable.close();
+        showToast("Directly autosaved to schedule.csv", "success");
+      } catch (err) {
+        console.error("Direct autosave failed:", err);
+        showToast("Auto-save failed. Permissions may have expired.", "error");
+      }
+    };
+
+    // MANUAL EXPORT TRIGGER
+    const downloadCSVExport = () => {
+      const csvString = generateCSVString();
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `schedule.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("Spreadsheet file downloaded!", "success");
+    };
+
+    // SYSTEM INTEGRATED RENDER ENGINE
+    const renderAll = () => {
+      // Toggle landing splash based on loaded course count
+      if (courses.length === 0) {
+        document.getElementById('startup-splash').classList.remove('hidden');
+        document.getElementById('main-workspace').classList.add('hidden');
+        document.getElementById('export-header-btn').classList.add('hidden');
+        return;
+      } else {
+        document.getElementById('startup-splash').classList.add('hidden');
+        document.getElementById('main-workspace').classList.remove('hidden');
+        document.getElementById('export-header-btn').classList.remove('hidden');
+      }
+
+      const conflicts = runGlobalConflictCheck();
+
+      // Update stat counters
+      const totalCount = courses.length;
+      const scheduledCount = courses.filter(c => c.days && c.days.length > 0).length;
+      const unscheduledCount = totalCount - scheduledCount;
+
+      document.getElementById('stat-total-courses').innerText = totalCount;
+      document.getElementById('stat-scheduled-courses').innerText = scheduledCount;
+      document.getElementById('stat-unscheduled-courses').innerText = unscheduledCount;
+      document.getElementById('pool-counter-pill').innerText = unscheduledCount;
+
+      const conflictsSpan = document.getElementById('stat-conflicts-count');
+      const conflictsContainer = document.getElementById('stat-conflicts-container');
+      const banner = document.getElementById('conflict-banner');
+      const bannerCount = document.getElementById('banner-conflict-count');
+      const ping = document.getElementById('conflict-terminal-ping');
+
+      conflictsSpan.innerText = conflicts.length;
+
+      if (conflicts.length > 0) {
+        conflictsSpan.className = "block text-2xl font-bold text-rose-600";
+        conflictsContainer.className = "bg-rose-50 p-3 rounded-lg text-center border border-rose-100";
+        banner.classList.remove('hidden');
+        bannerCount.innerText = conflicts.length;
+        ping.classList.remove('hidden');
+      } else {
+        conflictsSpan.className = "block text-2xl font-bold text-emerald-600";
+        conflictsContainer.className = "bg-slate-50 p-3 rounded-lg text-center border border-slate-100";
+        banner.classList.add('hidden');
+        ping.classList.add('hidden');
+      }
+
+      // Render Unscheduled pool
+      const poolContainer = document.getElementById('unscheduled-pool');
+      poolContainer.innerHTML = '';
+      const unscheduledPool = courses.filter(c => !c.days || c.days.length === 0 || !c.startTime);
+
+      if (unscheduledPool.length === 0) {
+        poolContainer.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-200 rounded-lg">
+            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-xs font-semibold text-slate-500 mt-2">All Courses Scheduled</p>
+            <p class="text-[10px] text-slate-400 mt-1">To change class times, drag blocks directly around the main week view.</p>
+          </div>
+        `;
+      } else {
+        unscheduledPool.forEach(course => {
+          poolContainer.innerHTML += `
+            <div
+              draggable="true"
+              ondragstart="handleDragStart(event, '${course.id}')"
+              class="p-3 rounded-lg border-l-4 shadow-sm transition cursor-grab active:cursor-grabbing ${getColorClass(course.color)}"
+            >
+              <div class="flex justify-between items-start">
+                <span class="text-xs font-mono font-bold uppercase">${course.code}</span>
+                <button onclick="deleteCourse('${course.id}')" class="text-slate-400 hover:text-rose-600 transition" title="Delete Course Inventory">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+              <h4 class="text-xs font-semibold mt-1 line-clamp-1">${course.name}</h4>
+              <div class="mt-2 flex flex-col space-y-0.5 text-[10px] opacity-90">
+                <div>🧑‍🏫 ${course.professor}</div>
+                <div class="flex items-center justify-between mt-1">
+                  <span>🏛️ Campus: <strong class="text-indigo-800 font-bold">${course.campus || "BN"}</strong></span>
+                  <span>🚪 Room: ${course.room || "TBD"}</span>
+                  <button onclick="openEditRoomModal('${course.id}')" class="p-1 text-slate-400 hover:text-indigo-600 rounded transition" title="Change Classroom & Campus">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      // Render Validation terminal
+      const dock = document.getElementById('conflict-list-container');
+      dock.innerHTML = '';
+      if (conflicts.length === 0) {
+        dock.innerHTML = `
+          <div class="p-4 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-lg flex items-center space-x-2 text-xs">
+            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Excellent! Zero professor overlaps, travel issues, or classroom conflicts.</span>
+          </div>
+        `;
+      } else {
+        const wrap = document.createElement('div');
+        wrap.className = "space-y-2 max-h-[220px] overflow-y-auto";
+        conflicts.forEach(conflict => {
+          let conflictLabel = 'Overlap';
+          if (conflict.type === 'professor') conflictLabel = 'Professor Overlap';
+          if (conflict.type === 'room') conflictLabel = 'Room Conflict';
+          if (conflict.type === 'multi-campus') conflictLabel = 'Faculty Travel Alert';
+
+          wrap.innerHTML += `
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800">
+              <div class="flex items-center space-x-1 font-bold uppercase tracking-wider text-[10px] mb-1">
+                <span class="px-1.5 py-0.5 bg-rose-200 text-rose-900 rounded">
+                  ${conflictLabel}
+                </span>
+              </div>
+              <p class="leading-relaxed">{${conflict.message}}</p>
+            </div>
+          `;
+        });
+        dock.appendChild(wrap);
+      }
+
+      // Render Active Calendar Placements
+      const filteredCalendarCourses = courses.filter(c => {
+        if (!c.days || c.days.length === 0 || !c.startTime || !c.endTime) return false;
+        if (viewPerspective === 'professor' && selectedEntity) {
+          return c.professor === selectedEntity;
+        }
+        if (viewPerspective === 'classroom' && selectedEntity) {
+          return c.room === selectedEntity;
+        }
+        if (viewPerspective === 'campus' && selectedEntity) {
+          return c.campus === selectedEntity;
+        }
+        return true;
+      });
+
+      document.getElementById('visible-placements-counter').innerText = filteredCalendarCourses.length;
+
+      // Populate Table Rows for Calendar Day Grid
+      const calendarRows = document.getElementById('calendar-rows-container');
+      calendarRows.innerHTML = '';
+
+      hourGrid.forEach(hour => {
+        const row = document.createElement('div');
+        row.className = "grid grid-cols-11 items-stretch divide-x divide-slate-100 min-h-[95px]";
+
+        // Render hour column axis
+        const axisCol = document.createElement('div');
+        axisCol.className = "col-span-1 bg-slate-50 p-2 text-center text-[11px] text-slate-500 flex flex-col justify-between font-mono";
+        const hourEndLabel = minutesToTimeStr(timeToMinutes(hour) + 30);
+        axisCol.innerHTML = `
+          <span class="font-semibold">${hour}</span>
+          <span class="text-[9px] opacity-60">${hourEndLabel}</span>
+        `;
+        row.appendChild(axisCol);
+
+        // Render Day Cell Columns
+        weekDays.forEach(day => {
+          const hourStart = timeToMinutes(hour);
+          const hourEnd = hourStart + 60;
+
+          // Gather cell courses fitting this interval
+          const cellCourses = filteredCalendarCourses.filter(course => {
+            if (!course.days.includes(day.key)) return false;
+            const courseStart = timeToMinutes(course.startTime);
+            return (courseStart >= hourStart && courseStart < hourEnd);
+          });
+
+          const cell = document.createElement('div');
+          cell.className = "col-span-2 p-1.5 bg-slate-50/20 hover:bg-slate-50/60 transition relative flex flex-col gap-1.5";
+          cell.setAttribute('ondragover', 'event.preventDefault()');
+          cell.setAttribute('ondrop', `handleDropOnCell(event, '${day.key}', '${hour}')`);
+
+          cellCourses.forEach(course => {
+            const hasConflict = conflicts.some(conf => 
+              conf.courseA.id === course.id || conf.courseB.id === course.id
+            );
+
+            const courseCard = document.createElement('div');
+            courseCard.setAttribute('draggable', 'true');
+            courseCard.setAttribute('ondragstart', `handleDragStart(event, '${course.id}', '${day.key}')`);
+            courseCard.className = `p-2.5 rounded-lg border-l-4 shadow-sm relative transition cursor-grab active:cursor-grabbing text-xs flex flex-col justify-between h-full ${getColorClass(course.color)} ${hasConflict ? 'ring-2 ring-rose-500 border-rose-600 bg-rose-50/90' : ''}`;
+
+            courseCard.innerHTML = `
+              <div>
+                <div class="flex justify-between items-start">
+                  <span class="font-mono font-bold tracking-tight">${course.code}</span>
+                  <div class="flex items-center space-x-1">
+                    ${hasConflict ? `<span class="w-2 h-2 rounded-full bg-rose-600 animate-ping" title="Conflict Warning"></span>` : ''}
+                    <button onclick="unscheduleCourse('${course.id}')" class="text-slate-400 hover:text-slate-700 font-extrabold text-[10px]" title="Remove from schedule">✕</button>
+                  </div>
+                </div>
+                <p class="font-semibold text-slate-800 mt-1 line-clamp-1">${course.name}</p>
+              </div>
+
+              <div class="mt-2 pt-1.5 border-t border-slate-200/50 flex flex-col space-y-0.5 text-[10px] text-slate-500 font-medium">
+                <div>⏰ ${course.startTime} - ${course.endTime}</div>
+                <div>👨‍🏫 ${course.professor}</div>
+                <div class="flex items-center justify-between mt-1 pt-0.5 border-t border-dashed border-slate-200">
+                  <div class="flex flex-col">
+                    <span class="text-[9px] text-slate-400 font-bold uppercase">Campus: ${course.campus || "BN"}</span>
+                    <span>🚪 Room: ${course.room}</span>
+                  </div>
+                  <button onclick="openEditRoomModal('${course.id}')" class="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition" title="Change Classroom & Campus">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            `;
+            cell.appendChild(courseCard);
+          });
+
+          row.appendChild(cell);
+        });
+
+        calendarRows.appendChild(row);
+      });
+    };
+
+    // Initialize application values on startup
+    window.onload = () => {
+      // Check for direct file writing API capability and adapt buttons
+      const isFileSystemSupported = typeof window.showOpenFilePicker === 'function';
+      if (isFileSystemSupported) {
+        document.getElementById('btn-fs-picker').classList.remove('hidden');
+      }
+      loadSampleTemplate();
+      renderAll();
+    };
+  </script>
+</body>
+</html>
