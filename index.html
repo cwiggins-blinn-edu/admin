@@ -1591,10 +1591,10 @@
       switchTab('calendar');
     }
 
-    // Defensive File Parsing & Loading Engine with self-healing properties for malformed line-wraps
-    function parseAndLoadCSVText(text) {
+    const parseAndLoadCSVText = (text) => {
       try {
         if (text.trim().startsWith('[')) {
+          // JSON Fallback
           const parsed = JSON.parse(text);
           if (Array.isArray(parsed)) {
             const sanitized = parsed.map((item, idx) => {
@@ -1633,6 +1633,7 @@
             courses = [...sanitized];
           }
         } else {
+          // Robust RFC 4180 parsing for Banner CSV
           const parsedLines = parseCSV(text);
           if (parsedLines.length <= 1) {
             alert("CSV must contain headers and at least 1 row.");
@@ -1640,18 +1641,12 @@
           }
 
           const rawHeaders = parsedLines[0].map(h => h.trim().toUpperCase());
-          importedHeaders = rawHeaders;
-          const expectedLength = rawHeaders.length;
+          importedHeaders = rawHeaders; // Stash columns config to preserve user schema on export
 
           const newEntries = [];
           for (let i = 1; i < parsedLines.length; i++) {
             const cells = parsedLines[i];
             if (cells.length === 0 || (cells.length === 1 && cells[0] === "")) continue;
-
-            // Zero-allocation fallback padding to completely eliminate undefined property errors
-            while (cells.length < expectedLength) {
-              cells.push("");
-            }
 
             const rowData = {};
             rawHeaders.forEach((header, index) => {
@@ -1667,6 +1662,7 @@
             const campusDesc = rowData["CAMPUS_DESC"] || "Brenham Campus";
             const contactHours = parseInt(rowData["COURSE_CONTACT_HOURS"], 10) || 48;
 
+            // Enforce Distance Ed Modality rules based on Campus designation
             let instructionMethod = rowData["INSTRUCTION_METHOD"] || "";
             if (campus === "DE" || campusDesc.toLowerCase().includes("distance")) {
               instructionMethod = "DE";
@@ -1674,10 +1670,11 @@
               instructionMethod = "TR";
             }
 
+            // Consolidate days from MEETING_DAY_1 through MEETING_DAY_4
             const daysSet = new Set();
             for (let d = 1; d <= 4; d++) {
               const mDay = rowData[`MEETING_DAY_${d}`];
-              if (mDay && typeof mDay === 'string' && mDay.trim() !== "" && mDay.trim() !== "-") {
+              if (mDay && mDay.trim() !== "" && mDay.trim() !== "-") {
                 mDay.trim().replace(/\s+/g, '').split('').forEach(char => {
                   if ("MTRWFmtrwf".includes(char)) {
                     daysSet.add(char.toUpperCase());
@@ -1686,11 +1683,12 @@
               }
             }
 
+            // Extract daily hours
             let startTime = "";
             let endTime = "";
             for (let t = 1; t <= 4; t++) {
               const mTime = rowData[`MEETING_TIME_${t}`];
-              if (mTime && typeof mTime === 'string' && mTime.trim() !== "" && mTime.trim() !== "-" && !mTime.includes("- -")) {
+              if (mTime && mTime.trim() !== "" && mTime.trim() !== "-" && !mTime.includes("- -")) {
                 const parsedTimes = parseTimeField(mTime);
                 if (parsedTimes.start && parsedTimes.end) {
                   startTime = parsedTimes.start;
@@ -1700,10 +1698,11 @@
               }
             }
 
+            // Extract space resource allocation
             let room = "TBD";
             for (let r = 1; r <= 4; r++) {
               const mRoom = rowData[`MEETING_ROOM_${r}`];
-              if (mRoom && typeof mRoom === 'string' && mRoom.trim() !== "" && mRoom.trim() !== "-") {
+              if (mRoom && mRoom.trim() !== "" && mRoom.trim() !== "-") {
                 room = mRoom.trim();
                 break;
               }
@@ -1738,7 +1737,7 @@
         console.error(e);
         alert("Error parsing file structure. Verify parameters are aligned.");
       }
-    }
+    };
 
     function handleSplashFileSelect(event) {
       const file = event.target.files[0];
