@@ -49,26 +49,29 @@
         <span>Academic Violations: <span id="conflictHeaderCount">0</span> conflict(s) discovered! Adjust professor daily campus assignments or meeting hours.</span>
     </div>
 
-    <!-- Top Navigation Header -->
-    <header class="bg-slate-900 text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+    <!-- Blinn College Nav Header -->
+    <header class="bg-[#003893] text-white shadow-md border-b-4 border-[#F2A900]">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="p-2 bg-indigo-600 rounded-lg">
-                    <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
+                <div class="p-2 bg-[#002c7a] rounded-lg border border-[#F2A900]/30 shadow-inner">
+                    <i data-lucide="shield-alert" class="w-6 h-6 text-[#F2A900]"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-tight">Academia Schedule Pro</h1>
-                    <p class="text-xs text-indigo-300">Blinn College Office of the Registrar &amp; Scheduling</p>
+                    <h1 class="text-xl font-extrabold tracking-tight flex items-center gap-2">
+                        <span>BLINN COLLEGE</span>
+                        <span class="font-normal text-xs bg-[#F2A900] text-slate-900 px-2 py-0.5 rounded-full font-bold">PRO</span>
+                    </h1>
+                    <p class="text-xs text-blue-100 font-medium">Division of MBET Scheduling</p>
                 </div>
             </div>
 
             <!-- Global Actions -->
             <div class="flex items-center gap-2">
-                <button id="toggleAutosave" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-slate-800 hover:bg-slate-700 transition border border-slate-700">
+                <button id="toggleAutosave" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-[#002c7a] hover:bg-[#001e54] text-white transition border border-[#F2A900]/40">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span>Autosave: On</span>
                 </button>
-                <button id="exportCsvBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 transition shadow">
+                <button id="exportCsvBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold bg-[#F2A900] hover:bg-[#d49600] text-[#003893] transition shadow font-bold">
                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
                     <span>Download schedule.csv</span>
                 </button>
@@ -86,30 +89,37 @@
             <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i>
+                        <i data-lucide="database" class="w-4 h-4 text-[#003893]"></i>
                         <span>Spreadsheet Connection</span>
                     </h2>
-                    <span id="syncStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-amber-100 text-amber-700">
-                        Local Workspace Loaded
+                    <span id="syncStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-slate-100 text-slate-500">
+                        Disconnected
                     </span>
                 </div>
                 
                 <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-                    Upload your raw <code class="bg-slate-100 px-1 py-0.5 rounded">schedule.csv</code> file containing Banner schedule columns to begin editing courses dynamically.
+                    Connect your raw <code class="bg-slate-100 px-1 py-0.5 rounded">schedule.csv</code> file. On modern browsers, choose <strong>Direct Disk Sync</strong> to auto-save changes directly back to your file on disk!
                 </p>
 
-                <div id="uploadContainer" class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-indigo-500 transition cursor-pointer">
-                    <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
-                    <p class="text-xs font-medium text-slate-600">Drag schedule.csv here or click to open</p>
-                    <input type="file" id="csvFileInput" class="hidden" accept=".csv" />
+                <div class="space-y-2">
+                    <button id="openFsFileBtn" class="w-full py-2.5 bg-[#003893] hover:bg-[#002570] text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-sm">
+                        <i data-lucide="folder-open" class="w-4 h-4 text-[#F2A900]"></i>
+                        <span>Open via Direct Disk Sync</span>
+                    </button>
+                    
+                    <div id="uploadContainer" class="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center hover:border-[#003893] transition cursor-pointer">
+                        <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-400 mx-auto mb-1"></i>
+                        <p class="text-[11px] font-medium text-slate-600">Or drag schedule.csv here to import</p>
+                        <input type="file" id="csvFileInput" class="hidden" accept=".csv" />
+                    </div>
                 </div>
                 
-                <div id="connectedFileInfo" class="hidden bg-slate-50 border border-slate-200 rounded p-2.5 flex items-center justify-between text-xs text-slate-600 animate-fade-in">
+                <div id="connectedFileInfo" class="hidden mt-3 bg-slate-50 border border-slate-200 rounded p-2.5 flex items-center justify-between text-xs text-slate-600 animate-fade-in">
                     <div class="truncate mr-2">
                         <span class="block font-bold truncate text-slate-800" id="connectedFileName">schedule.csv</span>
                         <span class="text-[10px] text-slate-400" id="connectedFileSize">0 KB</span>
                     </div>
-                    <button id="disconnectFile" class="text-slate-400 hover:text-rose-600 transition p-1">
+                    <button id="disconnectFile" class="text-slate-400 hover:text-[#003893] transition p-1">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -118,7 +128,7 @@
             <!-- Color Capacity Legend Widget -->
             <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
                 <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                    <i data-lucide="palette" class="w-4 h-4 text-indigo-600"></i>
+                    <i data-lucide="palette" class="w-4 h-4 text-[#003893]"></i>
                     <span>Capacity Fill Legends</span>
                 </h2>
                 <div class="space-y-2 text-xs">
@@ -144,7 +154,7 @@
             <!-- Scheduling Health Metrics -->
             <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
                 <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i>
+                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-[#003893]"></i>
                     <span>Scheduling Health</span>
                 </h2>
                 <div class="grid grid-cols-2 gap-3 text-center">
@@ -154,7 +164,7 @@
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded border border-slate-100">
                         <span class="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">Scheduled</span>
-                        <span id="statScheduled" class="text-lg font-bold text-indigo-600">0</span>
+                        <span id="statScheduled" class="text-lg font-bold text-emerald-600">0</span>
                     </div>
                     <div class="bg-slate-50 p-2.5 rounded border border-slate-100">
                         <span class="block text-[10px] uppercase text-slate-400 font-bold tracking-wider">In Pool (TBD)</span>
@@ -171,7 +181,7 @@
             <section class="bg-white rounded-lg shadow border border-slate-200 p-5 flex flex-col max-h-[420px]">
                 <div class="flex items-center justify-between mb-3 border-b pb-2">
                     <h2 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="inbox" class="w-4 h-4 text-indigo-600"></i>
+                        <i data-lucide="inbox" class="w-4 h-4 text-[#003893]"></i>
                         <span>Course Placement Pool</span>
                     </h2>
                     <span id="poolCount" class="bg-slate-100 text-slate-700 font-bold text-xs px-2 py-0.5 rounded-full">0</span>
@@ -207,7 +217,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Grouping View:</label>
                     <div class="inline-flex rounded-md shadow-sm" role="group">
-                        <button id="viewWeeklyGridBtn" class="px-3 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-l-md hover:bg-indigo-100 transition">
+                        <button id="viewWeeklyGridBtn" class="px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 rounded-l-md hover:bg-blue-100 transition">
                             Weekly Grid
                         </button>
                         <button id="viewClassroomBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-r border-slate-200 hover:bg-slate-50 transition">
@@ -219,17 +229,23 @@
                         <button id="viewCampusBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-r border-slate-200 hover:bg-slate-50 transition">
                             By Campus
                         </button>
-                        <button id="viewModalityBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-r border-slate-200 hover:bg-slate-50 rounded-r-md transition">
+                        <button id="viewModalityBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-r-md transition">
                             By Modality
                         </button>
                     </div>
+
+                    <!-- Separate premium button to see DE Courses -->
+                    <button id="openDeModalBtn" class="px-3.5 py-1.5 text-xs font-bold bg-[#003893]/10 hover:bg-[#003893]/20 text-[#003893] border border-[#003893]/20 rounded-md transition flex items-center gap-1.5 shadow-sm ml-2">
+                        <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                        <span>DE Courses (<span id="deBadgeCount" class="font-bold">0</span>)</span>
+                    </button>
                 </div>
 
                 <!-- Active day filter for Side-by-Side Track Views -->
                 <div id="dayToggleContainer" class="hidden flex items-center gap-1">
                     <span class="text-xs font-semibold text-slate-500 mr-1.5">View Day:</span>
                     <div class="inline-flex rounded-md shadow-sm">
-                        <button data-day="M" class="day-tab px-2.5 py-1 text-xs font-bold bg-indigo-600 text-white border border-indigo-600 rounded-l-md">M</button>
+                        <button data-day="M" class="day-tab px-2.5 py-1 text-xs font-bold bg-[#003893] text-white border border-[#003893] rounded-l-md">M</button>
                         <button data-day="T" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50">T</button>
                         <button data-day="W" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50">W</button>
                         <button data-day="R" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50">R</button>
@@ -247,9 +263,29 @@
             </section>
 
             <!-- Main Interactive Schedule Viewport -->
-            <section class="bg-white rounded-lg shadow border border-slate-200 p-5 flex-grow overflow-x-auto">
+            <section class="bg-white rounded-lg shadow border border-slate-200 p-5 flex-grow overflow-x-auto relative min-h-[500px]">
+                <!-- Placeholder startup overlay if empty -->
+                <div id="emptyWorkspaceSplash" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/95 text-center p-8 z-30 transition-all">
+                    <div class="p-4 bg-blue-100 text-[#003893] rounded-full mb-4 ring-4 ring-[#003893]/10">
+                        <i data-lucide="calendar" class="w-12 h-12 text-[#003893]"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Blinn College Academic Scheduler</h3>
+                    <p class="text-xs text-slate-500 max-w-md mb-6 leading-relaxed">
+                        No schedules are loaded. Open your Blinn <code class="bg-slate-200 text-slate-800 px-1 py-0.5 rounded font-mono">schedule.csv</code> catalog or create individual course blocks manually.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="document.getElementById('csvFileInput').click()" class="px-5 py-2.5 bg-[#003893] hover:bg-[#002570] text-white text-xs font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5">
+                            <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                            <span>Import CSV Spreadsheet</span>
+                        </button>
+                        <button onclick="document.getElementById('qcSub').focus();" class="px-5 py-2.5 bg-[#F2A900] hover:bg-[#d49600] text-slate-900 text-xs font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Create Course Manually</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="min-w-[850px] h-full flex flex-col">
-                    
                     <!-- Standard Weekly 5-Day Grid Column Headings -->
                     <div id="weeklyGridHeader" class="calendar-grid grid border-b border-slate-200 pb-3 text-center text-xs font-bold text-slate-500 select-none">
                         <div class="text-left pl-2">Time Slot</div>
@@ -274,25 +310,10 @@
                 </div>
             </section>
 
-            <!-- Distance Education (Online asynchronous) registry pool -->
-            <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
-                <div class="flex items-center justify-between border-b pb-2 mb-3">
-                    <h2 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="globe" class="w-4.5 h-4.5 text-indigo-600"></i>
-                        <span>Distance Education Asynchronous Portal</span>
-                    </h2>
-                    <span id="deCount" class="bg-cyan-100 text-cyan-800 font-bold text-xs px-2.5 py-0.5 rounded-full">0 Courses Online</span>
-                </div>
-                <p class="text-xs text-slate-400 mb-4">Distance Education (DE Instruction Method) represents fully online coursework exempt from multi-campus and standard daily start/stop hours.</p>
-                <div id="deList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <!-- Online classes rendered here -->
-                </div>
-            </section>
-
             <!-- Text Input Paste Options / Synchronization Output Panel -->
             <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
                 <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-4.5 h-4.5 text-indigo-600"></i>
+                    <i data-lucide="file-text" class="w-4.5 h-4.5 text-[#003893]"></i>
                     <span>Real-Time schedule.csv Output</span>
                 </h2>
                 <p class="text-xs text-slate-500 mb-3">The CSV block below automatically syncs as schedules change. Copy this text or download the file above to save your changes.</p>
@@ -301,8 +322,8 @@
 
             <!-- Quick Course Creator block -->
             <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
-                <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-4.5 h-4.5 text-indigo-600"></i>
+                <h2 class="text-sm font-semibold text-slate-[#003893] mb-3 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-4.5 h-4.5"></i>
                     <span>Create Single Course Block</span>
                 </h2>
                 <p class="text-xs text-slate-500 mb-4">Introduce custom courses or Sections directly. Newly added courses automatically display `ADD` as the CRN.</p>
@@ -373,7 +394,7 @@
                     </div>
                     
                     <div class="pt-2 border-t flex flex-col md:flex-row gap-3">
-                        <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded shadow-sm text-center transition">Add to Inventory</button>
+                        <button type="submit" class="px-6 py-2 bg-[#003893] hover:bg-[#002570] text-white font-semibold rounded shadow-sm text-center transition">Add to Inventory</button>
                     </div>
                 </form>
             </section>
@@ -382,8 +403,11 @@
 
     <!-- Configure Class Assignments Dialog (Classroom Modal with capitalization exact matches for event binds) -->
     <div id="classroomModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden border border-slate-200">
-            <div class="px-5 py-4 border-b flex items-center justify-between bg-slate-50">
+        <!-- Flexbox layout to properly handle scrolling on smaller screens -->
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden border border-slate-200 animate-fade-in flex flex-col max-h-[95vh] sm:max-h-[90vh]">
+            
+            <!-- Sticky Modal Header -->
+            <div class="px-5 py-4 border-b flex items-center justify-between bg-slate-50 border-b-2 border-[#003893] shrink-0">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i data-lucide="edit-3" class="w-4 h-4 text-indigo-600"></i>
                     <span id="classroomModalTitle">Configure Course Placement</span>
@@ -393,7 +417,8 @@
                 </button>
             </div>
             
-            <div class="p-5 space-y-4">
+            <!-- Scrollable Modal Body -->
+            <div class="p-5 space-y-4 overflow-y-auto flex-grow">
                 <!-- Course Identifier Tag -->
                 <div id="modalCourseBadge" class="bg-indigo-50 border border-indigo-100 p-2.5 rounded-md text-xs text-indigo-800">
                     <strong id="mBadgeCode">COSC 1436.101</strong> — <span id="mBadgeTitle">Programming Fundamentals</span>
@@ -504,7 +529,7 @@
                             <input type="checkbox" id="modalDayW" class="sr-only">
                             <span class="text-xs font-bold">W</span>
                         </label>
-                        <label class="flex flex-col items-center p-2 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition" id="labelDayR">
+                        <label class="flex flex-col items-center p-2 border border-[#cbd5e1] rounded cursor-pointer hover:bg-slate-50 transition" id="labelDayR">
                             <input type="checkbox" id="modalDayR" class="sr-only">
                             <span class="text-xs font-bold">R</span>
                         </label>
@@ -528,14 +553,20 @@
                 </div>
             </div>
 
-            <!-- Modal Action Buttons with precise event selectors -->
-            <div class="flex justify-end gap-2.5 p-4 border-t bg-slate-50">
-                <button id="cancelClassRoom" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded shadow-sm transition">
-                    Cancel
+            <!-- Sticky Modal Action Footer -->
+            <div class="flex justify-between p-4 border-t bg-slate-50 shrink-0">
+                <button id="deleteCourseBtn" class="px-4 py-2 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 rounded shadow-sm transition flex items-center gap-1.5">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Delete Course</span>
                 </button>
-                <button id="saveClassRoom" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow-sm transition">
-                    Save Changes
-                </button>
+                <div class="flex gap-2.5">
+                    <button id="cancelClassRoom" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded shadow-sm transition">
+                        Cancel
+                    </button>
+                    <button id="saveClassRoom" class="px-4 py-2 text-xs font-semibold text-white bg-[#003893] hover:bg-[#002570] rounded shadow-sm transition">
+                        Save Changes
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -567,6 +598,58 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal Overlay -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 animate-fade-in">
+        <div class="bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden border border-rose-100">
+            <div class="px-5 py-4 border-b flex items-center gap-2.5 bg-rose-50 text-rose-800">
+                <i data-lucide="trash-2" class="w-5 h-5 text-rose-600"></i>
+                <h3 class="text-sm font-bold">Delete Course Confirmation</h3>
+            </div>
+            <div class="p-5 text-xs text-slate-600">
+                <p>Are you sure you want to permanently delete <strong id="deleteCourseName" class="text-slate-800 font-bold">COSC 1436</strong> from your active MBET inventory?</p>
+                <p class="text-[10px] text-slate-400 mt-3">This action cannot be undone. All day, time, and room allocations for this section will be permanently deleted.</p>
+            </div>
+            <div class="flex justify-end gap-2.5 p-4 border-t bg-slate-50">
+                <button id="cancelDeleteBtn" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded shadow-sm transition">
+                    Cancel
+                </button>
+                <button id="confirmDeleteBtn" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded shadow-sm transition">
+                    Permanently Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distance Education (DE) Dedicated Portal Modal Overlay -->
+    <div id="deCoursesModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-45 p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-4xl w-full overflow-hidden border border-slate-200 animate-fade-in">
+            <div class="px-5 py-4 border-b flex items-center justify-between bg-slate-50 border-b-2 border-[#003893]">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 select-none">
+                    <i data-lucide="globe" class="w-5 h-5 text-[#003893]"></i>
+                    <span>Distance Education Asynchronous Catalog Portal</span>
+                </h3>
+                <button id="deModalClose" class="text-slate-400 hover:text-slate-600 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-5">
+                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                    The courses below represent fully asynchronous Distance Education (DE Instruction Method / DE Campus location) classes. These run without standard classrooms or timing block constraints.
+                </p>
+                <div id="deModalList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[420px] overflow-y-auto pr-1.5">
+                    <!-- Dynamic online courses rendered here -->
+                </div>
+            </div>
+
+            <div class="flex justify-end p-4 border-t bg-slate-50">
+                <button id="deModalCloseBtn" class="px-5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded shadow-sm transition">
+                    Close Catalog
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-slate-100 border-t border-slate-200 text-slate-400 py-3 text-center text-[10px]">
         Designed for academic schedule administrators. Runs fully client-side on your secure machine.
@@ -575,9 +658,11 @@
     <!-- Core Scheduler Program Engine -->
     <script>
         // --- Core Global System Memory State ---
-        let courseRegistry = [];
+        let courseRegistry = []; // Dynamically initialized with absolute blank startup data
         let isAutosaveOn = true;
         let currentEditingCourseId = null;
+        let fileHandle = null; // Stored FileSystemFileHandle for live saving to computer hard drive
+        let courseIdToDelete = null; // Tracking block staged for active deletion
         
         // Views: 'weekly_grid', 'classroom', 'faculty', 'campus', 'modality'
         let activeGroupingView = 'weekly_grid'; 
@@ -596,86 +681,6 @@
             'MEETING_ROOM_2', 'SCHEDULE3', 'MEETING_DAY_3', 'MEETING_TIME_3', 'MEETING_ROOM_3', 'SCHEDULE4', 
             'MEETING_DAY_4', 'MEETING_TIME_4', 'MEETING_ROOM_4', 'INTEGRATION_CODE', 'CAMPUS_RESTRICTION', 
             'SECTION_TEXT', 'LINK_IDENTIFIER', 'SSASYLB_SECTION_LONG_TEXT', 'LECTURE_HOURS', 'LAB_HOURS'
-        ];
-
-        // --- Fallback initial data (to make the system functional out-of-the-box) ---
-        const initialMockSchedules = [
-            {
-                id: "course-mock-1",
-                TERM: "202710",
-                CAMPUS: "BN",
-                CAMPUS_DESC: "Brenham Campus",
-                SUBJECT: "ITAI",
-                COURSE_ID: "1370",
-                SECTION: "01",
-                COURSE_REFERENCE_NUMBER: "26115",
-                COURSE_TITLE: "Introduction to AI",
-                CREDIT_HOURS: "3",
-                MAX_ENROLLMENT: "24",
-                ACTUAL_ENROLLMENT: "18", // 75% Capacity (Yellow)
-                INSTRUCTION_METHOD: "TRA",
-                INSTRUCTOR_NAME: "Johnson, Darron",
-                MEETING_DAY_1: "MW",
-                MEETING_TIME_1: "09:10 AM-10:25 AM",
-                MEETING_ROOM_1: "Brenham 102"
-            },
-            {
-                id: "course-mock-2",
-                TERM: "202710",
-                CAMPUS: "RL",
-                CAMPUS_DESC: "RELLIS Campus",
-                SUBJECT: "ITSY",
-                COURSE_ID: "1342",
-                SECTION: "102",
-                COURSE_REFERENCE_NUMBER: "22155",
-                COURSE_TITLE: "Information Tech. Security",
-                CREDIT_HOURS: "3",
-                MAX_ENROLLMENT: "24",
-                ACTUAL_ENROLLMENT: "24", // 100% Capacity (Red)
-                INSTRUCTION_METHOD: "TRA",
-                INSTRUCTOR_NAME: "Wiggins, Carol",
-                MEETING_DAY_1: "TR",
-                MEETING_TIME_1: "10:35 AM-11:50 AM",
-                MEETING_ROOM_1: "RELLIS 101"
-            },
-            {
-                id: "course-mock-3",
-                TERM: "202710",
-                CAMPUS: "DE",
-                CAMPUS_DESC: "Distance Education",
-                SUBJECT: "ITSY",
-                COURSE_ID: "1342",
-                SECTION: "N01",
-                COURSE_REFERENCE_NUMBER: "22465",
-                COURSE_TITLE: "Information Tech. Security",
-                CREDIT_HOURS: "3",
-                MAX_ENROLLMENT: "30",
-                ACTUAL_ENROLLMENT: "12", // Under 75% Capacity (Teal)
-                INSTRUCTION_METHOD: "DE",
-                INSTRUCTOR_NAME: "Sellountos, Dimitrios",
-                MEETING_DAY_1: "",
-                MEETING_TIME_1: "",
-                MEETING_ROOM_1: "Online"
-            },
-            {
-                id: "course-mock-4",
-                TERM: "202710",
-                CAMPUS: "BN",
-                CAMPUS_DESC: "Brenham Campus",
-                SUBJECT: "COSC",
-                COURSE_ID: "1436",
-                SECTION: "02",
-                COURSE_REFERENCE_NUMBER: "21980",
-                COURSE_TITLE: "Programming Fundamentals I",
-                CREDIT_HOURS: "4",
-                MAX_ENROLLMENT: "20",
-                ACTUAL_ENROLLMENT: "19", // 95% Capacity (Orange)
-                INSTRUCTION_METHOD: "TRA",
-                INSTRUCTOR_NAME: "Tikum, Teboh",
-                MEETING_DAY_1: "MW",
-                MEETING_TIME_1: "10:35 AM-11:50 AM",
-                MEETING_ROOM_1: "Brenham 102"
-            }
         ];
 
         let stagedPlacementAction = null; 
@@ -711,7 +716,6 @@
         const tracksHeaderContainer = document.getElementById('tracksHeaderContainer');
         
         const calendarTimeline = document.getElementById('calendarTimeline');
-        const deList = document.getElementById('deList');
         const deCount = document.getElementById('deCount');
 
         const statTotal = document.getElementById('statTotal');
@@ -742,7 +746,13 @@
         const mBadgeCredits = document.getElementById('mBadgeCredits');
         const mBadgeEnrollment = document.getElementById('mBadgeEnrollment');
 
-        // --- Conflict Overrides ---
+        // --- Distance Education Modal Elements ---
+        const deCoursesModal = document.getElementById('deCoursesModal');
+        const openDeModalBtn = document.getElementById('openDeModalBtn');
+        const deModalClose = document.getElementById('deModalClose');
+        const deModalCloseBtn = document.getElementById('deModalCloseBtn');
+
+        // --- Conflict Modal Elements ---
         const conflictWarningModal = document.getElementById('conflictWarningModal');
         const cancelConflictOverride = document.getElementById('cancelConflictOverride');
         const forceConflictOverride = document.getElementById('forceConflictOverride');
@@ -751,7 +761,7 @@
         const OPERATIONAL_START_HOUR = 7; // 7:00 AM
         const OPERATIONAL_END_HOUR = 21;  // 9:00 PM
 
-        // --- Program Bootstrap ---
+        // --- Startup Bootstrap Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
             loadStateFromLocalStorage();
             setupEventListeners();
@@ -759,22 +769,73 @@
             renderAll();
         });
 
-        // --- Event Binding ---
+        // --- Standard Section formatting helper ---
+        function formatSection(sec) {
+            let s = String(sec || '').trim();
+            if (s.length === 1) {
+                return '00' + s;
+            }
+            return s;
+        }
+
+        // --- Triggering custom delete confirmation dialog ---
+        function deleteCourseDirect(courseId) {
+            const course = courseRegistry.find(c => String(c.id) === String(courseId));
+            if (!course) return;
+            
+            courseIdToDelete = courseId;
+            const deleteCourseNameSpan = document.getElementById('deleteCourseName');
+            if (deleteCourseNameSpan) {
+                deleteCourseNameSpan.innerText = `${course.SUBJECT || ''} ${course.COURSE_ID || ''}.${formatSection(course.SECTION)} - ${course.COURSE_TITLE || ''}`;
+            }
+            
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            if (deleteConfirmModal) {
+                deleteConfirmModal.classList.remove('hidden');
+                deleteConfirmModal.classList.add('flex');
+            }
+        }
+        window.deleteCourseDirect = deleteCourseDirect;
+
+        // --- Setup Core Listeners ---
         function setupEventListeners() {
+            // Drag/drop listening to unschedule courses back into placement pool
+            poolContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                poolContainer.classList.add('bg-indigo-50/50', 'ring-2', 'ring-indigo-300');
+            });
+            poolContainer.addEventListener('dragleave', () => {
+                poolContainer.classList.remove('bg-indigo-50/50', 'ring-2', 'ring-indigo-300');
+            });
+            poolContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                poolContainer.classList.remove('bg-indigo-50/50', 'ring-2', 'ring-indigo-300');
+                const courseId = e.dataTransfer.getData('text/plain');
+                unscheduleCourse(courseId);
+            });
+
+            // Local File sync button if supported
+            const openFsFileBtn = document.getElementById('openFsFileBtn');
+            if (!window.showOpenFilePicker) {
+                if (openFsFileBtn) openFsFileBtn.classList.add('hidden');
+            } else {
+                if (openFsFileBtn) openFsFileBtn.addEventListener('click', handleFileOpen);
+            }
+
             // Drop zone operations
             uploadContainer.addEventListener('click', () => csvFileInput.click());
             csvFileInput.addEventListener('change', handleFileSelected);
             
             uploadContainer.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                uploadContainer.classList.add('border-indigo-500', 'bg-indigo-50/50');
+                uploadContainer.classList.add('border-[#003893]', 'bg-blue-50/50');
             });
             uploadContainer.addEventListener('dragleave', () => {
-                uploadContainer.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+                uploadContainer.classList.remove('border-[#003893]', 'bg-blue-50/50');
             });
             uploadContainer.addEventListener('drop', (e) => {
                 e.preventDefault();
-                uploadContainer.classList.remove('border-indigo-500', 'bg-indigo-50/50');
+                uploadContainer.classList.remove('border-[#003893]', 'bg-blue-50/50');
                 if (e.dataTransfer.files.length > 0) {
                     processFile(e.dataTransfer.files[0]);
                 }
@@ -787,6 +848,27 @@
             poolSearch.addEventListener('input', () => {
                 renderUnscheduledPool();
             });
+
+            // Distance Education catalog portal modal triggers
+            if (openDeModalBtn) {
+                openDeModalBtn.addEventListener('click', () => {
+                    renderDeModalList();
+                    deCoursesModal.classList.remove('hidden');
+                    deCoursesModal.classList.add('flex');
+                });
+            }
+            if (deModalClose) {
+                deModalClose.addEventListener('click', () => {
+                    deCoursesModal.classList.add('hidden');
+                    deCoursesModal.classList.remove('flex');
+                });
+            }
+            if (deModalCloseBtn) {
+                deModalCloseBtn.addEventListener('click', () => {
+                    deCoursesModal.classList.add('hidden');
+                    deCoursesModal.classList.remove('flex');
+                });
+            }
 
             // Quick creator badges
             document.querySelectorAll('.qc-faculty-badge').forEach(b => {
@@ -831,7 +913,7 @@
                     document.querySelectorAll('.day-tab').forEach(b => {
                         b.className = "day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50";
                     });
-                    btn.className = "day-tab px-2.5 py-1 text-xs font-bold bg-indigo-600 text-white border border-indigo-600 rounded-md";
+                    btn.className = "day-tab px-2.5 py-1 text-xs font-bold bg-[#003893] text-white border border-[#003893] rounded-md";
                     activeDayTab = btn.getAttribute('data-day');
                     renderCalendar();
                 });
@@ -882,6 +964,52 @@
                 saveClassRoom.addEventListener('click', saveModalChanges);
             }
 
+            // Delete configuration binders
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const deleteCourseBtn = document.getElementById('deleteCourseBtn');
+
+            if (cancelDeleteBtn) {
+                cancelDeleteBtn.addEventListener('click', () => {
+                    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+                    if (deleteConfirmModal) {
+                        deleteConfirmModal.classList.add('hidden');
+                        deleteConfirmModal.classList.remove('flex');
+                    }
+                    courseIdToDelete = null;
+                });
+            }
+
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.addEventListener('click', () => {
+                    if (courseIdToDelete) {
+                        courseRegistry = courseRegistry.filter(c => String(c.id) !== String(courseIdToDelete));
+                        
+                        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+                        if (deleteConfirmModal) {
+                            deleteConfirmModal.classList.add('hidden');
+                            deleteConfirmModal.classList.remove('flex');
+                        }
+                        
+                        courseIdToDelete = null;
+                        saveStateToLocalStorage();
+                        renderAll();
+                        
+                        if (isAutosaveOn) triggerAutosave();
+                    }
+                });
+            }
+
+            if (deleteCourseBtn) {
+                deleteCourseBtn.addEventListener('click', () => {
+                    if (currentEditingCourseId) {
+                        const tempId = currentEditingCourseId;
+                        closeModal(); // Closes the active configuration modal first
+                        deleteCourseDirect(tempId);
+                    }
+                });
+            }
+
             // Warnings
             cancelConflictOverride.addEventListener('click', () => {
                 conflictWarningModal.classList.add('hidden');
@@ -899,6 +1027,35 @@
             });
         }
 
+        // --- File System Access API Trigger ---
+        async function handleFileOpen() {
+            try {
+                const [handle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'CSV Files',
+                        accept: { 'text/csv': ['.csv'] }
+                    }],
+                    excludeAcceptAllOption: true,
+                    multiple: false
+                });
+                fileHandle = handle;
+                
+                const file = await fileHandle.getFile();
+                const text = await file.text();
+                parseCSV(text);
+                
+                connectedFileName.innerText = file.name;
+                connectedFileSize.innerText = `${(file.size / 1024).toFixed(1)} KB`;
+                uploadContainer.classList.add('hidden');
+                connectedFileInfo.classList.remove('hidden');
+                
+                saveStateToLocalStorage();
+                renderAll();
+            } catch (err) {
+                console.error("Direct file handle opening bypassed or failed:", err);
+            }
+        }
+
         // --- State Local Storage Operations ---
         function saveStateToLocalStorage() {
             localStorage.setItem('academia_course_registry', JSON.stringify(courseRegistry));
@@ -907,35 +1064,89 @@
         }
 
         function loadStateFromLocalStorage() {
-            const registryRaw = localStorage.getItem('academia_course_registry');
-            const headersRaw = localStorage.getItem('academia_original_headers');
-            if (registryRaw) {
-                try {
-                    courseRegistry = JSON.parse(registryRaw);
-                    if (headersRaw) {
-                        originalHeaderRow = JSON.parse(headersRaw);
-                    }
-                    syncStatusBadge.className = "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-amber-100 text-amber-700";
-                    syncStatusBadge.innerText = "Local Draft Restored";
-                } catch (err) {
-                    console.error("Local draft failed to restore: ", err);
-                }
+            // Emptied startup: startup is always clean and empty. No local drafts are restored.
+            courseRegistry = [];
+            localStorage.removeItem('academia_course_registry');
+            localStorage.removeItem('academia_original_headers');
+            updateSyncStatus();
+        }
+
+        // --- Connected Status Badge Sync ---
+        function updateSyncStatus() {
+            if (fileHandle) {
+                syncStatusBadge.className = "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-emerald-100 text-emerald-800";
+                syncStatusBadge.innerText = "Disk Sync Active";
+            } else if (courseRegistry.length > 0) {
+                syncStatusBadge.className = "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-amber-100 text-amber-700";
+                syncStatusBadge.innerText = "Local Workspace Draft Active";
             } else {
-                // Pre-populate with beautiful mock inventory
-                courseRegistry = [...initialMockSchedules];
+                syncStatusBadge.className = "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-slate-100 text-slate-500";
+                syncStatusBadge.innerText = "Disconnected";
             }
         }
 
-        // --- CSV String Output Generation ---
-        function updateCsvOutput() {
+        // --- CSV String Output Generation Engine ---
+        function generateCsvString() {
             if (courseRegistry.length === 0) {
-                rawCsvOutput.value = '';
-                return;
+                return '';
             }
-            const csvRows = [originalHeaderRow.join(',')];
+            let headers = originalHeaderRow;
+            if (!headers || headers.length === 0) {
+                headers = [
+                    'TERM', 'TERM_DESC', 'SUB_TERM', 'SUB_TERM_DESC', 'START_DATE', 'END_DATE', 'CAMPUS', 'CAMPUS_DESC', 
+                    'DIVISION', 'DIVISION_DESC', 'SUBJECT', 'COURSE_ID', 'SECTION', 'COURSE_REFERENCE_NUMBER', 
+                    'COURSE_TITLE', 'SECTION_CROSS_LIST', 'STATUS', 'VISIBLE_TO_STUDENT', 'GRADABLE_IND', 'CREDIT_HOURS', 
+                    'COURSE_CONTACT_HOURS', 'GENERATED_CONTACT_HOURS', 'MAX_ENROLLMENT', 'ACTUAL_ENROLLMENT', 'SEATS_AVAILABLE', 
+                    'FILL_RATE', 'SEAT_COUNT_GOAL', 'SEAT_COUNT_GOAL_FILL_RATE', 'WAITLIST_MAX', 'WAITLIST_ENROLL', 
+                    'WAITLIST_AVAILABLE', 'INSTRUCTION_METHOD', 'INSTRUCTOR_ID', 'INSTRUCTOR_NAME', 'SCHEDULE1', 
+                    'MEETING_DAY_1', 'MEETING_TIME_1', 'MEETING_ROOM_1', 'SCHEDULE2', 'MEETING_DAY_2', 'MEETING_TIME_2', 
+                    'MEETING_ROOM_2', 'SCHEDULE3', 'MEETING_DAY_3', 'MEETING_TIME_3', 'MEETING_ROOM_3', 'SCHEDULE4', 
+                    'MEETING_DAY_4', 'MEETING_TIME_4', 'MEETING_ROOM_4', 'INTEGRATION_CODE', 'CAMPUS_RESTRICTION', 
+                    'SECTION_TEXT', 'LINK_IDENTIFIER', 'SSASYLB_SECTION_LONG_TEXT', 'LECTURE_HOURS', 'LAB_HOURS'
+                ];
+            }
+            const csvRows = [headers.join(',')];
             courseRegistry.forEach(c => {
-                const lineValues = originalHeaderRow.map(header => {
-                    let val = c[header] || '';
+                const days = Array.from(c.MEETING_DAY_1 || '');
+                const lineValues = headers.map(header => {
+                    let val = '';
+                    
+                    if (header === 'MEETING_DAY_1') {
+                        val = days[0] || '';
+                    } else if (header === 'MEETING_TIME_1') {
+                        val = days[0] ? (c.MEETING_TIME_1 || '') : '';
+                    } else if (header === 'MEETING_ROOM_1') {
+                        val = days[0] ? (c.MEETING_ROOM_1 || '') : '';
+                    }
+                    
+                    else if (header === 'MEETING_DAY_2') {
+                        val = days[1] || '';
+                    } else if (header === 'MEETING_TIME_2') {
+                        val = days[1] ? (c.MEETING_TIME_1 || '') : '';
+                    } else if (header === 'MEETING_ROOM_2') {
+                        val = days[1] ? (c.MEETING_ROOM_1 || '') : '';
+                    }
+                    
+                    else if (header === 'MEETING_DAY_3') {
+                        val = days[2] || '';
+                    } else if (header === 'MEETING_TIME_3') {
+                        val = days[2] ? (c.MEETING_TIME_1 || '') : '';
+                    } else if (header === 'MEETING_ROOM_3') {
+                        val = days[2] ? (c.MEETING_ROOM_1 || '') : '';
+                    }
+                    
+                    else if (header === 'MEETING_DAY_4') {
+                        val = days[3] || '';
+                    } else if (header === 'MEETING_TIME_4') {
+                        val = days[3] ? (c.MEETING_TIME_1 || '') : '';
+                    } else if (header === 'MEETING_ROOM_4') {
+                        val = days[3] ? (c.MEETING_ROOM_1 || '') : '';
+                    }
+                    
+                    else {
+                        val = c[header] !== undefined ? c[header] : '';
+                    }
+
                     if (typeof val === 'string' && (val.includes(',') || val.includes('"') || val.includes('\n'))) {
                         val = `"${val.replace(/"/g, '""')}"`;
                     }
@@ -943,7 +1154,14 @@
                 });
                 csvRows.push(lineValues.join(','));
             });
-            rawCsvOutput.value = csvRows.join('\n');
+            return csvRows.join('\n');
+        }
+
+        function updateCsvOutput() {
+            const csvText = generateCsvString();
+            if (rawCsvOutput) {
+                rawCsvOutput.value = csvText;
+            }
         }
 
         // --- File handlers ---
@@ -963,8 +1181,6 @@
                 connectedFileSize.innerText = `${(file.size / 1024).toFixed(1)} KB`;
                 uploadContainer.classList.add('hidden');
                 connectedFileInfo.classList.remove('hidden');
-                syncStatusBadge.className = "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-emerald-100 text-emerald-800";
-                syncStatusBadge.innerText = "Synchronized";
                 
                 saveStateToLocalStorage();
                 renderAll();
@@ -973,15 +1189,14 @@
         }
 
         function clearFileConnection() {
-            courseRegistry = [...initialMockSchedules];
-            saveStateToLocalStorage();
+            courseRegistry = []; // Reset empty
+            fileHandle = null;
+            localStorage.removeItem('academia_course_registry');
+            localStorage.removeItem('academia_original_headers');
             
             connectedFileInfo.classList.add('hidden');
             uploadContainer.classList.remove('hidden');
             csvFileInput.value = '';
-            
-            syncStatusBadge.className = "text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-amber-100 text-amber-700";
-            syncStatusBadge.innerText = "Local Workspace Restored";
             
             renderAll();
         }
@@ -1020,7 +1235,6 @@
 
             if (lines.length === 0) return;
 
-            // Map columns dynamically
             const fileHeaders = lines[0].map(h => h.trim());
             originalHeaderRow = fileHeaders;
 
@@ -1039,20 +1253,32 @@
             const actEnrollIdx = fileHeaders.indexOf('ACTUAL_ENROLLMENT');
             const instrNameIdx = fileHeaders.indexOf('INSTRUCTOR_NAME');
             const instrMethodIdx = fileHeaders.indexOf('INSTRUCTION_METHOD');
-            const meetingDayIdx = fileHeaders.indexOf('MEETING_DAY_1');
-            const meetingTimeIdx = fileHeaders.indexOf('MEETING_TIME_1');
-            const meetingRoomIdx = fileHeaders.indexOf('MEETING_ROOM_1');
+
+            const meetingDayIdx1 = fileHeaders.indexOf('MEETING_DAY_1');
+            const meetingTimeIdx1 = fileHeaders.indexOf('MEETING_TIME_1');
+            const meetingRoomIdx1 = fileHeaders.indexOf('MEETING_ROOM_1');
+
+            const meetingDayIdx2 = fileHeaders.indexOf('MEETING_DAY_2');
+            const meetingTimeIdx2 = fileHeaders.indexOf('MEETING_TIME_2');
+            const meetingRoomIdx2 = fileHeaders.indexOf('MEETING_ROOM_2');
+
+            const meetingDayIdx3 = fileHeaders.indexOf('MEETING_DAY_3');
+            const meetingTimeIdx3 = fileHeaders.indexOf('MEETING_TIME_3');
+            const meetingRoomIdx3 = fileHeaders.indexOf('MEETING_ROOM_3');
+
+            const meetingDayIdx4 = fileHeaders.indexOf('MEETING_DAY_4');
+            const meetingTimeIdx4 = fileHeaders.indexOf('MEETING_TIME_4');
+            const meetingRoomIdx4 = fileHeaders.indexOf('MEETING_ROOM_4');
 
             for (let r = 1; r < lines.length; r++) {
                 const rData = lines[r];
-                if (rData.length < fileHeaders.length) continue; 
+                if (rData.length === 0 || (rData.length === 1 && rData[0] === "")) continue;
 
                 const rowObj = { id: `course-${idCounter++}` };
                 fileHeaders.forEach((header, index) => {
-                    rowObj[header] = (rData[index] || "").trim();
+                    rowObj[header] = (rData[index] !== undefined ? rData[index] : "").trim();
                 });
 
-                // Set semantic parameters explicitly for easy references
                 rowObj.TERM = termIdx !== -1 ? rData[termIdx].trim() : '';
                 rowObj.CAMPUS = campusIdx !== -1 ? rData[campusIdx].trim() : 'BN';
                 rowObj.SUBJECT = subjectIdx !== -1 ? rData[subjectIdx].trim() : '';
@@ -1065,9 +1291,49 @@
                 rowObj.ACTUAL_ENROLLMENT = actEnrollIdx !== -1 ? rData[actEnrollIdx].trim() : '0';
                 rowObj.INSTRUCTOR_NAME = instrNameIdx !== -1 ? rData[instrNameIdx].trim() : 'Staff';
                 rowObj.INSTRUCTION_METHOD = instrMethodIdx !== -1 ? rData[instrMethodIdx].trim() : 'TRA';
-                rowObj.MEETING_DAY_1 = meetingDayIdx !== -1 ? rData[meetingDayIdx].trim() : '';
-                rowObj.MEETING_TIME_1 = meetingTimeIdx !== -1 ? rData[meetingTimeIdx].trim() : '';
-                rowObj.MEETING_ROOM_1 = meetingRoomIdx !== -1 ? rData[meetingRoomIdx].trim() : '';
+
+                let daysSet = new Set();
+                let mainTime = '';
+                let mainRoom = '';
+
+                if (meetingDayIdx1 !== -1 && rData[meetingDayIdx1]) {
+                    const d1 = rData[meetingDayIdx1].trim();
+                    Array.from(d1).forEach(char => {
+                        if (['M', 'T', 'W', 'R', 'F'].includes(char)) daysSet.add(char);
+                    });
+                    if (meetingTimeIdx1 !== -1 && rData[meetingTimeIdx1]) mainTime = rData[meetingTimeIdx1].trim();
+                    if (meetingRoomIdx1 !== -1 && rData[meetingRoomIdx1]) mainRoom = rData[meetingRoomIdx1].trim();
+                }
+                if (meetingDayIdx2 !== -1 && rData[meetingDayIdx2]) {
+                    const d2 = rData[meetingDayIdx2].trim();
+                    Array.from(d2).forEach(char => {
+                        if (['M', 'T', 'W', 'R', 'F'].includes(char)) daysSet.add(char);
+                    });
+                    if (!mainTime && meetingTimeIdx2 !== -1 && rData[meetingTimeIdx2]) mainTime = rData[meetingTimeIdx2].trim();
+                    if (!mainRoom && meetingRoomIdx2 !== -1 && rData[meetingRoomIdx2]) mainRoom = rData[meetingRoomIdx2].trim();
+                }
+                if (meetingDayIdx3 !== -1 && rData[meetingDayIdx3]) {
+                    const d3 = rData[meetingDayIdx3].trim();
+                    Array.from(d3).forEach(char => {
+                        if (['M', 'T', 'W', 'R', 'F'].includes(char)) daysSet.add(char);
+                    });
+                    if (!mainTime && meetingTimeIdx3 !== -1 && rData[meetingTimeIdx3]) mainTime = rData[meetingTimeIdx3].trim();
+                    if (!mainRoom && meetingRoomIdx3 !== -1 && rData[meetingRoomIdx3]) mainRoom = rData[meetingRoomIdx3].trim();
+                }
+                if (meetingDayIdx4 !== -1 && rData[meetingDayIdx4]) {
+                    const d4 = rData[meetingDayIdx4].trim();
+                    Array.from(d4).forEach(char => {
+                        if (['M', 'T', 'W', 'R', 'F'].includes(char)) daysSet.add(char);
+                    });
+                    if (!mainTime && meetingTimeIdx4 !== -1 && rData[meetingTimeIdx4]) mainTime = rData[meetingTimeIdx4].trim();
+                    if (!mainRoom && meetingRoomIdx4 !== -1 && rData[meetingRoomIdx4]) mainRoom = rData[meetingRoomIdx4].trim();
+                }
+
+                const sortedDays = ['M', 'T', 'W', 'R', 'F'].filter(d => daysSet.has(d)).join('');
+                
+                rowObj.MEETING_DAY_1 = sortedDays || '';
+                rowObj.MEETING_TIME_1 = mainTime || '';
+                rowObj.MEETING_ROOM_1 = mainRoom || '';
 
                 courses.push(rowObj);
             }
@@ -1075,17 +1341,38 @@
             courseRegistry = courses;
         }
 
-        // --- View toggles controller ---
+        // --- Dynamic Interface Render Master Manager ---
+        function renderAll() {
+            updateStats();
+            updateSyncStatus();
+            renderCalendar();
+            renderUnscheduledPool();
+            renderDistanceEducationPortal();
+            updateCsvOutput();
+            lucide.createIcons();
+
+            // Toggle empty screen overlay if courseRegistry is empty
+            const overlay = document.getElementById('emptyWorkspaceSplash');
+            if (overlay) {
+                if (courseRegistry.length === 0) {
+                    overlay.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+                } else {
+                    overlay.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+                }
+            }
+        }
+
+        // --- Core Group View Mechanics ---
         function toggleView(view) {
             activeGroupingView = view;
             
-            // Highlight Buttons
+            // Highlight Buttons using Blinn color accents
             [viewWeeklyGridBtn, viewClassroomBtn, viewFacultyBtn, viewCampusBtn, viewModalityBtn].forEach(b => {
                 b.className = "px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition";
             });
 
             if (view === 'weekly_grid') {
-                viewWeeklyGridBtn.className = "px-3 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-l-md";
+                viewWeeklyGridBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 rounded-l-md hover:bg-blue-100";
                 dayToggleContainer.classList.add('hidden');
                 filterSelectionContainer.classList.remove('hidden');
                 
@@ -1097,10 +1384,10 @@
                 weeklyGridHeader.classList.add('hidden');
                 multiTrackHeader.classList.remove('hidden');
 
-                if (view === 'classroom') viewClassroomBtn.className = "px-3 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200";
-                if (view === 'faculty') viewFacultyBtn.className = "px-3 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200";
-                if (view === 'campus') viewCampusBtn.className = "px-3 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200";
-                if (view === 'modality') viewModalityBtn.className = "px-3 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-r-md";
+                if (view === 'classroom') viewClassroomBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
+                if (view === 'faculty') viewFacultyBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
+                if (view === 'campus') viewCampusBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
+                if (view === 'modality') viewModalityBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100 rounded-r-md";
             }
 
             buildDropdownFilters();
@@ -1134,16 +1421,6 @@
                 filterSelector.value = 'all';
                 currentFilterSelection = 'all';
             }
-        }
-
-        // --- Dynamic Interface Render Master Manager ---
-        function renderAll() {
-            updateStats();
-            renderCalendar();
-            renderUnscheduledPool();
-            renderDistanceEducationPortal();
-            updateCsvOutput();
-            lucide.createIcons();
         }
 
         // --- Scheduling Statistics & Safety Header Controller ---
@@ -1191,16 +1468,12 @@
             const ratio = act / max;
 
             if (ratio >= 1.0) {
-                // 100%+ Capacity (Crimson Red)
                 return { bg: 'bg-rose-50', border: 'border-rose-400', text: 'text-rose-950', hover: 'hover:bg-rose-100' };
             } else if (ratio >= 0.90) {
-                // 90% - 99% Capacity (Orange)
                 return { bg: 'bg-orange-50', border: 'border-orange-400', text: 'text-orange-950', hover: 'hover:bg-orange-100/50' };
             } else if (ratio >= 0.75) {
-                // 75% - 89% Capacity (Yellow)
                 return { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-950', hover: 'hover:bg-yellow-100/50' };
             } else {
-                // Under 75% Capacity (Cool Teal Blue)
                 return { bg: 'bg-teal-50', border: 'border-teal-300', text: 'text-teal-950', hover: 'hover:bg-teal-100/50' };
             }
         }
@@ -1258,7 +1531,7 @@
 
                     const overlaps = (timeA.start < timeB.end && timeA.end > timeB.start);
                     if (overlaps) {
-                        problems.push(`<strong>Room Collision:</strong> Room ${cA.MEETING_ROOM_1} has concurrent bookings on ${sharedDays.map(getDayName).join(', ')} for ${cA.SUBJECT} ${cA.COURSE_ID} and ${cB.SUBJECT} ${cB.COURSE_ID}.`);
+                        problems.push(`<strong>Room Collision:</strong> Room ${cA.MEETING_ROOM_1} has concurrent bookings on ${sharedDays.map(getDayName).join(', ')} for ${cA.SUBJECT} ${cA.COURSE_ID} and ${cB.SUBJECT} ${cA.COURSE_ID}.`);
                     }
                 }
             }
@@ -1338,6 +1611,19 @@
             return (hours * 60) + minutes;
         }
 
+        // --- Unschedule scheduled courses ---
+        function unscheduleCourse(courseId) {
+            const course = courseRegistry.find(c => String(c.id) === String(courseId));
+            if (course) {
+                course.MEETING_DAY_1 = '';
+                course.MEETING_TIME_1 = '';
+                course.MEETING_ROOM_1 = '';
+                saveStateToLocalStorage();
+                renderAll();
+                if (isAutosaveOn) triggerAutosave();
+            }
+        }
+
         // --- Weekly Placement Pool populator ---
         function renderUnscheduledPool() {
             const query = poolSearch.value.toLowerCase().trim();
@@ -1375,7 +1661,7 @@
 
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-1">
-                        <span class="font-bold text-indigo-700">${course.SUBJECT} ${course.COURSE_ID}.${course.SECTION || '00'}</span>
+                        <span class="font-bold text-[#003893]">${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION || '00')}</span>
                         <span class="text-[9px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold uppercase">${course.CAMPUS || 'TBD'}</span>
                     </div>
                     <p class="font-medium mb-1 truncate">${course.COURSE_TITLE}</p>
@@ -1387,8 +1673,11 @@
                         <span class="truncate"><i data-lucide="user" class="w-3 h-3 inline mr-0.5"></i> ${course.INSTRUCTOR_NAME || 'Staff'}</span>
                         <span class="font-semibold text-[9px]">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
                     </div>
-                    <div class="mt-2 pt-1 border-t border-slate-200/50 flex justify-end">
-                        <button class="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-0.5 text-[10px]" onclick="triggerManualConfig('${course.id}')">
+                    <div class="mt-2 pt-1 border-t border-slate-200/50 flex justify-between items-center">
+                        <button class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-0.5 text-[10px]" onclick="deleteCourseDirect('${course.id}')">
+                            <i data-lucide="trash-2" class="w-2.5 h-2.5"></i> Delete
+                        </button>
+                        <button class="text-[#003893] hover:text-[#002570] font-bold flex items-center gap-0.5 text-[10px]" onclick="triggerManualConfig('${course.id}')">
                             <i data-lucide="edit-3" class="w-2.5 h-2.5"></i> Place Course
                         </button>
                     </div>
@@ -1404,15 +1693,24 @@
             lucide.createIcons();
         }
 
-        // --- Distance Education registry populator ---
+        // --- Distance Education registry count display ---
         function renderDistanceEducationPortal() {
-            deList.innerHTML = '';
+            const deCourses = courseRegistry.filter(c => isOnlineCourse(c));
+            const deBadgeCount = document.getElementById('deBadgeCount');
+            if (deBadgeCount) {
+                deBadgeCount.innerText = deCourses.length;
+            }
+        }
+
+        // --- Distance Education Registry modal rendering ---
+        function renderDeModalList() {
+            const deModalList = document.getElementById('deModalList');
+            if (!deModalList) return;
+            deModalList.innerHTML = '';
             const deCourses = courseRegistry.filter(c => isOnlineCourse(c));
 
-            deCount.innerText = `${deCourses.length} Course${deCourses.length === 1 ? '' : 's'} Online`;
-
             if (deCourses.length === 0) {
-                deList.innerHTML = `<p class="text-xs text-slate-400 text-center py-4 col-span-full">No Distance Education (DE) courses found in local registry.</p>`;
+                deModalList.innerHTML = `<p class="text-xs text-slate-400 text-center py-12 col-span-full">No Distance Education (DE) courses found in local registry.</p>`;
                 return;
             }
 
@@ -1425,10 +1723,10 @@
                 item.innerHTML = `
                     <div>
                         <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-cyan-800">${course.SUBJECT} ${course.COURSE_ID}.${course.SECTION || 'N01'}</span>
-                            <span class="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">ONLINE DE</span>
+                            <span class="font-bold text-cyan-800">${course.COURSE_ID}.${formatSection(course.SECTION || 'N01')}</span>
+                            <span class="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">${course.CAMPUS} - ONLINE DE</span>
                         </div>
-                        <p class="font-medium text-slate-800 mb-1 truncate">${course.COURSE_TITLE}</p>
+                        <p class="font-medium text-slate-800 mb-1 truncate text-slate-700">${course.COURSE_TITLE}</p>
                         <div class="flex justify-between items-center text-[10px] text-slate-500 mb-1.5">
                             <span>CRN: <strong>${crnLabel}</strong></span>
                             <span>Credits: <strong>${course.CREDIT_HOURS || '3'}</strong></span>
@@ -1438,22 +1736,127 @@
                         </p>
                     </div>
                     <div class="flex items-center justify-between border-t border-cyan-100/50 pt-2 mt-1 text-[10px]">
-                        <span class="text-[9.5px] text-cyan-700 italic">👥 Enrollment: ${course.ACTUAL_ENROLLMENT} / ${course.MAX_ENROLLMENT}</span>
-                        <button class="text-cyan-800 hover:text-cyan-900 font-bold flex items-center gap-0.5" onclick="triggerManualConfig('${course.id}')">
+                        <button class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-0.5" onclick="deleteCourseDirect('${course.id}'); deCoursesModal.classList.add('hidden'); deCoursesModal.classList.remove('flex');">
+                            <i data-lucide="trash-2" class="w-2.5 h-2.5"></i> Delete
+                        </button>
+                        <button class="text-cyan-800 hover:text-cyan-900 font-bold flex items-center gap-0.5" onclick="triggerManualConfig('${course.id}'); deCoursesModal.classList.add('hidden'); deCoursesModal.classList.remove('flex');">
                             <i data-lucide="edit-3" class="w-2.5 h-2.5"></i> Manage
                         </button>
                     </div>
                 `;
-                deList.appendChild(item);
+                deModalList.appendChild(item);
             });
             lucide.createIcons();
+        }
+
+        // --- Snapping Algorithm for Official Start/Stop Slots (Preserves day formats on drop) ---
+        function getSnappedSchedule(course, startMinutes, droppedDay) {
+            let contactHours = parseInt(course.COURSE_CONTACT_HOURS) || 0;
+            if (!contactHours) {
+                const credits = parseInt(course.CREDIT_HOURS) || 3;
+                if (credits === 4) contactHours = 64;
+                else contactHours = 48;
+            }
+
+            let existingDays = (course.MEETING_DAY_1 || '').toUpperCase();
+            let daysPattern = '';
+
+            if (existingDays) {
+                if (existingDays.length >= 3) {
+                    daysPattern = 'MWF';
+                } else if (existingDays.length === 2) {
+                    if (droppedDay === 'T' || droppedDay === 'R') {
+                        daysPattern = 'TR';
+                    } else {
+                        daysPattern = 'MW';
+                    }
+                } else if (existingDays.length === 1) {
+                    daysPattern = droppedDay;
+                } else {
+                    daysPattern = existingDays;
+                }
+            } else {
+                if (droppedDay === 'T' || droppedDay === 'R') {
+                    daysPattern = 'TR';
+                } else if (droppedDay === 'F') {
+                    daysPattern = 'MWF';
+                } else {
+                    if (contactHours === 48 || contactHours === 80) {
+                        daysPattern = 'MWF';
+                    } else {
+                        daysPattern = 'MW';
+                    }
+                }
+            }
+
+            let slots = [];
+
+            if (daysPattern === 'MWF') {
+                slots = [
+                    { start: 465, end: 515, label: "07:45 AM-08:35 AM" },
+                    { start: 525, end: 575, label: "08:45 AM-09:35 AM" },
+                    { start: 585, end: 635, label: "09:45 AM-10:35 AM" },
+                    { start: 645, end: 695, label: "10:45 AM-11:35 AM" },
+                    { start: 705, end: 755, label: "11:45 AM-12:35 PM" },
+                    { start: 765, end: 815, label: "12:45 PM-01:35 PM" },
+                    { start: 825, end: 875, label: "01:45 PM-02:35 PM" },
+                    { start: 885, end: 935, label: "02:45 PM-03:35 PM" }
+                ];
+            } else if (contactHours === 96) {
+                slots = [
+                    { start: 465, end: 565, label: "07:45 AM-09:25 AM" },
+                    { start: 500, end: 600, label: "08:20 AM-10:00 AM" },
+                    { start: 610, end: 710, label: "10:10 AM-11:50 AM" },
+                    { start: 720, end: 820, label: "12:00 PM-01:40 PM" },
+                    { start: 830, end: 930, label: "01:50 PM-03:30 PM" },
+                    { start: 940, end: 1040, label: "03:40 PM-05:20 PM" }
+                ];
+            } else if (contactHours === 64) {
+                slots = [
+                    { start: 465, end: 540, label: "07:45 AM-09:00 AM" },
+                    { start: 550, end: 625, label: "09:10 AM-10:25 AM" },
+                    { start: 635, end: 710, label: "10:35 AM-11:50 AM" },
+                    { start: 720, end: 820, label: "12:00 PM-01:40 PM" },
+                    { start: 830, end: 930, label: "01:50 PM-03:30 PM" },
+                    { start: 940, end: 1040, label: "03:40 PM-05:20 PM" },
+                    { start: 1050, end: 1150, label: "05:30 PM-07:10 PM" },
+                    { start: 1160, end: 1260, label: "07:20 PM-09:00 PM" }
+                ];
+            } else {
+                slots = [
+                    { start: 465, end: 540, label: "07:45 AM-09:00 AM" },
+                    { start: 550, end: 625, label: "09:10 AM-10:25 AM" },
+                    { start: 635, end: 710, label: "10:35 AM-11:50 AM" },
+                    { start: 720, end: 795, label: "12:00 PM-01:15 PM" },
+                    { start: 805, end: 880, label: "01:25 PM-02:40 PM" },
+                    { start: 890, end: 965, label: "02:50 PM-04:05 PM" },
+                    { start: 975, end: 1050, label: "04:15 PM-05:30 PM" },
+                    { start: 1060, end: 1135, label: "05:40 PM-06:55 PM" },
+                    { start: 1145, end: 1220, label: "07:05 PM-08:20 PM" }
+                ];
+            }
+
+            let closestSlot = slots[0];
+            let minDiff = Math.abs(slots[0].start - startMinutes);
+            for (let i = 1; i < slots.length; i++) {
+                const diff = Math.abs(slots[i].start - startMinutes);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestSlot = slots[i];
+                }
+            }
+
+            return {
+                days: daysPattern,
+                timeRange: closestSlot.label
+            };
         }
 
         // --- Weekly Calendar / Dynamic Track timeline renderer ---
         function renderCalendar() {
             calendarTimeline.innerHTML = '';
 
-            // 1. Classical 5-Day calendar render route
+            // 1. Classical 5-Day calendar render route with Side-by-Side placement
             if (activeGroupingView === 'weekly_grid') {
                 multiTrackHeader.classList.add('hidden');
                 weeklyGridHeader.classList.remove('hidden');
@@ -1478,27 +1881,33 @@
                 calendarTimeline.querySelectorAll('.day-slot').forEach(cell => {
                     cell.addEventListener('dragover', (e) => {
                         e.preventDefault();
-                        cell.classList.add('bg-indigo-50/70', 'ring-2', 'ring-indigo-300');
+                        cell.classList.add('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
                     });
                     cell.addEventListener('dragleave', () => {
-                        cell.classList.remove('bg-indigo-50/70', 'ring-2', 'ring-indigo-300');
+                        cell.classList.remove('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
                     });
                     cell.addEventListener('drop', (e) => {
                         e.preventDefault();
-                        cell.classList.remove('bg-indigo-50/70', 'ring-2', 'ring-indigo-300');
+                        cell.classList.remove('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
                         const courseId = e.dataTransfer.getData('text/plain');
                         const day = cell.getAttribute('data-day');
                         const startHour = parseInt(cell.getAttribute('data-hour'));
-                        performCoursePlacement(courseId, day, startHour);
+                        
+                        const rect = cell.getBoundingClientRect();
+                        const dropY = e.clientY - rect.top;
+                        const percentY = Math.max(0, Math.min(1, dropY / rect.height));
+                        const dropMinute = Math.round(percentY * 60);
+                        const startMinutes = (startHour * 60) + dropMinute;
+                        
+                        performCoursePlacementPrecise(courseId, day, startMinutes);
                     });
                 });
 
-                // Place tiles in columns
+                // Filter active scheduled courses
                 const activeScheduled = courseRegistry.filter(c => {
                     if (isOnlineCourse(c)) return false;
                     if (!c.MEETING_DAY_1 || !c.MEETING_TIME_1) return false;
 
-                    // Dropdown highlighting
                     if (currentFilterSelection !== 'all') {
                         const [type, val] = currentFilterSelection.split(': ');
                         if (type === 'Professor' && c.INSTRUCTOR_NAME !== val) return false;
@@ -1509,33 +1918,93 @@
                     return true;
                 });
 
-                activeScheduled.forEach(course => {
-                    const times = parseTimeRange(course.MEETING_TIME_1);
-                    if (!times) return;
+                // Side-by-side positioning allocation algorithm per day
+                ['M', 'T', 'W', 'R', 'F'].forEach(day => {
+                    const dayCourses = activeScheduled.filter(c => c.MEETING_DAY_1.includes(day));
+                    const parsedCourses = dayCourses.map(c => {
+                        const times = parseTimeRange(c.MEETING_TIME_1);
+                        return {
+                            course: c,
+                            start: times ? times.start : 0,
+                            end: times ? times.end : 0,
+                            duration: times ? (times.end - times.start) : 0
+                        };
+                    }).filter(item => item.start < item.end);
 
-                    const topMin = times.start;
-                    const duration = times.end - times.start;
+                    // Group intersecting intervals into distinct clusters
+                    let clusters = [];
+                    parsedCourses.forEach(item => {
+                        let itemClusters = [];
+                        clusters.forEach((cluster, idx) => {
+                            let overlaps = cluster.some(other => {
+                                return (item.start < other.end && item.end > other.start);
+                            });
+                            if (overlaps) {
+                                itemClusters.push(idx);
+                            }
+                        });
 
-                    const days = Array.from(course.MEETING_DAY_1);
-                    days.forEach(day => {
-                        const cell = calendarTimeline.querySelector(`.day-slot[data-day="${day}"][data-hour="${Math.floor(topMin / 60)}"]`);
+                        if (itemClusters.length === 0) {
+                            clusters.push([item]);
+                        } else if (itemClusters.length === 1) {
+                            clusters[itemClusters[0]].push(item);
+                        } else {
+                            let mergedCluster = [item];
+                            itemClusters.sort((a, b) => b - a);
+                            itemClusters.forEach(idx => {
+                                mergedCluster = mergedCluster.concat(clusters[idx]);
+                                clusters.splice(idx, 1);
+                            });
+                            clusters.push(mergedCluster);
+                        }
+                    });
+
+                    // Assign columns per cluster
+                    clusters.forEach(cluster => {
+                        cluster.sort((a, b) => a.start - b.start || b.end - a.end);
+                        let columns = [];
+                        cluster.forEach(item => {
+                            let colIndex = 0;
+                            while (colIndex < columns.length && columns[colIndex] > item.start) {
+                                colIndex++;
+                            }
+                            columns[colIndex] = item.end;
+                            item.colIndex = colIndex;
+                        });
+
+                        let totalCols = columns.length;
+                        cluster.forEach(item => {
+                            item.totalCols = totalCols;
+                        });
+                    });
+
+                    // Render elements inside snapped day slots
+                    parsedCourses.forEach(item => {
+                        const course = item.course;
+                        const cell = calendarTimeline.querySelector(`.day-slot[data-day="${day}"][data-hour="${Math.floor(item.start / 60)}"]`);
                         if (!cell) return;
 
-                        const relativeTopPx = topMin - (Math.floor(topMin / 60) * 60);
+                        const relativeTopPx = item.start - (Math.floor(item.start / 60) * 60);
                         const element = document.createElement('div');
                         const styles = getCapacityColorStyles(course);
-                        const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
 
-                        element.className = `absolute left-1 right-1 rounded border ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-pointer overflow-hidden z-10 flex flex-col justify-between transition-all`;
+                        element.draggable = true;
+                        element.className = `absolute rounded border ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-grab active:cursor-grabbing overflow-hidden z-10 flex flex-col justify-between transition-all`;
+                        
+                        // Side-by-side calculated offset styles
+                        const colWidth = 100 / item.totalCols;
+                        element.style.left = `${item.colIndex * colWidth}%`;
+                        element.style.width = `calc(${colWidth}% - 4px)`;
                         element.style.top = `${relativeTopPx}px`;
-                        element.style.height = `${duration}px`;
+                        element.style.height = `${item.duration}px`;
 
+                        // Displays formatted Course_ID.Section (Subject removed) and includes custom Campus in the room pill
                         element.innerHTML = `
                             <div class="font-bold flex items-center justify-between truncate leading-tight">
-                                <span>${course.SUBJECT} ${course.COURSE_ID}.${course.SECTION}</span>
-                                <span class="text-[8px] bg-white/70 px-1 rounded font-bold">${course.MEETING_ROOM_1 || 'TBD'}</span>
+                                <span>${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
+                                <span class="text-[8px] bg-white/70 px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} - ${course.MEETING_ROOM_1 || 'TBD'}</span>
                             </div>
-                            <p class="truncate leading-tight my-0.5 font-medium opacity-90">${course.COURSE_TITLE}</p>
+                            <p class="truncate leading-tight my-0.5 font-medium opacity-90 text-slate-700">${course.COURSE_TITLE}</p>
                             <div class="flex justify-between items-center text-[9px] pt-1 mt-auto border-t border-slate-200/40 opacity-80">
                                 <span>Credits: ${course.CREDIT_HOURS || '3'} hrs</span>
                                 <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
@@ -1545,6 +2014,11 @@
                                 <span class="shrink-0 font-semibold">${course.MEETING_TIME_1}</span>
                             </div>
                         `;
+
+                        element.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', course.id);
+                            e.dataTransfer.effectAllowed = 'move';
+                        });
 
                         element.addEventListener('click', (e) => {
                             e.stopPropagation();
@@ -1556,11 +2030,10 @@
                 });
 
             } else {
-                // 2. Dynamic multi-column layout for visual Side-by-Side tracks
+                // 2. Dynamic multi-column layout for visual Side-by-Side tracks (with overlapping column layouts)
                 weeklyGridHeader.classList.add('hidden');
                 multiTrackHeader.classList.remove('hidden');
 
-                // Determine active grouping keys
                 const trackKeysSet = new Set();
                 courseRegistry.forEach(c => {
                     if (isOnlineCourse(c)) return;
@@ -1580,7 +2053,7 @@
                 tracksHeaderContainer.innerHTML = '';
                 trackKeys.forEach(key => {
                     const el = document.createElement('div');
-                    el.className = "flex-1 text-center font-bold bg-slate-100 text-slate-700 py-1 rounded select-none border border-slate-200";
+                    el.className = "flex-1 text-center font-bold bg-[#003893]/10 text-[#003893] py-1 rounded select-none border border-[#003893]/20 text-xs";
                     el.innerText = key;
                     tracksHeaderContainer.appendChild(el);
                 });
@@ -1607,141 +2080,173 @@
                 calendarTimeline.querySelectorAll('.track-day-slot').forEach(cell => {
                     cell.addEventListener('dragover', (e) => {
                         e.preventDefault();
-                        cell.classList.add('bg-indigo-50/80', 'ring-2', 'ring-indigo-300');
+                        cell.classList.add('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
                     });
                     cell.addEventListener('dragleave', () => {
-                        cell.classList.remove('bg-indigo-50/80', 'ring-2', 'ring-indigo-300');
+                        cell.classList.remove('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
                     });
                     cell.addEventListener('drop', (e) => {
                         e.preventDefault();
-                        cell.classList.remove('bg-indigo-50/80', 'ring-2', 'ring-indigo-300');
+                        cell.classList.remove('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
                         const courseId = e.dataTransfer.getData('text/plain');
                         const droppedKey = cell.getAttribute('data-key');
                         const startHour = parseInt(cell.getAttribute('data-hour'));
                         
-                        performTrackBasedPlacement(courseId, activeDayTab, droppedKey, startHour);
+                        const rect = cell.getBoundingClientRect();
+                        const dropY = e.clientY - rect.top;
+                        const percentY = Math.max(0, Math.min(1, dropY / rect.height));
+                        const dropMinute = Math.round(percentY * 60);
+                        const startMinutes = (startHour * 60) + dropMinute;
+                        
+                        performTrackBasedPlacementPrecise(courseId, activeDayTab, droppedKey, startMinutes);
                     });
                 });
 
-                // Draw active cards in correct tracks
+                // Filter current view day active scheduled courses
                 const dayFilteredScheduled = courseRegistry.filter(c => {
                     if (isOnlineCourse(c)) return false;
                     return c.MEETING_DAY_1 && c.MEETING_DAY_1.includes(activeDayTab) && c.MEETING_TIME_1;
                 });
 
-                dayFilteredScheduled.forEach(course => {
-                    const times = parseTimeRange(course.MEETING_TIME_1);
-                    if (!times) return;
-
-                    const topMin = times.start;
-                    const duration = times.end - times.start;
-
-                    let targetKey = null;
-                    if (activeGroupingView === 'classroom') targetKey = course.MEETING_ROOM_1;
-                    if (activeGroupingView === 'faculty') targetKey = course.INSTRUCTOR_NAME;
-                    if (activeGroupingView === 'campus') targetKey = course.CAMPUS;
-                    if (activeGroupingView === 'modality') targetKey = course.INSTRUCTION_METHOD;
-
-                    if (!targetKey) return;
-
-                    const cell = calendarTimeline.querySelector(`.track-day-slot[data-key="${targetKey}"][data-hour="${Math.floor(topMin / 60)}"]`);
-                    if (!cell) return;
-
-                    const relativeTopPx = topMin - (Math.floor(topMin / 60) * 60);
-                    const element = document.createElement('div');
-                    const styles = getCapacityColorStyles(course);
-
-                    element.className = `absolute left-1 right-1 rounded border ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-pointer overflow-hidden z-10 flex flex-col justify-between transition-all`;
-                    element.style.top = `${relativeTopPx}px`;
-                    element.style.height = `${duration}px`;
-
-                    element.innerHTML = `
-                        <div class="font-bold flex items-center justify-between truncate leading-tight">
-                            <span>${course.SUBJECT} ${course.COURSE_ID}.${course.SECTION}</span>
-                            <span class="text-[8px] bg-white/70 px-1 rounded font-bold">${course.CAMPUS} ${course.MEETING_ROOM_1 || 'TBD'}</span>
-                        </div>
-                        <p class="truncate leading-tight my-0.5 font-semibold opacity-90">${course.COURSE_TITLE}</p>
-                        <div class="flex justify-between items-center text-[9px] pt-1 mt-auto border-t border-slate-200/40 opacity-80">
-                            <span>Credits: ${course.CREDIT_HOURS || '3'} hrs</span>
-                            <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[8.5px] opacity-75">
-                            <span class="truncate italic">${course.INSTRUCTOR_NAME || 'Staff'}</span>
-                            <span class="shrink-0 font-semibold">${course.MEETING_TIME_1}</span>
-                        </div>
-                    `;
-
-                    element.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        triggerManualConfig(course.id);
+                // Render side-by-side overlaps per track key column of the active day
+                trackKeys.forEach(trackKey => {
+                    const trackCourses = dayFilteredScheduled.filter(c => {
+                        let checkKey = null;
+                        if (activeGroupingView === 'classroom') checkKey = c.MEETING_ROOM_1;
+                        if (activeGroupingView === 'faculty') checkKey = c.INSTRUCTOR_NAME;
+                        if (activeGroupingView === 'campus') checkKey = c.CAMPUS;
+                        if (activeGroupingView === 'modality') checkKey = c.INSTRUCTION_METHOD;
+                        return checkKey === trackKey;
                     });
 
-                    cell.appendChild(element);
+                    const parsedTrackCourses = trackCourses.map(c => {
+                        const times = parseTimeRange(c.MEETING_TIME_1);
+                        return {
+                            course: c,
+                            start: times ? times.start : 0,
+                            end: times ? times.end : 0,
+                            duration: times ? (times.end - times.start) : 0
+                        };
+                    }).filter(item => item.start < item.end);
+
+                    // Overlap grouping clusters for parallel tracks
+                    let clusters = [];
+                    parsedTrackCourses.forEach(item => {
+                        let itemClusters = [];
+                        clusters.forEach((cluster, idx) => {
+                            let overlaps = cluster.some(other => {
+                                return (item.start < other.end && item.end > other.start);
+                            });
+                            if (overlaps) {
+                                itemClusters.push(idx);
+                            }
+                        });
+
+                        if (itemClusters.length === 0) {
+                            clusters.push([item]);
+                        } else if (itemClusters.length === 1) {
+                            clusters[itemClusters[0]].push(item);
+                        } else {
+                            let mergedCluster = [item];
+                            itemClusters.sort((a, b) => b - a);
+                            itemClusters.forEach(idx => {
+                                mergedCluster = mergedCluster.concat(clusters[idx]);
+                                clusters.splice(idx, 1);
+                            });
+                            clusters.push(mergedCluster);
+                        }
+                    });
+
+                    // Track columns spacing setup
+                    clusters.forEach(cluster => {
+                        cluster.sort((a, b) => a.start - b.start || b.end - a.end);
+                        let columns = [];
+                        cluster.forEach(item => {
+                            let colIndex = 0;
+                            while (colIndex < columns.length && columns[colIndex] > item.start) {
+                                colIndex++;
+                            }
+                            columns[colIndex] = item.end;
+                            item.colIndex = colIndex;
+                        });
+
+                        let totalCols = columns.length;
+                        cluster.forEach(item => {
+                            item.totalCols = totalCols;
+                        });
+                    });
+
+                    // Plot the elements
+                    parsedTrackCourses.forEach(item => {
+                        const course = item.course;
+                        const cell = calendarTimeline.querySelector(`.track-day-slot[data-key="${trackKey}"][data-hour="${Math.floor(item.start / 60)}"]`);
+                        if (!cell) return;
+
+                        const relativeTopPx = item.start - (Math.floor(item.start / 60) * 60);
+                        const element = document.createElement('div');
+                        const styles = getCapacityColorStyles(course);
+
+                        element.draggable = true;
+                        element.className = `absolute rounded border ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-grab active:cursor-grabbing overflow-hidden z-10 flex flex-col justify-between transition-all`;
+                        
+                        const colWidth = 100 / item.totalCols;
+                        element.style.left = `${item.colIndex * colWidth}%`;
+                        element.style.width = `calc(${colWidth}% - 4px)`;
+                        element.style.top = `${relativeTopPx}px`;
+                        element.style.height = `${item.duration}px`;
+
+                        // Displays formatted Course_ID.Section (Subject removed) and includes custom Campus in the room pill
+                        element.innerHTML = `
+                            <div class="font-bold flex items-center justify-between truncate leading-tight">
+                                <span>${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
+                                <span class="text-[8px] bg-white/70 px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} - ${course.MEETING_ROOM_1 || 'TBD'}</span>
+                            </div>
+                            <p class="truncate leading-tight my-0.5 font-semibold opacity-90 text-slate-700">${course.COURSE_TITLE}</p>
+                            <div class="flex justify-between items-center text-[9px] pt-1 mt-auto border-t border-slate-200/40 opacity-80">
+                                <span>Credits: ${course.CREDIT_HOURS || '3'} hrs</span>
+                                <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[8.5px] opacity-75">
+                                <span class="shrink-0 font-semibold">${course.MEETING_TIME_1}</span>
+                            </div>
+                        `;
+
+                        element.addEventListener('dragstart', (e) => {
+                            e.dataTransfer.setData('text/plain', course.id);
+                            e.dataTransfer.effectAllowed = 'move';
+                        });
+
+                        element.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            triggerManualConfig(course.id);
+                        });
+
+                        cell.appendChild(element);
+                    });
                 });
             }
         }
 
-        // --- Timed Overlap validation helper ---
-        function evaluateSingleCourseCollisions(course) {
-            if (!course.MEETING_DAY_1 || !course.MEETING_TIME_1 || isOnlineCourse(course)) return false;
-
-            const timeA = parseTimeRange(course.MEETING_TIME_1);
-            if (!timeA) return false;
-
-            return courseRegistry.some(other => {
-                if (other.id === course.id) return false;
-                if (!other.MEETING_DAY_1 || !other.MEETING_TIME_1 || isOnlineCourse(other)) return false;
-
-                const sharedDays = Array.from(course.MEETING_DAY_1).filter(d => other.MEETING_DAY_1.includes(d));
-                if (sharedDays.length === 0) return false;
-
-                const timeB = parseTimeRange(other.MEETING_TIME_1);
-                if (!timeB) return false;
-
-                const overlaps = (timeA.start < timeB.end && timeA.end > timeB.start);
-                if (!overlaps) return false;
-
-                const instructorConflict = (course.INSTRUCTOR_NAME && other.INSTRUCTOR_NAME && course.INSTRUCTOR_NAME === other.INSTRUCTOR_NAME);
-                const roomConflict = (course.MEETING_ROOM_1 && other.MEETING_ROOM_1 && course.MEETING_ROOM_1 === other.MEETING_ROOM_1);
-
-                return (instructorConflict || roomConflict);
-            });
-        }
-
         // --- Execute standard scheduling course placements ---
-        function performCoursePlacement(courseId, targetDay, targetStartHour) {
+        function performCoursePlacementPrecise(courseId, targetDay, startMinutes) {
             const course = courseRegistry.find(c => String(c.id) === String(courseId));
             if (!course) return;
 
-            let durationMinutes = 75; // MW standard preset
-            if (course.MEETING_TIME_1) {
-                const currentRange = parseTimeRange(course.MEETING_TIME_1);
-                if (currentRange) {
-                    durationMinutes = currentRange.end - currentRange.start;
-                }
-            }
-
-            const startMinutes = targetStartHour * 60;
-            const endMinutes = startMinutes + durationMinutes;
-
-            const startTimeStr = convertMinutesTo12HourString(startMinutes);
-            const endTimeStr = convertMinutesTo12HourString(endMinutes);
-            const generatedTimeRange = `${startTimeStr}-${endTimeStr}`;
+            const snapped = getSnappedSchedule(course, startMinutes, targetDay);
 
             const commitPlacement = () => {
-                course.MEETING_DAY_1 = targetDay;
-                course.MEETING_TIME_1 = generatedTimeRange;
+                course.MEETING_DAY_1 = snapped.days;
+                course.MEETING_TIME_1 = snapped.timeRange;
 
                 saveStateToLocalStorage();
                 renderAll();
                 if (isAutosaveOn) triggerAutosave();
             };
 
-            // Run constraint evaluations
-            const potentialConflicts = findPotentialConflicts(course, targetDay, generatedTimeRange, course.MEETING_ROOM_1, course.CAMPUS, course.INSTRUCTOR_NAME);
+            const potentialConflicts = findPotentialConflicts(course, snapped.days, snapped.timeRange, course.MEETING_ROOM_1, course.CAMPUS, course.INSTRUCTOR_NAME);
             if (potentialConflicts.length > 0) {
                 stagedPlacementAction = () => commitPlacement();
-                displayConflictModal(course, targetDay, generatedTimeRange, potentialConflicts);
+                displayConflictModal(course, snapped.days, snapped.timeRange, potentialConflicts);
                 return;
             }
 
@@ -1749,22 +2254,12 @@
         }
 
         // --- Execute side-by-side parallel columns placements ---
-        function performTrackBasedPlacement(courseId, activeDay, droppedKey, targetStartHour) {
+        function performTrackBasedPlacementPrecise(courseId, activeDay, droppedKey, startMinutes) {
             const course = courseRegistry.find(c => String(c.id) === String(courseId));
             if (!course) return;
 
-            let durationMinutes = 75; 
-            if (course.MEETING_TIME_1) {
-                const currentRange = parseTimeRange(course.MEETING_TIME_1);
-                if (currentRange) durationMinutes = currentRange.end - currentRange.start;
-            }
+            const snapped = getSnappedSchedule(course, startMinutes, activeDay);
 
-            const startMinutes = targetStartHour * 60;
-            const endMinutes = startMinutes + durationMinutes;
-
-            const generatedTimeRange = `${convertMinutesTo12HourString(startMinutes)}-${convertMinutesTo12HourString(endMinutes)}`;
-
-            // Inherit key attribute based on active view track
             let targetRoom = course.MEETING_ROOM_1;
             let targetCampus = course.CAMPUS;
             let targetInstructor = course.INSTRUCTOR_NAME;
@@ -1776,8 +2271,8 @@
             if (activeGroupingView === 'modality') targetModality = droppedKey;
 
             const commitTrackPlacement = () => {
-                course.MEETING_DAY_1 = activeDay;
-                course.MEETING_TIME_1 = generatedTimeRange;
+                course.MEETING_DAY_1 = activeDay; 
+                course.MEETING_TIME_1 = snapped.timeRange;
                 course.MEETING_ROOM_1 = targetRoom;
                 course.CAMPUS = targetCampus;
                 course.INSTRUCTOR_NAME = targetInstructor;
@@ -1788,10 +2283,10 @@
                 if (isAutosaveOn) triggerAutosave();
             };
 
-            const potentialConflicts = findPotentialConflicts(course, activeDay, generatedTimeRange, targetRoom, targetCampus, targetInstructor);
+            const potentialConflicts = findPotentialConflicts(course, activeDay, snapped.timeRange, targetRoom, targetCampus, targetInstructor);
             if (potentialConflicts.length > 0) {
                 stagedPlacementAction = () => commitTrackPlacement();
-                displayConflictModal(course, activeDay, generatedTimeRange, potentialConflicts);
+                displayConflictModal(course, activeDay, snapped.timeRange, potentialConflicts);
                 return;
             }
 
@@ -1817,17 +2312,14 @@
                 const overlaps = (timeA.start < timeB.end && timeA.end > timeB.start);
                 if (!overlaps) return;
 
-                // Overlapping professor constraint
                 if (checkInstructor && other.INSTRUCTOR_NAME && checkInstructor === other.INSTRUCTOR_NAME) {
-                    problems.push(`Professor <strong>${checkInstructor}</strong> is already scheduled for <strong>${other.SUBJECT} ${other.COURSE_ID}.${other.SECTION || '00'}</strong> during this time.`);
+                    problems.push(`Professor <strong>${checkInstructor}</strong> is already scheduled for <strong>${other.SUBJECT} ${other.COURSE_ID}.${formatSection(other.SECTION || '00')}</strong> during this time.`);
                 }
-                // Room overlap constraint
                 if (checkRoom && other.MEETING_ROOM_1 && checkRoom === other.MEETING_ROOM_1) {
-                    problems.push(`Room <strong>${checkRoom}</strong> is currently assigned to <strong>${other.SUBJECT} ${other.COURSE_ID}.${other.SECTION || '00'}</strong> during this time.`);
+                    problems.push(`Room <strong>${checkRoom}</strong> is currently assigned to <strong>${other.SUBJECT} ${other.COURSE_ID}.${formatSection(other.SECTION || '00')}</strong> during this time.`);
                 }
             });
 
-            // Multi-campus professor day rule: DE is exempt
             if (checkInstructor && checkInstructor !== 'Staff' && checkCampus !== 'DE') {
                 const dayCampuses = {};
                 courseRegistry.forEach(other => {
@@ -1842,7 +2334,6 @@
                     });
                 });
 
-                // Check physical multi-campuses on same scheduled days
                 const targetDaysArr = Array.from(tentativeDays);
                 targetDaysArr.forEach(day => {
                     if (dayCampuses[day] && dayCampuses[day].size > 0) {
@@ -1887,6 +2378,7 @@
             return `${hours}:${minStr} ${suffix}`;
         }
 
+        // --- Translate time to 24h representation ---
         function convertTo24Hour(time12h) {
             const match = time12h.match(/^(\d+):(\d+)\s*(AM|PM)?$/i);
             if (!match) return "08:00";
@@ -1903,6 +2395,7 @@
             return `${hourStr}:${minStr}`;
         }
 
+        // --- Translate time to 12h representation ---
         function convertTo12Hour(time24h) {
             if (!time24h) return '';
             const [hourStr, minStr] = time24h.split(':');
@@ -1926,12 +2419,12 @@
             if (!course) return;
 
             currentEditingCourseId = courseId;
-            mBadgeCode.innerText = `${course.SUBJECT} ${course.COURSE_ID}.${course.SECTION || '101'}`;
+            mBadgeCode.innerText = `${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION || '101')}`;
             mBadgeTitle.innerText = course.COURSE_TITLE || 'Course Entry';
             
             const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
             mBadgeCrn.innerText = `CRN: ${crnLabel}`;
-            mBadgeCredits.innerText = `Credits: ${course.CREDIT_HOURS || '3'} hrs`;
+            mBadgeCredits.innerText = `Credits: ${course.CREDIT_HOUniform || course.CREDIT_HOURS || '3'} hrs`;
             mBadgeEnrollment.innerText = `Enrollment: ${course.ACTUAL_ENROLLMENT || '0'} / ${course.MAX_ENROLLMENT || '24'}`;
 
             modalClassroom.value = course.MEETING_ROOM_1 || '';
@@ -1969,13 +2462,14 @@
             const label = document.getElementById(`labelDay${day}`);
             if (label) {
                 if (isChecked) {
-                    label.className = "flex flex-col items-center p-2 border bg-indigo-50 border-indigo-500 text-indigo-700 rounded cursor-pointer transition";
+                    label.className = "flex flex-col items-center p-2 border bg-blue-50 border-[#003893] text-[#003893] rounded cursor-pointer transition";
                 } else {
                     label.className = "flex flex-col items-center p-2 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition text-slate-700 font-medium";
                 }
             }
         }
 
+        // Close configure course modal
         function closeModal() {
             classroomModal.classList.add('hidden');
             classroomModal.classList.remove('flex');
@@ -1995,7 +2489,6 @@
                 const tentativeInstrMethod = modalInstrMethod.value;
                 const tentativeCredits = modalCredits.value.trim() || '3';
 
-                // Days scheduled block
                 const selectedDays = [];
                 ['M', 'T', 'W', 'R', 'F'].forEach(d => {
                     const checkbox = document.getElementById(`modalDay${d}`);
@@ -2003,7 +2496,6 @@
                 });
                 const tentativeDaysStr = selectedDays.join('');
 
-                // Start/Stop block
                 const startVal = modalStartTime.value;
                 const endVal = modalEndTime.value;
                 let tentativeTimeRange = '';
@@ -2028,7 +2520,6 @@
                     if (isAutosaveOn) triggerAutosave();
                 };
 
-                // Conflict and override checks
                 if (tentativeDaysStr && tentativeTimeRange && tentativeInstrMethod !== 'DE' && tentativeCampus !== 'DE') {
                     const potentialConflicts = findPotentialConflicts(course, tentativeDaysStr, tentativeTimeRange, tentativeRoom, tentativeCampus, tentativeInstructor);
                     if (potentialConflicts.length > 0) {
@@ -2046,8 +2537,10 @@
         function addNewCourse() {
             const sub = document.getElementById('qcSub').value.trim().toUpperCase();
             const cid = document.getElementById('qcId').value.trim();
-            const sect = document.getElementById('qcSect').value.trim() || '101';
-            const camp = document.getElementById('qcCampus').value;
+            const qcSect = document.getElementById('qcSect');
+            const sect = qcSect ? qcSect.value.trim() || '101' : '101';
+            const qcCamp = document.getElementById('qcCampus');
+            const camp = qcCamp ? qcCamp.value : 'BN';
             const title = document.getElementById('qcTitle').value.trim();
             const credits = document.getElementById('qcCredits').value.trim();
             const maxEnroll = document.getElementById('qcMaxEnroll').value.trim() || '24';
@@ -2065,6 +2558,7 @@
                 COURSE_REFERENCE_NUMBER: "ADD",
                 COURSE_TITLE: title,
                 CREDIT_HOURS: credits,
+                COURSE_CONTACT_HOURS: camp === 'DE' || instrMethod === 'DE' ? '0' : '64',
                 MAX_ENROLLMENT: maxEnroll,
                 ACTUAL_ENROLLMENT: actEnroll,
                 INSTRUCTION_METHOD: instrMethod,
@@ -2074,7 +2568,6 @@
                 MEETING_ROOM_1: isOnlineCourse({ INSTRUCTION_METHOD: instrMethod, CAMPUS: camp, MEETING_ROOM_1: '' }) ? 'Online' : ''
             };
 
-            // Structural back-fills
             if (originalHeaderRow) {
                 originalHeaderRow.forEach(col => {
                     if (newObj[col] === undefined) newObj[col] = '';
@@ -2083,10 +2576,9 @@
 
             courseRegistry.unshift(newObj);
             
-            // Clear input fields
             document.getElementById('qcSub').value = '';
             document.getElementById('qcId').value = '';
-            document.getElementById('qcSect').value = '';
+            if (qcSect) qcSect.value = '';
             document.getElementById('qcTitle').value = '';
             document.getElementById('qcInstructor').value = '';
             document.getElementById('qcActualEnroll').value = '0';
@@ -2097,24 +2589,13 @@
 
         // --- Export Courses back to structured CSV file ---
         function exportRegistryToCsv() {
-            if (courseRegistry.length === 0) {
+            const csvContent = generateCsvString();
+            if (!csvContent) {
                 alert("No active schedules found in workspace to export.");
                 return;
             }
 
-            const csvRows = [originalHeaderRow.join(',')];
-            courseRegistry.forEach(c => {
-                const lineValues = originalHeaderRow.map(header => {
-                    let val = c[header] || '';
-                    if (typeof val === 'string' && (val.includes(',') || val.includes('"') || val.includes('\n'))) {
-                        val = `"${val.replace(/"/g, '""')}"`;
-                    }
-                    return val;
-                });
-                csvRows.push(lineValues.join(','));
-            });
-
-            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
@@ -2124,18 +2605,36 @@
             document.body.removeChild(link);
         }
 
-        // --- Autosave Debouncing Manager ---
+        // --- Disk Auto-Save debounced controller ---
         let autosaveTimer = null;
-        function triggerAutosave() {
+        let isWriting = false;
+        async function triggerAutosave() {
             if (!isAutosaveOn) return;
             
             if (autosaveTimer) clearTimeout(autosaveTimer);
-            autosaveTimer = setTimeout(() => {
+            autosaveTimer = setTimeout(async () => {
                 const badge = document.getElementById('toggleAutosave');
-                badge.classList.add('bg-emerald-700');
-                setTimeout(() => {
-                    badge.classList.remove('bg-emerald-700');
-                }, 400);
+                if (badge) {
+                    badge.classList.add('bg-emerald-700');
+                    setTimeout(() => {
+                        badge.classList.remove('bg-emerald-700');
+                    }, 400);
+                }
+
+                if (fileHandle && !isWriting) {
+                    isWriting = true;
+                    try {
+                        const writable = await fileHandle.createWritable();
+                        const csvContent = generateCsvString();
+                        await writable.write(csvContent);
+                        await writable.close();
+                        console.log("Dynamically autosaved back to local disk!");
+                    } catch (err) {
+                        console.error("Direct autosave back to disk failed:", err);
+                    } finally {
+                        isWriting = false;
+                    }
+                }
             }, 600);
         }
     </script>
