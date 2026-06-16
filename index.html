@@ -107,13 +107,13 @@
         <span>Open schedule.csv</span>
       </button>
 
-      <label id="header-file-label" class="hidden px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm cursor-pointer" title="Upload a different schedule.csv spreadsheet">
+      <div id="header-file-label" class="hidden relative px-3.5 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm cursor-pointer animate-fadeIn" title="Upload a different schedule.csv spreadsheet">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
         </svg>
         <span>Upload CSV</span>
-        <input type="file" id="header-file-uploader" accept=".csv" onchange="handleSplashFileSelect(event)" class="hidden" />
-      </label>
+        <input type="file" id="header-file-uploader" accept=".csv" onchange="handleSplashFileSelect(event)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+      </div>
 
       <!-- EXPORT TO CSV BUTTON -->
       <button id="export-header-btn" onclick="downloadCSVExport()" class="hidden px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-md" title="Download schedule spreadsheet compatible with Banner imports">
@@ -148,16 +148,36 @@
         <span>Open schedule.csv (Enable Direct Auto-Save)</span>
       </button>
 
-      <!-- Standard Manual upload Option -->
+      <!-- Standard Manual upload Option (Overlay integration ensures click-through triggers) -->
       <div class="relative w-full">
-        <label for="splash-file-uploader" class="w-full px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition border border-slate-200 flex items-center justify-center space-x-2 cursor-pointer">
+        <div class="relative w-full px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition border border-slate-200 flex items-center justify-center space-x-2 cursor-pointer">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
           <span id="splash-uploader-text">Upload schedule.csv File (Manual Save)</span>
-        </label>
-        <input type="file" id="splash-file-uploader" accept=".csv" onchange="handleSplashFileSelect(event)" class="absolute inset-0 opacity-0 w-full cursor-pointer h-full hidden" />
+          <input type="file" id="splash-file-uploader" accept=".csv" onchange="handleSplashFileSelect(event)" class="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
+        </div>
       </div>
+    </div>
+
+    <!-- PASTE CSV ACCORDION FALLBACK -->
+    <div class="mt-4 border-t border-slate-100 pt-4 w-full text-left">
+      <details class="group">
+        <summary class="flex justify-between items-center font-bold text-xs text-indigo-600 hover:text-indigo-800 cursor-pointer list-none uppercase tracking-wider">
+          <span>or Paste CSV Content Directly</span>
+          <span class="transition group-open:rotate-180">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </span>
+        </summary>
+        <div class="mt-3 space-y-2 animate-fadeIn">
+          <textarea id="splash-paste-area" rows="6" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 font-mono text-[10px] focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Paste schedule.csv content here... (include the header row at the top)"></textarea>
+          <button onclick="handleSplashPasteSubmit()" class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition shadow-sm">
+            Load Pasted Content
+          </button>
+        </div>
+      </details>
     </div>
 
     <div class="mt-8 text-left border-t border-slate-100 pt-6 w-full">
@@ -465,7 +485,7 @@
                 <span>Friday</span>
               </label>
             </div>
-            <p class="text-[10px] text-slate-400 mt-1">If zero days are selected, the course starts inside the "Course Placement Pool".</p>
+            <p class="text-[11px] text-slate-400 mt-1">If zero days are selected, the course starts inside the "Course Placement Pool".</p>
           </div>
 
           <!-- CONDITIONAL TIME FORM CONFIGURATOR -->
@@ -908,7 +928,6 @@
           }
         }
 
-        // Implicit meridian context healing for time blocks like "11:00 - 1:30"
         if (!sa && !ea) {
           if (sh === 12 && eh < 12) {
             eh += 12;
@@ -930,7 +949,7 @@
         const endStr = `${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
         return { start: startStr, end: endStr };
       }
-      return { start: "", end: "" }; // Always return structure fallback
+      return { start: "", end: "" };
     }
 
     function getColorClass(color) {
@@ -948,64 +967,48 @@
       }
     }
 
-    // Advanced, industry-standard RFC 4180 State Parser with self-healing row reconstitution rules
+    // Advanced quote-balancing CSV line parser
     function parseCSV(text) {
       if (!text || text.trim() === "") return [];
+      const lines = text.split(/\r?\n/);
       const result = [];
-      let row = [];
-      let cell = '';
-      let inQuotes = false;
       
-      // Strip UTF-8 Byte Order Mark (BOM) if found
-      if (text.startsWith('\uFEFF')) {
-        text = text.substring(1);
-      }
-      
-      for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        const next = text[i + 1];
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        if (!line || line.trim() === "") continue;
         
-        if (c === '"') {
-          if (inQuotes) {
-            if (next === '"') {
+        // Count quotes to stitch multiline text blocks back together
+        let quoteCount = (line.match(/"/g) || []).length;
+        while (quoteCount % 2 !== 0 && i < lines.length - 1) {
+          i++;
+          line += "\n" + lines[i];
+          quoteCount = (line.match(/"/g) || []).length;
+        }
+        
+        const row = [];
+        let cell = "";
+        let inQuotes = false;
+        for (let j = 0; j < line.length; j++) {
+          const c = line[j];
+          const next = line[j+1];
+          
+          if (c === '"') {
+            if (inQuotes && next === '"') {
               cell += '"';
-              i++; // skip the double quote
+              j++;
             } else {
-              inQuotes = false;
+              inQuotes = !inQuotes;
             }
+          } else if (c === ',' && !inQuotes) {
+            row.push(cell.trim());
+            cell = "";
           } else {
-            inQuotes = true;
+            cell += c;
           }
-        } else if (c === '\\' && next === '"') {
-          // Robust Backslash-Escaped Quotes support (e.g. \")
-          cell += '"';
-          i++; 
-        } else if (c === ',' && !inQuotes) {
-          row.push(cell);
-          cell = '';
-        } else if ((c === '\r' || c === '\n') && !inQuotes) {
-          row.push(cell);
-          cell = '';
-          if (row.length > 1 || row[0] !== '') {
-            result.push(row);
-          }
-          row = [];
-          if (c === '\r' && next === '\n') {
-            i++; // skip standard windows newline character pairing
-          }
-        } else {
-          cell += c;
         }
+        row.push(cell.trim());
+        result.push(row);
       }
-      
-      // Clear final fields
-      if (cell !== '' || row.length > 0) {
-        row.push(cell);
-        if (row.length > 1 || row[0] !== '') {
-          result.push(row);
-        }
-      }
-      
       return result;
     }
 
@@ -1600,9 +1603,23 @@
       switchTab('calendar');
     }
 
+    function handleSplashPasteSubmit() {
+      const pasteText = document.getElementById('splash-paste-area').value.trim();
+      if (!pasteText) {
+        showToast("Paste area is empty.", "error");
+        return;
+      }
+      parseAndLoadCSVText(pasteText);
+    }
+
     // Defensive File Parsing & Loading Engine with self-healing properties for malformed line-wraps
     function parseAndLoadCSVText(text) {
       try {
+        if (!text || text.trim() === "") {
+          showToast("Loaded file content is empty.", "error");
+          return;
+        }
+
         if (text.trim().startsWith('[')) {
           const parsed = JSON.parse(text);
           if (Array.isArray(parsed)) {
@@ -1633,7 +1650,7 @@
                 days: Array.isArray(item.days) ? item.days : (item.days ? item.days.split('') : []),
                 startTime: item.startTime || "",
                 endTime: item.endTime || "",
-                color: item.color || colorsList[idx % colorsList.length],
+                color: colorsList[idx % colorsList.length],
                 contactHours: item.contactHours || 48,
                 instructionMethod: item.instructionMethod || (item.campus === "DE" ? "DE" : "TR"),
                 rawRow: rawRow
@@ -1644,20 +1661,44 @@
         } else {
           const parsedLines = parseCSV(text);
           if (parsedLines.length <= 1) {
-            showToast("CSV must contain headers and at least 1 row.", "error");
+            alert("Diagnostic: Found " + parsedLines.length + " lines in CSV. It must contain column headers and at least 1 course row.");
             return;
           }
 
-          const rawHeaders = parsedLines[0].map(h => h.trim().toUpperCase());
+          // Search dynamically to locate the correct Header Row containing standard fields
+          let headerRowIndex = -1;
+          for (let rowIdx = 0; rowIdx < parsedLines.length; rowIdx++) {
+            const currentLine = parsedLines[rowIdx];
+            if (currentLine && currentLine.some(cell => typeof cell === 'string' && cell.toUpperCase().trim() === 'SUBJECT')) {
+              headerRowIndex = rowIdx;
+              break;
+            }
+          }
+
+          // Fallback if SUBJECT is not found: assume first non-empty line
+          if (headerRowIndex === -1) {
+            for (let rowIdx = 0; rowIdx < parsedLines.length; rowIdx++) {
+              if (parsedLines[rowIdx] && parsedLines[rowIdx].length > 5) {
+                headerRowIndex = rowIdx;
+                break;
+              }
+            }
+          }
+
+          if (headerRowIndex === -1) {
+            alert("Diagnostic Error: Failed to find valid column headers in the loaded file. Please verify column fields such as 'SUBJECT' are present.");
+            return;
+          }
+
+          const rawHeaders = parsedLines[headerRowIndex].map(h => h.trim().toUpperCase());
           importedHeaders = rawHeaders;
           const expectedLength = rawHeaders.length;
 
           const newEntries = [];
-          for (let i = 1; i < parsedLines.length; i++) {
+          for (let i = headerRowIndex + 1; i < parsedLines.length; i++) {
             const cells = parsedLines[i];
             if (!cells || cells.length === 0 || (cells.length === 1 && cells[0] === "")) continue;
 
-            // Zero-allocation fallback padding to completely eliminate undefined property errors
             while (cells.length < expectedLength) {
               cells.push("");
             }
@@ -1667,9 +1708,15 @@
               rowData[header] = cells[index] !== undefined ? cells[index].trim() : "";
             });
 
-            const subject = rowData["SUBJECT"] || "CS";
-            const courseId = rowData["COURSE_ID"] || "COURSE";
-            const section = rowData["SECTION"] || "101";
+            const subject = rowData["SUBJECT"] || "";
+            const courseId = rowData["COURSE_ID"] || "";
+            const section = rowData["SECTION"] || "";
+
+            // Safely bypass empty rows or trailing comma lines
+            if (!subject && !courseId && !section) {
+              continue;
+            }
+
             const courseTitle = rowData["COURSE_TITLE"] || "Imported Course";
             const instructorName = rowData["INSTRUCTOR_NAME"] || "Staff";
             const campus = rowData["CAMPUS"] || "BN";
@@ -1740,12 +1787,17 @@
           courses = [...newEntries];
         }
 
+        if (courses.length === 0) {
+          alert("Diagnostic Warning: Loaded 0 courses. Make sure the spreadsheet has active course records beneath the header column line.");
+          return;
+        }
+
         showToast(`Successfully loaded ${courses.length} courses!`);
         renderAll();
         triggerAutoSave();
       } catch (e) {
         console.error(e);
-        showToast("Error parsing file structure. Verify parameters are aligned.", "error");
+        alert("Parser Error: " + e.message);
       }
     }
 
