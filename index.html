@@ -908,22 +908,6 @@
       return { start: "", end: "" };
     };
 
-    // Standard CSS classes generator
-    const getColorClass = (color) => {
-      switch (color) {
-        case 'indigo': return 'bg-indigo-50 border-indigo-500 text-indigo-700 hover:bg-indigo-100';
-        case 'blue': return 'bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100';
-        case 'emerald': return 'bg-emerald-50 border-emerald-500 text-emerald-700 hover:bg-emerald-100';
-        case 'amber': return 'bg-amber-50 border-amber-500 text-amber-700 hover:bg-amber-100';
-        case 'purple': return 'bg-purple-50 border-purple-500 text-purple-700 hover:bg-purple-100';
-        case 'rose': return 'bg-rose-50 border-rose-500 text-rose-700 hover:bg-rose-100';
-        case 'cyan': return 'bg-cyan-50 border-cyan-500 text-cyan-700 hover:bg-cyan-100';
-        case 'violet': return 'bg-violet-50 border-violet-500 text-violet-700 hover:bg-violet-100';
-        case 'orange': return 'bg-orange-50 border-orange-500 text-orange-700 hover:bg-orange-100';
-        default: return 'bg-gray-50 border-gray-500 text-gray-700 hover:bg-gray-100';
-      }
-    };
-
     // Helper: RFC 4180 parsing logic for processing csv cell contents
     const parseCSV = (text) => {
       const lines = [];
@@ -1325,8 +1309,14 @@
       document.getElementById('edit-room-course-code').innerText = course.code;
       document.getElementById('edit-room-input').value = course.room || '';
       document.getElementById('edit-professor-input').value = course.professor || '';
+      document.getElementById('edit-contact-hours-input').value = parseInt(course.contactHours, 10) || 48;
+      document.getElementById('edit-modality-select').value = course.instructionMethod || 'TR';
 
-      // Populate Datalist Autocomplete Options for Professors
+      const daysArray = course.days || [];
+      document.querySelectorAll('input[name="edit-days-checkbox"]').forEach(checkbox => {
+        checkbox.checked = daysArray.includes(checkbox.value);
+      });
+
       const professorsDatalist = document.getElementById('professors-datalist');
       professorsDatalist.innerHTML = '';
       const distinctProfs = Array.from(new Set(courses.map(c => c.professor).filter(Boolean)));
@@ -2098,7 +2088,7 @@
             >
               <div class="flex justify-between items-start">
                 <span class="text-xs font-mono font-bold uppercase">${course.code}</span>
-                <button onclick="deleteCourse('${course.id}')" class="text-slate-400 hover:text-rose-600 transition" title="Delete Course Inventory">
+                <button onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); deleteCourse('${course.id}')" class="text-slate-400 hover:text-rose-600 transition" title="Delete Course Inventory">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
@@ -2110,7 +2100,7 @@
                 <div class="flex items-center justify-between mt-1">
                   <span>🏛️ Campus: <strong class="text-indigo-800 font-bold">${course.campus || "BN"}</strong></span>
                   <span>🚪 Room: ${course.room || "TBD"}</span>
-                  <button onclick="openEditRoomModal('${course.id}')" class="p-1 text-slate-400 hover:text-indigo-600 rounded transition" title="Configure Assignments (Instructor, Room, Campus)">
+                  <button onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); openEditRoomModal('${course.id}')" class="p-1 text-slate-400 hover:text-indigo-600 rounded transition" title="Configure Assignments (Instructor, Room, Campus)">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
@@ -2348,7 +2338,7 @@
                   <span class="font-mono font-bold tracking-tight text-[10px] bg-white/60 px-1 rounded truncate max-w-[80%]">${course.code}</span>
                   <div class="flex items-center space-x-1 shrink-0">
                     ${hasConflict ? `<span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping" title="Conflict Warning"></span>` : ''}
-                    <button onclick="unscheduleCourse('${course.id}')" class="text-slate-400 hover:text-slate-700 font-extrabold text-[9px] leading-none" title="Remove from schedule">✕</button>
+                    <button onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); unscheduleCourse('${course.id}')" class="text-slate-400 hover:text-slate-700 font-extrabold text-[9px] leading-none" title="Remove from schedule">✕</button>
                   </div>
                 </div>
                 <p class="font-bold text-slate-800 mt-1 line-clamp-2 leading-tight">${course.name}</p>
@@ -2368,7 +2358,7 @@
                     <span class="text-[9px] text-slate-400 font-bold uppercase leading-none">Campus: ${course.campus || "BN"}</span>
                     <span class="mt-0.5 text-slate-700 font-bold">🚪 ${course.room}</span>
                   </div>
-                  <button onclick="openEditRoomModal('${course.id}')" class="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition opacity-0 group-hover/card:opacity-100" title="Configure Assignments (Instructor, Room, Campus, Modality)">
+                  <button onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); openEditRoomModal('${course.id}')" class="p-0.5 text-slate-400 hover:text-indigo-600 rounded transition opacity-0 group-hover/card:opacity-100" title="Configure Assignments (Instructor, Room, Campus, Modality)">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
@@ -2416,7 +2406,7 @@
                 <span class="font-mono font-bold text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">${course.code}</span>
                 <div class="flex items-center space-x-1.5">
                   <span class="text-[10px] font-bold text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded">CRN: ${course.rawRow?.COURSE_REFERENCE_NUMBER || 'TBD'}</span>
-                  <button onclick="deleteCourse('${course.id}')" class="text-slate-400 hover:text-rose-600 font-extrabold text-[10px]" title="Remove from schedule">✕</button>
+                  <button onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); deleteCourse('${course.id}')" class="text-slate-400 hover:text-rose-600 font-extrabold text-[10px]" title="Remove from schedule">✕</button>
                 </div>
               </div>
               <h4 class="font-bold text-slate-800 text-sm mt-2 line-clamp-1">${course.name}</h4>
@@ -2438,7 +2428,7 @@
               </div>
               
               <div class="flex justify-end pt-1">
-                <button onclick="openEditRoomModal('${course.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold flex items-center space-x-1 transition" title="Edit modality and instructor settings">
+                <button onmousedown="event.stopPropagation()" onclick="event.stopPropagation(); openEditRoomModal('${course.id}')" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold flex items-center space-x-1 transition" title="Edit modality and instructor settings">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
