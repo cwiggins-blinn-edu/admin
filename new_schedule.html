@@ -229,16 +229,14 @@
                         <button id="viewCampusBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-r border-slate-200 hover:bg-slate-50 transition">
                             By Campus
                         </button>
-                        <button id="viewModalityBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-r-md transition">
+                        <button id="viewModalityBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-slate-200 hover:bg-slate-50 transition">
                             By Modality
                         </button>
+                        <button id="viewDeCoursesBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-r-md transition flex items-center gap-1.5">
+                            <span>DE Courses</span>
+                            <span id="deBadgeCount" class="bg-[#003893]/10 text-[#003893] text-[10px] font-extrabold px-1.5 py-0.2 rounded-full">0</span>
+                        </button>
                     </div>
-
-                    <!-- Separate premium button to see DE Courses -->
-                    <button id="openDeModalBtn" class="px-3.5 py-1.5 text-xs font-bold bg-[#003893]/10 hover:bg-[#003893]/20 text-[#003893] border border-[#003893]/20 rounded-md transition flex items-center gap-1.5 shadow-sm ml-2">
-                        <i data-lucide="globe" class="w-3.5 h-3.5"></i>
-                        <span>DE Courses (<span id="deBadgeCount" class="font-bold">0</span>)</span>
-                    </button>
                 </div>
 
                 <!-- Active day filter for Side-by-Side Track Views -->
@@ -383,13 +381,9 @@
                     <div>
                         <label class="block font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
                         <input type="text" id="qcInstructor" class="w-full border rounded px-2.5 py-1.5 focus:outline-indigo-500 mb-1.5" placeholder="e.g. Tikum, Teboh" />
-                        <!-- Faculty quick clicks -->
-                        <div class="flex flex-wrap gap-1 items-center">
-                            <span class="text-[10px] text-slate-400 mr-1 select-none">Quick select faculty:</span>
-                            <button type="button" class="qc-faculty-badge text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium transition" data-name="Tikum, Teboh">Tikum, Teboh</button>
-                            <button type="button" class="qc-faculty-badge text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium transition" data-name="Wiggins, Carol">Wiggins, Carol</button>
-                            <button type="button" class="qc-faculty-badge text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium transition" data-name="Sellountos, Dimitrios">Sellountos, Dimitrios</button>
-                            <button type="button" class="qc-faculty-badge text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium transition" data-name="Johnson, Darron">Johnson, Darron</button>
+                        <!-- Faculty quick clicks dynamic wrapper -->
+                        <div id="qcFacultyBadgeContainer" class="flex flex-wrap gap-1 items-center min-h-[24px]">
+                            <!-- Generated programmatically -->
                         </div>
                     </div>
                     
@@ -474,13 +468,9 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
                     <input type="text" id="modalInstructor" class="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none" placeholder="e.g. Wiggins, Carol">
-                    <!-- Modal quick selects -->
-                    <div class="flex flex-wrap gap-1 items-center mt-1.5">
-                        <span class="text-[10px] text-slate-400 mr-1 select-none">Quick selects:</span>
-                        <button type="button" class="modal-faculty-badge text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium" data-name="Tikum, Teboh">Tikum, Teboh</button>
-                        <button type="button" class="modal-faculty-badge text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium" data-name="Wiggins, Carol">Wiggins, Carol</button>
-                        <button type="button" class="modal-faculty-badge text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium" data-name="Sellountos, Dimitrios">Sellountos, Dimitrios</button>
-                        <button type="button" class="modal-faculty-badge text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium" data-name="Johnson, Darron">Johnson, Darron</button>
+                    <!-- Modal quick selects dynamic wrapper -->
+                    <div id="modalFacultyBadgeContainer" class="flex flex-wrap gap-1 items-center mt-1.5 min-h-[24px]">
+                        <!-- Generated programmatically -->
                     </div>
                 </div>
 
@@ -525,7 +515,7 @@
                             <input type="checkbox" id="modalDayT" class="sr-only">
                             <span class="text-xs font-bold">T</span>
                         </label>
-                        <label class="flex flex-col items-center p-2 border border-slate-200 rounded cursor-pointer hover:bg-slate-50 transition" id="labelDayW">
+                        <label class="flex flex-col items-center p-2 border border-[#cbd5e1] rounded cursor-pointer hover:bg-slate-50 transition" id="labelDayW">
                             <input type="checkbox" id="modalDayW" class="sr-only">
                             <span class="text-xs font-bold">W</span>
                         </label>
@@ -598,6 +588,24 @@
         </div>
     </div>
 
+    <!-- Custom Notification Modal -->
+    <div id="notificationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[80] p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden border border-slate-200">
+            <div class="px-5 py-4 border-b flex items-center gap-2.5 bg-slate-50 text-slate-800">
+                <i data-lucide="info" class="w-5 h-5 text-[#003893]"></i>
+                <h3 id="notificationTitle" class="text-sm font-bold">Notification</h3>
+            </div>
+            <div class="p-5 text-xs text-slate-600">
+                <p id="notificationMessage">Message goes here...</p>
+            </div>
+            <div class="flex justify-end p-4 border-t bg-slate-50">
+                <button id="closeNotificationBtn" class="px-4 py-2 text-xs font-semibold text-white bg-[#003893] hover:bg-[#002570] rounded shadow-sm transition">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete Confirmation Modal Overlay -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4 animate-fade-in">
         <div class="bg-white rounded-lg shadow-xl max-w-sm w-full overflow-hidden border border-rose-100">
@@ -620,36 +628,6 @@
         </div>
     </div>
 
-    <!-- Distance Education (DE) Dedicated Portal Modal Overlay -->
-    <div id="deCoursesModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-45 p-4">
-        <div class="bg-white rounded-lg shadow-2xl max-w-4xl w-full overflow-hidden border border-slate-200 animate-fade-in">
-            <div class="px-5 py-4 border-b flex items-center justify-between bg-slate-50 border-b-2 border-[#003893]">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 select-none">
-                    <i data-lucide="globe" class="w-5 h-5 text-[#003893]"></i>
-                    <span>Distance Education Asynchronous Catalog Portal</span>
-                </h3>
-                <button id="deModalClose" class="text-slate-400 hover:text-slate-600 transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="p-5">
-                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-                    The courses below represent fully asynchronous Distance Education (DE Instruction Method / DE Campus location) classes. These run without standard classrooms or timing block constraints.
-                </p>
-                <div id="deModalList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[420px] overflow-y-auto pr-1.5">
-                    <!-- Dynamic online courses rendered here -->
-                </div>
-            </div>
-
-            <div class="flex justify-end p-4 border-t bg-slate-50">
-                <button id="deModalCloseBtn" class="px-5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded shadow-sm transition">
-                    Close Catalog
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer class="bg-slate-100 border-t border-slate-200 text-slate-400 py-3 text-center text-[10px]">
         Designed for academic schedule administrators. Runs fully client-side on your secure machine.
@@ -664,7 +642,10 @@
         let fileHandle = null; // Stored FileSystemFileHandle for live saving to computer hard drive
         let courseIdToDelete = null; // Tracking block staged for active deletion
         
-        // Views: 'weekly_grid', 'classroom', 'faculty', 'campus', 'modality'
+        // Dynamic faculty quick select memory state
+        let facultyQuickPicks = ['Tikum, Teboh', 'Wiggins, Carol', 'Sellountos, Dimitrios', 'Johnson, Darron'];
+
+        // Views: 'weekly_grid', 'classroom', 'faculty', 'campus', 'modality', 'de_courses'
         let activeGroupingView = 'weekly_grid'; 
         let activeDayTab = 'M'; // active day for side-by-side track view
         let currentFilterSelection = 'all';
@@ -706,6 +687,7 @@
         const viewFacultyBtn = document.getElementById('viewFacultyBtn');
         const viewCampusBtn = document.getElementById('viewCampusBtn');
         const viewModalityBtn = document.getElementById('viewModalityBtn');
+        const viewDeCoursesBtn = document.getElementById('viewDeCoursesBtn');
         
         const dayToggleContainer = document.getElementById('dayToggleContainer');
         const filterSelectionContainer = document.getElementById('filterSelectionContainer');
@@ -716,7 +698,7 @@
         const tracksHeaderContainer = document.getElementById('tracksHeaderContainer');
         
         const calendarTimeline = document.getElementById('calendarTimeline');
-        const deCount = document.getElementById('deCount');
+        const deBadgeCount = document.getElementById('deBadgeCount');
 
         const statTotal = document.getElementById('statTotal');
         const statScheduled = document.getElementById('statScheduled');
@@ -746,12 +728,6 @@
         const mBadgeCredits = document.getElementById('mBadgeCredits');
         const mBadgeEnrollment = document.getElementById('mBadgeEnrollment');
 
-        // --- Distance Education Modal Elements ---
-        const deCoursesModal = document.getElementById('deCoursesModal');
-        const openDeModalBtn = document.getElementById('openDeModalBtn');
-        const deModalClose = document.getElementById('deModalClose');
-        const deModalCloseBtn = document.getElementById('deModalCloseBtn');
-
         // --- Conflict Modal Elements ---
         const conflictWarningModal = document.getElementById('conflictWarningModal');
         const cancelConflictOverride = document.getElementById('cancelConflictOverride');
@@ -765,6 +741,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadStateFromLocalStorage();
             setupEventListeners();
+            renderFacultyBadges();
             lucide.createIcons();
             renderAll();
         });
@@ -796,6 +773,98 @@
             }
         }
         window.deleteCourseDirect = deleteCourseDirect;
+
+        // --- Elegant Non-blocking Custom Notification Overlay ---
+        function showNotification(title, message) {
+            const modal = document.getElementById('notificationModal');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            if (modal && titleEl && messageEl) {
+                titleEl.innerText = title;
+                messageEl.innerHTML = message;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        // --- Render dynamic faculty badges ---
+        function renderFacultyBadges() {
+            const modalBadgeContainer = document.getElementById('modalFacultyBadgeContainer');
+            if (modalBadgeContainer) {
+                modalBadgeContainer.innerHTML = '';
+                const titleSpan = document.createElement('span');
+                titleSpan.className = "text-[10px] text-slate-400 mr-1 select-none";
+                titleSpan.innerText = "Quick selects:";
+                modalBadgeContainer.appendChild(titleSpan);
+                
+                facultyQuickPicks.forEach(name => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = "modal-faculty-badge text-[9px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium transition";
+                    btn.setAttribute('data-name', name);
+                    btn.innerText = name;
+                    btn.addEventListener('click', () => {
+                        modalInstructor.value = name;
+                    });
+                    modalBadgeContainer.appendChild(btn);
+                });
+            }
+
+            const qcBadgeContainer = document.getElementById('qcFacultyBadgeContainer');
+            if (qcBadgeContainer) {
+                qcBadgeContainer.innerHTML = '';
+                const titleSpan = document.createElement('span');
+                titleSpan.className = "text-[10px] text-slate-400 mr-1 select-none";
+                titleSpan.innerText = "Quick select faculty:";
+                qcBadgeContainer.appendChild(titleSpan);
+                
+                facultyQuickPicks.forEach(name => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = "qc-faculty-badge text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-medium transition";
+                    btn.setAttribute('data-name', name);
+                    btn.innerText = name;
+                    btn.addEventListener('click', () => {
+                        document.getElementById('qcInstructor').value = name;
+                    });
+                    qcBadgeContainer.appendChild(btn);
+                });
+            }
+        }
+
+        // --- Helper to parse lecture and lab hours from SECTION_TEXT or fallbacks ---
+        function parseHoursFromSectionText(sectionText, course) {
+            let lec = 0;
+            let lab = 0;
+            if (sectionText) {
+                const lecMatch = sectionText.match(/(\d+)\s+lecture/i);
+                const labMatch = sectionText.match(/(\d+)\s+lab/i);
+                if (lecMatch) lec = parseInt(lecMatch[1]);
+                if (labMatch) lab = parseInt(labMatch[1]);
+            }
+            // Fallback to LECTURE_HOURS and LAB_HOURS columns if we parsed 0 and they are populated
+            if (lec === 0 && course.LECTURE_HOURS) {
+                lec = parseInt(course.LECTURE_HOURS) || 0;
+            }
+            if (lab === 0 && course.LAB_HOURS) {
+                lab = parseInt(course.LAB_HOURS) || 0;
+            }
+            // Estimate based on course credit hours if still 0
+            if (lec === 0 && lab === 0) {
+                const credits = parseInt(course.CREDIT_HOURS) || 3;
+                if (credits === 4) {
+                    lec = 3;
+                    lab = 1; // standard COSC 1436 has 3 lec / 1 lab
+                } else if (credits === 1) {
+                    lec = 0;
+                    lab = 3; // Lab only
+                } else {
+                    lec = credits;
+                    lab = 0;
+                }
+            }
+            return { lec, lab };
+        }
 
         // --- Setup Core Listeners ---
         function setupEventListeners() {
@@ -849,63 +918,13 @@
                 renderUnscheduledPool();
             });
 
-            // Distance Education catalog portal modal triggers
-            if (openDeModalBtn) {
-                openDeModalBtn.addEventListener('click', () => {
-                    renderDeModalList();
-                    deCoursesModal.classList.remove('hidden');
-                    deCoursesModal.classList.add('flex');
-                });
-            }
-            if (deModalClose) {
-                deModalClose.addEventListener('click', () => {
-                    deCoursesModal.classList.add('hidden');
-                    deCoursesModal.classList.remove('flex');
-                });
-            }
-            if (deModalCloseBtn) {
-                deModalCloseBtn.addEventListener('click', () => {
-                    deCoursesModal.classList.add('hidden');
-                    deCoursesModal.classList.remove('flex');
-                });
-            }
-
-            // Quick creator badges
-            document.querySelectorAll('.qc-faculty-badge').forEach(b => {
-                b.addEventListener('click', () => {
-                    document.getElementById('qcInstructor').value = b.getAttribute('data-name');
-                });
-            });
-
-            // Modal badges
-            document.querySelectorAll('.modal-faculty-badge').forEach(b => {
-                b.addEventListener('click', () => {
-                    modalInstructor.value = b.getAttribute('data-name');
-                });
-            });
-
-            // Preset times selection mapping
-            modalPresets.addEventListener('change', (e) => {
-                const val = e.target.value;
-                if (val && val.includes('-')) {
-                    const [start, end] = val.split('-');
-                    modalStartTime.value = convertTo24Hour(start.trim());
-                    modalEndTime.value = convertTo24Hour(end.trim());
-                }
-            });
-
-            // Quick course builder
-            quickCreateForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                addNewCourse();
-            });
-
             // Tab groupings toggles
             viewWeeklyGridBtn.addEventListener('click', () => toggleView('weekly_grid'));
             viewClassroomBtn.addEventListener('click', () => toggleView('classroom'));
             viewFacultyBtn.addEventListener('click', () => toggleView('faculty'));
             viewCampusBtn.addEventListener('click', () => toggleView('campus'));
             viewModalityBtn.addEventListener('click', () => toggleView('modality'));
+            viewDeCoursesBtn.addEventListener('click', () => toggleView('de_courses'));
 
             // Day sub-tabs
             document.querySelectorAll('.day-tab').forEach(btn => {
@@ -962,6 +981,18 @@
             }
             if (saveClassRoom) {
                 saveClassRoom.addEventListener('click', saveModalChanges);
+            }
+
+            // Custom Notification modal dismiss
+            const closeNotificationBtn = document.getElementById('closeNotificationBtn');
+            if (closeNotificationBtn) {
+                closeNotificationBtn.addEventListener('click', () => {
+                    const modal = document.getElementById('notificationModal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                    }
+                });
             }
 
             // Delete configuration binders
@@ -1060,14 +1091,24 @@
         function saveStateToLocalStorage() {
             localStorage.setItem('academia_course_registry', JSON.stringify(courseRegistry));
             localStorage.setItem('academia_original_headers', JSON.stringify(originalHeaderRow));
+            localStorage.setItem('academia_faculty_quick_picks', JSON.stringify(facultyQuickPicks));
             updateCsvOutput();
         }
 
         function loadStateFromLocalStorage() {
-            // Emptied startup: startup is always clean and empty. No local drafts are restored.
+            // Clean Startup
             courseRegistry = [];
             localStorage.removeItem('academia_course_registry');
             localStorage.removeItem('academia_original_headers');
+            
+            const facultyRaw = localStorage.getItem('academia_faculty_quick_picks');
+            if (facultyRaw) {
+                try {
+                    facultyQuickPicks = JSON.parse(facultyRaw);
+                } catch(e) {
+                    console.error("Failed to load faculty picks: ", e);
+                }
+            }
             updateSyncStatus();
         }
 
@@ -1335,10 +1376,16 @@
                 rowObj.MEETING_TIME_1 = mainTime || '';
                 rowObj.MEETING_ROOM_1 = mainRoom || '';
 
+                // Seed dynamic faculty list
+                if (rowObj.INSTRUCTOR_NAME && rowObj.INSTRUCTOR_NAME !== 'Staff' && !facultyQuickPicks.includes(rowObj.INSTRUCTOR_NAME)) {
+                    facultyQuickPicks.push(rowObj.INSTRUCTOR_NAME);
+                }
+
                 courses.push(rowObj);
             }
 
             courseRegistry = courses;
+            renderFacultyBadges();
         }
 
         // --- Dynamic Interface Render Master Manager ---
@@ -1367,7 +1414,7 @@
             activeGroupingView = view;
             
             // Highlight Buttons using Blinn color accents
-            [viewWeeklyGridBtn, viewClassroomBtn, viewFacultyBtn, viewCampusBtn, viewModalityBtn].forEach(b => {
+            [viewWeeklyGridBtn, viewClassroomBtn, viewFacultyBtn, viewCampusBtn, viewModalityBtn, viewDeCoursesBtn].forEach(b => {
                 b.className = "px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition";
             });
 
@@ -1378,6 +1425,13 @@
                 
                 weeklyGridHeader.classList.remove('hidden');
                 multiTrackHeader.classList.add('hidden');
+            } else if (view === 'de_courses') {
+                viewDeCoursesBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 rounded-r-md hover:bg-blue-100";
+                dayToggleContainer.classList.add('hidden');
+                filterSelectionContainer.classList.add('hidden');
+                
+                weeklyGridHeader.classList.add('hidden');
+                multiTrackHeader.classList.add('hidden');
             } else {
                 dayToggleContainer.classList.remove('hidden');
                 filterSelectionContainer.classList.add('hidden');
@@ -1387,7 +1441,7 @@
                 if (view === 'classroom') viewClassroomBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
                 if (view === 'faculty') viewFacultyBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
                 if (view === 'campus') viewCampusBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
-                if (view === 'modality') viewModalityBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100 rounded-r-md";
+                if (view === 'modality') viewModalityBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
             }
 
             buildDropdownFilters();
@@ -1702,50 +1756,69 @@
             }
         }
 
-        // --- Distance Education Registry modal rendering ---
-        function renderDeModalList() {
-            const deModalList = document.getElementById('deModalList');
-            if (!deModalList) return;
-            deModalList.innerHTML = '';
+        // --- Distance Education Registry view list rendering inside central board ---
+        function renderDeViewGrid() {
             const deCourses = courseRegistry.filter(c => isOnlineCourse(c));
 
             if (deCourses.length === 0) {
-                deModalList.innerHTML = `<p class="text-xs text-slate-400 text-center py-12 col-span-full">No Distance Education (DE) courses found in local registry.</p>`;
+                calendarTimeline.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 text-center">
+                        <div class="p-3 bg-blue-50 text-[#003893] rounded-full mb-3">
+                            <i data-lucide="globe" class="w-10 h-10"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-700">No Distance Education (DE) Courses found.</p>
+                        <p class="text-xs text-slate-400 mt-1 max-w-xs">Upload a spreadsheet containing DE campus/instructional method classes or create one manually.</p>
+                    </div>
+                `;
+                lucide.createIcons();
                 return;
             }
+
+            const grid = document.createElement('div');
+            grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4";
 
             deCourses.forEach(course => {
                 const styles = getCapacityColorStyles(course);
                 const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
-                const item = document.createElement('div');
-                item.className = `${styles.bg} border ${styles.border} rounded-lg p-3 text-xs flex flex-col justify-between hover:shadow-sm`;
+                const card = document.createElement('div');
+                card.className = `rounded-lg border-2 ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-4 flex flex-col justify-between shadow-sm relative transition-all duration-150`;
                 
-                item.innerHTML = `
+                card.innerHTML = `
                     <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="font-bold text-cyan-800">${course.COURSE_ID}.${formatSection(course.SECTION || 'N01')}</span>
-                            <span class="text-[9px] bg-cyan-100 text-cyan-800 px-1.5 py-0.5 rounded font-bold">${course.CAMPUS} - ONLINE DE</span>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-extrabold text-[#003893] text-sm">${course.COURSE_ID}.${formatSection(course.SECTION || '001')}</span>
+                            <span class="text-[10px] bg-[#003893]/10 text-[#003893] px-2 py-0.5 rounded font-extrabold tracking-wider uppercase border border-[#003893]/20">${course.CAMPUS} ONLINE</span>
                         </div>
-                        <p class="font-medium text-slate-800 mb-1 truncate text-slate-700">${course.COURSE_TITLE}</p>
-                        <div class="flex justify-between items-center text-[10px] text-slate-500 mb-1.5">
-                            <span>CRN: <strong>${crnLabel}</strong></span>
-                            <span>Credits: <strong>${course.CREDIT_HOURS || '3'}</strong></span>
+                        <h4 class="font-bold text-slate-800 text-xs mb-2 leading-tight">${course.COURSE_TITLE}</h4>
+                        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500 mb-3 border-t border-b border-slate-200/50 py-2">
+                            <div>CRN: <strong class="text-slate-800">${crnLabel}</strong></div>
+                            <div>Credits: <strong class="text-slate-800">${course.CREDIT_HOURS || '3'} hrs</strong></div>
+                            <div>Modality: <strong class="text-slate-800">${course.INSTRUCTION_METHOD || 'DE'}</strong></div>
+                            <div>Classroom: <strong class="text-slate-800">${course.MEETING_ROOM_1 || 'Online'}</strong></div>
                         </div>
-                        <p class="text-[10px] text-slate-500 truncate mb-2">
-                            <i data-lucide="user" class="w-3 h-3 inline mr-0.5"></i> ${course.INSTRUCTOR_NAME || 'Staff'}
-                        </p>
+                        <div class="flex items-center gap-2 text-[11px] text-slate-600 mb-4">
+                            <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                            <span class="truncate">Instructor: <strong class="text-slate-800">${course.INSTRUCTOR_NAME || 'Staff'}</strong></span>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between border-t border-cyan-100/50 pt-2 mt-1 text-[10px]">
-                        <button class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-0.5" onclick="deleteCourseDirect('${course.id}'); deCoursesModal.classList.add('hidden'); deCoursesModal.classList.remove('flex');">
-                            <i data-lucide="trash-2" class="w-2.5 h-2.5"></i> Delete
-                        </button>
-                        <button class="text-cyan-800 hover:text-cyan-900 font-bold flex items-center gap-0.5" onclick="triggerManualConfig('${course.id}'); deCoursesModal.classList.add('hidden'); deCoursesModal.classList.remove('flex');">
-                            <i data-lucide="edit-3" class="w-2.5 h-2.5"></i> Manage
-                        </button>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-200/50 text-xs">
+                        <span class="font-bold text-[10px] text-slate-600 bg-white/80 px-2 py-1 rounded border border-slate-100 shadow-sm shrink-0">
+                            👥 Enrollment: ${course.ACTUAL_ENROLLMENT} / ${course.MAX_ENROLLMENT}
+                        </span>
+                        <div class="flex gap-2">
+                            <button class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-0.5 text-[10px]" onclick="deleteCourseDirect('${course.id}')">
+                                <i data-lucide="trash-2" class="w-3 h-3"></i> Delete
+                            </button>
+                            <button class="text-[#003893] hover:text-[#002570] font-bold flex items-center gap-0.5 text-[10px]" onclick="triggerManualConfig('${course.id}')">
+                                <i data-lucide="edit-3" class="w-3 h-3"></i> Manage
+                            </button>
+                        </div>
                     </div>
                 `;
-                deModalList.appendChild(item);
+                grid.appendChild(card);
             });
+
+            calendarTimeline.appendChild(grid);
             lucide.createIcons();
         }
 
@@ -1856,7 +1929,15 @@
         function renderCalendar() {
             calendarTimeline.innerHTML = '';
 
-            // 1. Classical 5-Day calendar render route with Side-by-Side placement
+            // 1. Dedicated Asynchronous Distance Education view route
+            if (activeGroupingView === 'de_courses') {
+                weeklyGridHeader.classList.add('hidden');
+                multiTrackHeader.classList.add('hidden');
+                renderDeViewGrid();
+                return;
+            }
+
+            // 2. Classical 5-Day calendar render route with Side-by-Side placement
             if (activeGroupingView === 'weekly_grid') {
                 multiTrackHeader.classList.add('hidden');
                 weeklyGridHeader.classList.remove('hidden');
@@ -2030,8 +2111,8 @@
                 });
 
             } else {
-                // 2. Dynamic multi-column layout for visual Side-by-Side tracks (with overlapping column layouts)
-                weeklyGridHeader.classList.add('hidden');
+                // 3. Dynamic multi-column layout for visual Side-by-Side tracks (with overlapping column layouts)
+                weeklyGridHeader.className = "hidden";
                 multiTrackHeader.classList.remove('hidden');
 
                 const trackKeysSet = new Set();
@@ -2049,12 +2130,39 @@
                     return;
                 }
 
-                // Render dynamic header row
+                // Render dynamic header row (Includes dynamic Professor workload, Credits and ILUs calculation from ILUs.docx)
                 tracksHeaderContainer.innerHTML = '';
                 trackKeys.forEach(key => {
                     const el = document.createElement('div');
-                    el.className = "flex-1 text-center font-bold bg-[#003893]/10 text-[#003893] py-1 rounded select-none border border-[#003893]/20 text-xs";
-                    el.innerText = key;
+                    el.className = "flex-1 text-center font-bold bg-[#003893]/10 text-[#003893] py-1.5 px-2 rounded select-none border border-[#003893]/20 flex flex-col justify-center items-center gap-1 min-w-[130px] shrink-0 overflow-hidden";
+                    
+                    if (activeGroupingView === 'faculty') {
+                        // Gather professor metrics
+                        const profCourses = courseRegistry.filter(c => c.INSTRUCTOR_NAME === key);
+                        let totalCredits = 0;
+                        let totalILUs = 0;
+                        
+                        profCourses.forEach(c => {
+                            const credits = parseInt(c.CREDIT_HOURS) || 0;
+                            const secText = c.SECTION_TEXT || '';
+                            const { lec, lab } = parseHoursFromSectionText(secText, c);
+                            
+                            // ILUs formula from ILUs.docx: Lecture Hrs * 1.0 + Lab Hrs * 0.67
+                            const ilus = (lec * 1.0) + (lab * 0.67);
+                            totalCredits += credits;
+                            totalILUs += ilus;
+                        });
+                        
+                        el.innerHTML = `
+                            <span class="font-extrabold text-xs truncate max-w-full text-[#003893]">${key}</span>
+                            <div class="flex gap-1 justify-center flex-wrap select-none text-[9.5px]">
+                                <span class="bg-indigo-50 text-indigo-700 px-1 py-0.5 rounded border border-indigo-200/50 font-bold">Credits: ${totalCredits}</span>
+                                <span class="bg-emerald-50 text-emerald-700 px-1 py-0.5 rounded border border-emerald-200/50 font-bold">ILUs: ${totalILUs.toFixed(2)}</span>
+                            </div>
+                        `;
+                    } else {
+                        el.innerHTML = `<span class="font-extrabold text-xs text-[#003893]">${key}</span>`;
+                    }
                     tracksHeaderContainer.appendChild(el);
                 });
 
@@ -2066,12 +2174,12 @@
                     
                     let columnsHtml = '';
                     trackKeys.forEach(key => {
-                        columnsHtml += `<div class="flex-1 border-l border-slate-100 relative min-h-[60px] track-day-slot" data-key="${key}" data-hour="${hour}"></div>`;
+                        columnsHtml += `<div class="flex-1 border-l border-slate-100 relative min-h-[60px] track-day-slot min-w-[130px] shrink-0" data-key="${key}" data-hour="${hour}"></div>`;
                     });
 
                     row.innerHTML = `
                         <div class="w-20 shrink-0 text-[11px] font-semibold text-slate-400 py-2 pl-2 select-none">${timeLabel12}</div>
-                        <div class="flex-grow flex gap-4">${columnsHtml}</div>
+                        <div class="flex-grow flex gap-4 overflow-x-auto">${columnsHtml}</div>
                     `;
                     calendarTimeline.appendChild(row);
                 }
@@ -2227,72 +2335,6 @@
             }
         }
 
-        // --- Execute standard scheduling course placements ---
-        function performCoursePlacementPrecise(courseId, targetDay, startMinutes) {
-            const course = courseRegistry.find(c => String(c.id) === String(courseId));
-            if (!course) return;
-
-            const snapped = getSnappedSchedule(course, startMinutes, targetDay);
-
-            const commitPlacement = () => {
-                course.MEETING_DAY_1 = snapped.days;
-                course.MEETING_TIME_1 = snapped.timeRange;
-
-                saveStateToLocalStorage();
-                renderAll();
-                if (isAutosaveOn) triggerAutosave();
-            };
-
-            const potentialConflicts = findPotentialConflicts(course, snapped.days, snapped.timeRange, course.MEETING_ROOM_1, course.CAMPUS, course.INSTRUCTOR_NAME);
-            if (potentialConflicts.length > 0) {
-                stagedPlacementAction = () => commitPlacement();
-                displayConflictModal(course, snapped.days, snapped.timeRange, potentialConflicts);
-                return;
-            }
-
-            commitPlacement();
-        }
-
-        // --- Execute side-by-side parallel columns placements ---
-        function performTrackBasedPlacementPrecise(courseId, activeDay, droppedKey, startMinutes) {
-            const course = courseRegistry.find(c => String(c.id) === String(courseId));
-            if (!course) return;
-
-            const snapped = getSnappedSchedule(course, startMinutes, activeDay);
-
-            let targetRoom = course.MEETING_ROOM_1;
-            let targetCampus = course.CAMPUS;
-            let targetInstructor = course.INSTRUCTOR_NAME;
-            let targetModality = course.INSTRUCTION_METHOD;
-
-            if (activeGroupingView === 'classroom') targetRoom = droppedKey;
-            if (activeGroupingView === 'faculty') targetInstructor = droppedKey;
-            if (activeGroupingView === 'campus') targetCampus = droppedKey;
-            if (activeGroupingView === 'modality') targetModality = droppedKey;
-
-            const commitTrackPlacement = () => {
-                course.MEETING_DAY_1 = activeDay; 
-                course.MEETING_TIME_1 = snapped.timeRange;
-                course.MEETING_ROOM_1 = targetRoom;
-                course.CAMPUS = targetCampus;
-                course.INSTRUCTOR_NAME = targetInstructor;
-                course.INSTRUCTION_METHOD = targetModality;
-
-                saveStateToLocalStorage();
-                renderAll();
-                if (isAutosaveOn) triggerAutosave();
-            };
-
-            const potentialConflicts = findPotentialConflicts(course, activeDay, snapped.timeRange, targetRoom, targetCampus, targetInstructor);
-            if (potentialConflicts.length > 0) {
-                stagedPlacementAction = () => commitTrackPlacement();
-                displayConflictModal(course, activeDay, snapped.timeRange, potentialConflicts);
-                return;
-            }
-
-            commitTrackPlacement();
-        }
-
         // --- Constraint check logic for overlapping times & multi-campus professor days ---
         function findPotentialConflicts(targetCourse, tentativeDays, tentativeTimeRange, checkRoom, checkCampus, checkInstructor) {
             const problems = [];
@@ -2424,7 +2466,7 @@
             
             const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
             mBadgeCrn.innerText = `CRN: ${crnLabel}`;
-            mBadgeCredits.innerText = `Credits: ${course.CREDIT_HOUniform || course.CREDIT_HOURS || '3'} hrs`;
+            mBadgeCredits.innerText = `Credits: ${course.CREDIT_HOURS || '3'} hrs`;
             mBadgeEnrollment.innerText = `Enrollment: ${course.ACTUAL_ENROLLMENT || '0'} / ${course.MAX_ENROLLMENT || '24'}`;
 
             modalClassroom.value = course.MEETING_ROOM_1 || '';
@@ -2503,6 +2545,13 @@
                     tentativeTimeRange = `${convertTo12Hour(startVal)}-${convertTo12Hour(endVal)}`;
                 }
 
+                // Append new instructor to picks if modified and not existing
+                if (tentativeInstructor && tentativeInstructor !== 'Staff' && !facultyQuickPicks.includes(tentativeInstructor)) {
+                    facultyQuickPicks.push(tentativeInstructor);
+                    localStorage.setItem('academia_faculty_quick_picks', JSON.stringify(facultyQuickPicks));
+                    renderFacultyBadges();
+                }
+
                 const commitModalChanges = () => {
                     course.MEETING_ROOM_1 = tentativeRoom;
                     course.CAMPUS = tentativeCampus;
@@ -2548,6 +2597,13 @@
             const instrMethod = document.getElementById('qcInstrMethod').value;
             const inst = document.getElementById('qcInstructor').value.trim() || 'Staff';
 
+            // Append new instructor to picks if modified and not existing
+            if (inst && inst !== 'Staff' && !facultyQuickPicks.includes(inst)) {
+                facultyQuickPicks.push(inst);
+                localStorage.setItem('academia_faculty_quick_picks', JSON.stringify(facultyQuickPicks));
+                renderFacultyBadges();
+            }
+
             const newObj = {
                 id: `course-user-${Date.now()}`,
                 TERM: "202710",
@@ -2591,7 +2647,7 @@
         function exportRegistryToCsv() {
             const csvContent = generateCsvString();
             if (!csvContent) {
-                alert("No active schedules found in workspace to export.");
+                showNotification("Export Error", "No active schedules were found in your workspace to export.");
                 return;
             }
 
@@ -2624,7 +2680,7 @@
                 if (fileHandle && !isWriting) {
                     isWriting = true;
                     try {
-                        const writable = await fileHandle.createWritable();
+                        const writable = awaaileHandle.createWritable();
                         const csvContent = generateCsvString();
                         await writable.write(csvContent);
                         await writable.close();
