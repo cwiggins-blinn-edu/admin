@@ -296,7 +296,7 @@
                     </div>
 
                     <!-- Main Dynamic Scrollable Workspace Container -->
-                    <div id="calendarTimeline" class="divide-y divide-slate-100 relative min-h-[550px] overflow-y-auto">
+                    <div id="calendarTimeline" class="divide-y divide-slate-100 relative min-h-[700px] overflow-y-auto">
                         <!-- Hour rows programmatically loaded here -->
                     </div>
                 </div>
@@ -362,14 +362,23 @@
                             </select>
                         </div>
                     </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-2">
+                            <label class="block font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
+                            <input type="text" id="qcInstructor" class="w-full border rounded px-2.5 py-1.5 focus:outline-indigo-500" placeholder="e.g. Smith, John" />
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">Faculty ID</label>
+                            <input type="text" id="qcInstructorId" class="w-full border rounded px-2.5 py-1.5 focus:outline-indigo-500" placeholder="e.g. 10245" />
+                        </div>
+                    </div>
                     <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
-                        <input type="text" id="qcInstructor" class="w-full border rounded px-2.5 py-1.5 focus:outline-indigo-500 mb-1.5" placeholder="e.g. Smith, John" />
                         <!-- Faculty quick clicks dynamic wrapper -->
-                        <div id="qcFacultyBadgeContainer" class="flex flex-wrap gap-1 items-center min-h-[24px]">
+                        <div id="qcFacultyBadgeContainer" class="flex flex-wrap gap-1 items-center min-h-[24px] mt-1.5">
                             <!-- Generated programmatically -->
                         </div>
                     </div>
+
                     
                     <div class="pt-2 border-t flex flex-col md:flex-row gap-3">
                         <button type="submit" class="px-6 py-2 bg-[#003893] hover:bg-[#002570] text-white font-semibold rounded shadow-sm text-center transition">Add to Inventory</button>
@@ -449,14 +458,23 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
+                        <input type="text" id="modalInstructor" class="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none" placeholder="e.g. Wiggins, Carol">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Faculty ID</label>
+                        <input type="text" id="modalInstructorId" class="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none" placeholder="e.g. 10245">
+                    </div>
+                </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
-                    <input type="text" id="modalInstructor" class="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none" placeholder="e.g. Wiggins, Carol">
                     <!-- Modal quick selects dynamic wrapper -->
                     <div id="modalFacultyBadgeContainer" class="flex flex-wrap gap-1 items-center mt-1.5 min-h-[24px]">
                         <!-- Generated programmatically -->
                     </div>
                 </div>
+
 
                 <!-- Meeting Times Preset selector (DOCX Standard presets) -->
                 <div class="border-t pt-3">
@@ -650,6 +668,7 @@
         
         // Dynamic faculty quick select memory state
         let facultyQuickPicks = []; // Populated from imported CSV only
+        let facultyIdMap = {}; // Maps INSTRUCTOR_NAME -> INSTRUCTOR_ID, populated from imported CSV
 
         // Views: 'weekly_grid', 'classroom', 'faculty', 'campus', 'modality'
         let activeGroupingView = 'weekly_grid'; 
@@ -718,6 +737,7 @@
         const modalClassroom = document.getElementById('modalClassroom');
         const modalCampus = document.getElementById('modalCampus');
         const modalInstructor = document.getElementById('modalInstructor');
+        const modalInstructorId = document.getElementById('modalInstructorId');
         const modalStartTime = document.getElementById('modalStartTime');
         const modalEndTime = document.getElementById('modalEndTime');
         const modalMaxEnroll = document.getElementById('modalMaxEnroll');
@@ -740,6 +760,7 @@
 
         const OPERATIONAL_START_HOUR = 7; // 7:00 AM
         const OPERATIONAL_END_HOUR = 21;  // 9:00 PM
+        const PX_PER_MIN = 1.5;           // pixels per minute — controls calendar row height & tile sizing
 
         // Compute the last hour that actually has a scheduled course (for a given course list)
         function getEffectiveEndHour(courses) {
@@ -824,6 +845,7 @@
                     btn.innerText = name;
                     btn.addEventListener('click', () => {
                         modalInstructor.value = name;
+                        modalInstructorId.value = facultyIdMap[name] || modalInstructorId.value;
                     });
                     modalBadgeContainer.appendChild(btn);
                 });
@@ -845,6 +867,7 @@
                     btn.innerText = name;
                     btn.addEventListener('click', () => {
                         document.getElementById('qcInstructor').value = name;
+                        document.getElementById('qcInstructorId').value = facultyIdMap[name] || document.getElementById('qcInstructorId').value;
                     });
                     qcBadgeContainer.appendChild(btn);
                 });
@@ -1313,6 +1336,7 @@
             const maxEnrollIdx = fileHeaders.indexOf('MAX_ENROLLMENT');
             const actEnrollIdx = fileHeaders.indexOf('ACTUAL_ENROLLMENT');
             const instrNameIdx = fileHeaders.indexOf('INSTRUCTOR_NAME');
+            const instrIdIdx = fileHeaders.indexOf('INSTRUCTOR_ID');
             const instrMethodIdx = fileHeaders.indexOf('INSTRUCTION_METHOD');
 
             const meetingDayIdx1 = fileHeaders.indexOf('MEETING_DAY_1');
@@ -1351,6 +1375,7 @@
                 rowObj.MAX_ENROLLMENT = maxEnrollIdx !== -1 ? rData[maxEnrollIdx].trim() : '24';
                 rowObj.ACTUAL_ENROLLMENT = actEnrollIdx !== -1 ? rData[actEnrollIdx].trim() : '0';
                 rowObj.INSTRUCTOR_NAME = instrNameIdx !== -1 ? rData[instrNameIdx].trim() : 'Staff';
+                rowObj.INSTRUCTOR_ID = instrIdIdx !== -1 ? rData[instrIdIdx].trim() : '';
                 rowObj.INSTRUCTION_METHOD = instrMethodIdx !== -1 ? rData[instrMethodIdx].trim() : 'TRA';
 
                 let daysSet = new Set();
@@ -1399,6 +1424,9 @@
                 // Seed dynamic faculty list
                 if (rowObj.INSTRUCTOR_NAME && rowObj.INSTRUCTOR_NAME !== 'Staff' && !facultyQuickPicks.includes(rowObj.INSTRUCTOR_NAME)) {
                     facultyQuickPicks.push(rowObj.INSTRUCTOR_NAME);
+                }
+                if (rowObj.INSTRUCTOR_NAME && rowObj.INSTRUCTOR_ID) {
+                    facultyIdMap[rowObj.INSTRUCTOR_NAME] = rowObj.INSTRUCTOR_ID;
                 }
 
                 courses.push(rowObj);
@@ -1767,25 +1795,19 @@
                 const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
 
                 card.innerHTML = `
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="font-bold text-[#003893]">${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION || '00')}</span>
-                        <span class="text-[9px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold uppercase">${course.CAMPUS || 'TBD'}</span>
+                    <div class="flex items-start justify-between gap-1 mb-1">
+                        <span class="font-extrabold text-[#003893] text-[11px] leading-tight">${course.COURSE_ID}.${formatSection(course.SECTION || '00')} <span class="text-[9px] font-bold text-slate-500">CRN: ${crnLabel}</span></span>
+                        <button class="text-slate-400 hover:text-rose-600 transition shrink-0 ml-1" onclick="deleteCourseDirect('${course.id}')" title="Delete">✕</button>
                     </div>
-                    <p class="font-medium mb-1 truncate">${course.COURSE_TITLE}</p>
-                    <div class="flex justify-between items-center text-[10px] text-slate-500 mb-1">
-                        <span>CRN: <strong class="text-slate-700">${crnLabel}</strong></span>
-                        <span>Credits: <strong class="text-slate-700">${course.CREDIT_HOURS || '3'} hrs</strong></span>
+                    <p class="font-bold text-slate-800 text-[11px] leading-snug mb-1.5 truncate">${course.COURSE_TITLE}</p>
+                    <div class="space-y-0.5 text-[10px] text-slate-600">
+                        <div class="flex items-center gap-1.5"><span>🧑‍🏫</span><span class="truncate">${course.INSTRUCTOR_NAME || 'Staff'}</span></div>
+                        <div class="flex items-center gap-1.5"><span>🏛️</span><span>CAMPUS: ${course.CAMPUS || 'TBD'}</span></div>
                     </div>
-                    <div class="flex justify-between items-center text-[10px] text-slate-500">
-                        <span class="truncate"><i data-lucide="user" class="w-3 h-3 inline mr-0.5"></i> ${course.INSTRUCTOR_NAME || 'Staff'}</span>
-                        <span class="font-semibold text-[9px]">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
-                    </div>
-                    <div class="mt-2 pt-1 border-t border-slate-200/50 flex justify-between items-center">
-                        <button class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-0.5 text-[10px]" onclick="deleteCourseDirect('${course.id}')">
-                            <i data-lucide="trash-2" class="w-2.5 h-2.5"></i> Delete
-                        </button>
+                    <div class="mt-2 pt-1.5 border-t border-slate-200/60 flex items-center justify-between">
+                        <span class="text-[9px] font-bold bg-white/60 border border-slate-200 px-1.5 py-0.5 rounded">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
                         <button class="text-[#003893] hover:text-[#002570] font-bold flex items-center gap-0.5 text-[10px]" onclick="triggerManualConfig('${course.id}')">
-                            <i data-lucide="edit-3" class="w-2.5 h-2.5"></i> Place Course
+                            <i data-lucide="edit-3" class="w-2.5 h-2.5"></i> Place
                         </button>
                     </div>
                 `;
@@ -1945,16 +1967,16 @@
 
                 for (let hour = OPERATIONAL_START_HOUR; hour <= weeklyEndHour; hour++) {
                     const row = document.createElement('div');
-                    row.className = "calendar-grid grid min-h-[60px] relative items-stretch group hover:bg-slate-50/50";
+                    row.className = "calendar-grid grid relative items-stretch group hover:bg-slate-50/50"; row.style.minHeight = `${60 * PX_PER_MIN}px`;
                     const timeLabel12 = hour === 12 ? '12:00 PM' : (hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`);
                     
                     row.innerHTML = `
-                        <div class="text-[11px] font-semibold text-slate-400 py-2 pl-2 select-none">${timeLabel12}</div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="M" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="T" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="W" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="R" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="F" data-hour="${hour}"></div>
+                        <div class="text-[11px] font-semibold text-slate-400 pt-2 pl-2 select-none self-start">${timeLabel12}</div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="M" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="T" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="W" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="R" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="F" data-hour="${hour}"></div>
                     `;
                     calendarTimeline.appendChild(row);
                 }
@@ -2066,7 +2088,7 @@
                         const cell = calendarTimeline.querySelector(`.day-slot[data-day="${day}"][data-hour="${Math.floor(item.start / 60)}"]`);
                         if (!cell) return;
 
-                        const relativeTopPx = item.start - (Math.floor(item.start / 60) * 60);
+                        const relativeTopPx = (item.start - (Math.floor(item.start / 60) * 60)) * PX_PER_MIN;
                         const element = document.createElement('div');
                         const styles = getCapacityColorStyles(course);
 
@@ -2078,22 +2100,21 @@
                         element.style.left = `${item.colIndex * colWidth}%`;
                         element.style.width = `calc(${colWidth}% - 4px)`;
                         element.style.top = `${relativeTopPx}px`;
-                        element.style.height = `${item.duration}px`;
+                        element.style.height = `${item.duration * PX_PER_MIN}px`;
 
-                        // Displays formatted Course_ID.Section (Subject removed) and includes custom Campus in the room pill
                         element.innerHTML = `
-                            <div class="font-bold flex items-center justify-between truncate leading-tight">
-                                <span>${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
-                                <span class="text-[8px] bg-white/70 px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} - ${course.MEETING_ROOM_1 || 'TBD'}</span>
+                            <div class="flex items-start justify-between gap-0.5 leading-tight mb-0.5">
+                                <span class="font-extrabold text-[#003893] text-[10px] truncate">${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
+                                <button class="text-slate-400 hover:text-rose-500 text-[10px] leading-none shrink-0" onclick="event.stopPropagation();triggerManualConfig('${course.id}')" title="Edit">✎</button>
                             </div>
-                            <p class="truncate leading-tight my-0.5 font-medium opacity-90 text-slate-700">${course.COURSE_TITLE}</p>
-                            <div class="flex justify-between items-center text-[9px] pt-1 mt-auto border-t border-slate-200/40 opacity-80">
-                                <span>Credits: ${course.CREDIT_HOURS || '3'} hrs</span>
-                                <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                            <p class="font-bold text-slate-800 text-[9.5px] leading-snug mb-1">${course.COURSE_TITLE}</p>
+                            <div class="space-y-px text-[8.5px] text-slate-600 mt-auto">
+                                <div class="flex items-center gap-1"><span>⏰</span><span class="font-semibold truncate">${course.MEETING_TIME_1}</span></div>
+                                <div class="flex items-center gap-1"><span>🧑‍🏫</span><span class="truncate">${course.INSTRUCTOR_NAME || 'Staff'}</span></div>
+                                <div class="flex items-center gap-1"><span>🏛️</span><span>${course.CAMPUS || 'TBD'}</span><span class="mx-0.5 opacity-40">·</span><span>🚪</span><span class="truncate">${course.MEETING_ROOM_1 || 'TBD'}</span></div>
                             </div>
-                            <div class="flex justify-between items-center text-[8.5px] opacity-75">
-                                <span class="truncate italic">${course.INSTRUCTOR_NAME || 'Staff'}</span>
-                                <span class="shrink-0 font-semibold">${course.MEETING_TIME_1}</span>
+                            <div class="mt-1 pt-0.5 border-t border-slate-200/40 flex justify-end">
+                                <span class="text-[8px] font-bold opacity-70">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
                             </div>
                         `;
 
@@ -2181,15 +2202,15 @@
 
                 for (let hour = OPERATIONAL_START_HOUR; hour <= groupedEndHour; hour++) {
                     const row = document.createElement('div');
-                    row.className = "calendar-grid grid min-h-[60px] relative items-stretch group hover:bg-slate-50/50";
+                    row.className = "calendar-grid grid relative items-stretch group hover:bg-slate-50/50"; row.style.minHeight = `${60 * PX_PER_MIN}px`;
                     const timeLabel12 = hour === 12 ? '12:00 PM' : (hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`);
                     row.innerHTML = `
-                        <div class="text-[11px] font-semibold text-slate-400 py-2 pl-2 select-none">${timeLabel12}</div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="M" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="T" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="W" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="R" data-hour="${hour}"></div>
-                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="F" data-hour="${hour}"></div>
+                        <div class="text-[11px] font-semibold text-slate-400 pt-2 pl-2 select-none self-start">${timeLabel12}</div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="M" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="T" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="W" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="R" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative day-slot" style="min-height:${60*PX_PER_MIN}px" data-day="F" data-hour="${hour}"></div>
                     `;
                     calendarTimeline.appendChild(row);
                 }
@@ -2248,7 +2269,7 @@
                         const course = item.course;
                         const cell = calendarTimeline.querySelector(`.day-slot[data-day="${day}"][data-hour="${Math.floor(item.start/60)}"]`);
                         if (!cell) return;
-                        const relativeTopPx = item.start - (Math.floor(item.start/60)*60);
+                        const relativeTopPx = (item.start - (Math.floor(item.start/60)*60)) * PX_PER_MIN;
                         const element = document.createElement('div');
                         const styles = getCapacityColorStyles(course);
                         element.draggable = true;
@@ -2257,18 +2278,21 @@
                         element.style.left   = `${item.colIndex * colWidth}%`;
                         element.style.width  = `calc(${colWidth}% - 4px)`;
                         element.style.top    = `${relativeTopPx}px`;
-                        element.style.height = `${item.duration}px`;
+                        element.style.height = `${item.duration * PX_PER_MIN}px`;
                         element.innerHTML = `
-                            <div class="font-bold flex items-center justify-between truncate leading-tight">
-                                <span>${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
-                                <span class="text-[8px] bg-white/70 px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} - ${course.MEETING_ROOM_1||'TBD'}</span>
+                            <div class="flex items-start justify-between gap-0.5 leading-tight mb-0.5">
+                                <span class="font-extrabold text-[#003893] text-[10px] truncate">${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
+                                <button class="text-slate-400 hover:text-rose-500 text-[10px] leading-none shrink-0" onclick="event.stopPropagation();triggerManualConfig('${course.id}')" title="Edit">✎</button>
                             </div>
-                            <p class="truncate leading-tight my-0.5 font-semibold opacity-90 text-slate-700">${course.COURSE_TITLE}</p>
-                            <div class="flex justify-between items-center text-[9px] pt-1 mt-auto border-t border-slate-200/40 opacity-80">
-                                <span class="truncate italic">${course.INSTRUCTOR_NAME||'Staff'}</span>
-                                <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                            <p class="font-bold text-slate-800 text-[9.5px] leading-snug mb-1">${course.COURSE_TITLE}</p>
+                            <div class="space-y-px text-[8.5px] text-slate-600 mt-auto">
+                                <div class="flex items-center gap-1"><span>⏰</span><span class="font-semibold truncate">${course.MEETING_TIME_1}</span></div>
+                                <div class="flex items-center gap-1"><span>🧑‍🏫</span><span class="truncate">${course.INSTRUCTOR_NAME||'Staff'}</span></div>
+                                <div class="flex items-center gap-1"><span>🏛️</span><span>${course.CAMPUS||'TBD'}</span><span class="mx-0.5 opacity-40">·</span><span>🚪</span><span class="truncate">${course.MEETING_ROOM_1||'TBD'}</span></div>
                             </div>
-                            <div class="text-[8.5px] opacity-75 font-semibold">${course.MEETING_TIME_1}</div>
+                            <div class="mt-1 pt-0.5 border-t border-slate-200/40 flex justify-end">
+                                <span class="text-[8px] font-bold opacity-70">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                            </div>
                         `;
                         element.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', course.id); e.dataTransfer.effectAllowed='move'; });
                         element.addEventListener('click', (e) => { e.stopPropagation(); triggerManualConfig(course.id); });
@@ -2305,18 +2329,18 @@
                             const card = document.createElement('div');
                             card.className = `${styles.bg} border border-l-4 ${styles.border} ${styles.text} rounded p-2.5 text-[10px] flex flex-col gap-1 cursor-pointer hover:shadow-sm transition-all`;
                             card.innerHTML = `
-                                <div class="flex items-center justify-between">
-                                    <span class="font-extrabold text-[#003893]">${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION||'00')}</span>
-                                    <span class="text-[9px] bg-[#003893]/10 text-[#003893] px-1.5 py-0.5 rounded font-bold">${course.CAMPUS} ONLINE</span>
+                                <div class="flex items-start justify-between gap-1 mb-1">
+                                    <span class="font-extrabold text-[#003893] text-[11px]">${course.COURSE_ID}.${formatSection(course.SECTION||'00')} <span class="text-[9px] font-bold text-slate-500">CRN: ${crnLabel}</span></span>
+                                    <span class="text-[9px] bg-[#003893]/10 text-[#003893] px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} ONLINE</span>
                                 </div>
-                                <p class="font-semibold text-slate-700 truncate">${course.COURSE_TITLE}</p>
-                                <div class="flex justify-between text-slate-500 text-[9px]">
-                                    <span>CRN: <strong class="text-slate-700">${crnLabel}</strong></span>
-                                    <span>${course.CREDIT_HOURS||'3'} cr hrs</span>
+                                <p class="font-bold text-slate-800 text-[11px] leading-snug truncate mb-1.5">${course.COURSE_TITLE}</p>
+                                <div class="space-y-0.5 text-[10px] text-slate-600">
+                                    <div class="flex items-center gap-1.5"><span>🧑‍🏫</span><span class="truncate">${course.INSTRUCTOR_NAME||'Staff'}</span></div>
+                                    <div class="flex items-center gap-1.5"><span>🏛️</span><span>CAMPUS: ${course.CAMPUS||'TBD'}</span></div>
                                 </div>
-                                <div class="flex justify-between text-slate-500 text-[9px]">
-                                    <span class="italic">${course.INSTRUCTION_METHOD||'DE'}</span>
-                                    <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                                <div class="mt-2 pt-1.5 border-t border-slate-200/60 flex items-center justify-between">
+                                    <span class="text-[9px] font-bold bg-white/60 border border-slate-200 px-1.5 py-0.5 rounded">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                                    <span class="text-[9px] text-slate-500 font-semibold">${course.INSTRUCTION_METHOD||'DE'} · ${course.CREDIT_HOURS||'3'} cr</span>
                                 </div>
                             `;
                             card.addEventListener('click', () => triggerManualConfig(course.id));
@@ -2465,6 +2489,7 @@
             modalClassroom.value = course.MEETING_ROOM_1 || '';
             modalCampus.value = course.CAMPUS || 'BN';
             modalInstructor.value = course.INSTRUCTOR_NAME || '';
+            modalInstructorId.value = course.INSTRUCTOR_ID || '';
             modalMaxEnroll.value = course.MAX_ENROLLMENT || '24';
             modalActualEnroll.value = course.ACTUAL_ENROLLMENT || '0';
             modalInstrMethod.value = course.INSTRUCTION_METHOD || 'TRA';
@@ -2548,6 +2573,8 @@
                     course.MEETING_ROOM_1 = tentativeRoom;
                     course.CAMPUS = tentativeCampus;
                     course.INSTRUCTOR_NAME = tentativeInstructor;
+                    course.INSTRUCTOR_ID = modalInstructorId.value.trim();
+                    if (course.INSTRUCTOR_ID) facultyIdMap[tentativeInstructor] = course.INSTRUCTOR_ID;
                     course.MAX_ENROLLMENT = tentativeMaxEnroll;
                     course.ACTUAL_ENROLLMENT = tentativeActualEnroll;
                     course.INSTRUCTION_METHOD = tentativeInstrMethod;
@@ -2589,6 +2616,7 @@
             const actEnroll = document.getElementById('qcActualEnroll').value.trim() || '0';
             const instrMethod = document.getElementById('qcInstrMethod').value;
             const inst = document.getElementById('qcInstructor').value.trim() || 'Staff';
+            const instId = document.getElementById('qcInstructorId').value.trim();
 
             // Append new instructor to picks if modified and not existing
             if (inst && inst !== 'Staff' && !facultyQuickPicks.includes(inst)) {
@@ -2602,7 +2630,7 @@
                 TERM: "202710",
                 CAMPUS: camp,
                 SUBJECT: sub,
-                COURSE_ID: cid,
+                COURSE_ID: (sub && cid && !cid.toUpperCase().startsWith(sub.toUpperCase())) ? sub + cid : cid,
                 SECTION: sect,
                 COURSE_REFERENCE_NUMBER: "ADD",
                 COURSE_TITLE: title,
@@ -2612,6 +2640,7 @@
                 ACTUAL_ENROLLMENT: actEnroll,
                 INSTRUCTION_METHOD: instrMethod,
                 INSTRUCTOR_NAME: inst,
+                INSTRUCTOR_ID: instId,
                 MEETING_DAY_1: '',
                 MEETING_TIME_1: '',
                 MEETING_ROOM_1: isOnlineCourse({ INSTRUCTION_METHOD: instrMethod, CAMPUS: camp, MEETING_ROOM_1: '' }) ? 'Online' : ''
@@ -2630,6 +2659,7 @@
             if (qcSect) qcSect.value = '';
             document.getElementById('qcTitle').value = '';
             document.getElementById('qcInstructor').value = '';
+            document.getElementById('qcInstructorId').value = '';
             document.getElementById('qcActualEnroll').value = '0';
 
             saveStateToLocalStorage();
