@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Schedule Pro — Portal Landing</title>
+    <style>
+        :root {
+            --blinn-blue: #002f6c;
+            --blinn-gold: #c5a059;
+            --conflict-red: #d32f2f;
+            --success-green: #2e7d32;
+            --bg-dark-gray: #1e293b;
+            --bg-light: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* Top Alert Bar matching new_schedule.html style */
+        .top-alert-bar {
+            background-color: #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            background-color: var(--success-green);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* Main Workspace Branding Header */
+        header {
+            background-color: white;
+            border-bottom: 4px solid var(--blinn-gold);
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .brand-zone h1 {
+            font-size: 1.75rem;
+            color: var(--blinn-blue);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-zone p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .badge-system {
+            background-color: var(--blinn-blue);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* Master Grid Container */
+        .workspace {
+            max-width: 1400px;
+            margin: 32px auto;
+            padding: 0 24px;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 24px;
+        }
+
+        @media(max-width: 960px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Control Widget Sidebar Column */
+        .sidebar-widgets {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .widget-panel {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .widget-panel h2 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--blinn-blue);
+            margin-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+
+        /* Center Grid Canvas Column */
+        .content-canvas {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Hero Launcher Panel */
+        .launcher-card {
+            background-color: var(--blinn-blue);
+            color: white;
+            border-radius: 8px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .launcher-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .launcher-card p {
+            color: #dae4f0;
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin-bottom: 24px;
+        }
+
+        .btn-scheduler {
+            display: inline-block;
+            background-color: var(--blinn-gold);
+            color: #0f172a;
+            text-decoration: none;
+            padding: 12px 28px;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.15s ease;
+        }
+
+        .btn-scheduler:hover {
+            background-color: #dcb365;
+        }
+
+        /* Dashboard Rows */
+        .dashboard-row {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .dashboard-row h3 {
+            font-size: 1.2rem;
+            color: var(--blinn-blue);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        ol, ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        li strong {
+            color: var(--text-main);
+        }
+
+        /* Legend Indicators matching new_schedule.html colors */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .color-full { background-color: #ef4444; }
+        .color-high { background-color: #f97316; }
+        .color-mid { background-color: #eab308; }
+        .color-low { background-color: #3b82f6; }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: white;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Alert Bar -->
+    <div class="top-alert-bar">
+        <div>System Diagnostics: <span class="status-badge">Fully Secure</span> Matrix Validation Center</div>
+        <div>Active Planning Violations: 0 conflicts</div>
+    </div>
+
+    <!-- Workspace Branding Header -->
+    <header>
+        <div class="brand-zone">
+            <h1>Academia Schedule Pro</h1>
+            <p>Division of MBET Academic Scheduling Center</p>
+        </div>
+        <div class="badge-system">BLINN COLLEGE PRO</div>
+    </header>
+
+    <!-- Master Grid Workspace Structure -->
+    <div class="workspace">
+        
+        <!-- Left Column Sidebar Widgets -->
+        <div class="sidebar-widgets">
+            <div class="widget-panel">
+                <h2>Capacity Legends</h2>
+                <div class="legend-item">
+                    <div class="legend-color color-full"></div>
+                    <span>100%+ Capacity (Full)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-high"></div>
+                    <span>90% - 99% Capacity</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-mid"></div>
+                    <span>75% - 89% Capacity</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color color-low"></div>
+                    <span>Under 75% Capacity</span>
+                </div>
+            </div>
+
+            <div class="widget-panel">
+                <h2>Platform Matrix</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Grouping Layouts Viewports:</p>
+                <ul style="list-style-type: square; margin-top: 8px; padding-left: 16px;">
+                    <li style="margin-bottom: 4px; font-size: 0.85rem;">Weekly Grid View</li>
+                    <li style="margin-bottom: 4px; font-size: 0.85rem;">By Classroom</li>
+                    <li style="margin-bottom: 4px; font-size: 0.85rem;">By Professor</li>
+                    <li style="margin-bottom: 4px; font-size: 0.85rem;">By Campus</li>
+                    <li style="margin-bottom: 4px; font-size: 0.85rem;">By Modality</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column Center Canvas -->
+        <div class="content-canvas">
+            
+            <!-- Hero Launcher Widget -->
+            <div class="launcher-card">
+                <h2>Launch Schedule Builder Dashboard</h2>
+                <p>Connect your raw catalog file via Direct Disk Sync or build custom sections with interactive grid-placement mapping pipelines.</p>
+                <a href="new_schedule.html" class="btn-scheduler">Open Scheduler</a>
+            </div>
+
+            <!-- Configuration Instructions -->
+            <div class="dashboard-row">
+                <h3>📋 System Instructions & Data Ingestion</h3>
+                <ol>
+                    <li><strong>Download Schedule Data:</strong> Log in and download a schedule CSV file from <em>Argos Student &rarr; Schedule Offering_Academic Courses Run Dashboard</em>.</li>
+                    <li><strong>Configure Report parameters:</strong> Select all the options desired and click on the <strong>Class Count Report</strong> button.</li>
+                    <li><strong>Save Fields:</strong> Ensure you choose to save all fields to keep data structures intact for Banner compatibility.</li>
+                    <li><strong>Sync with Application:</strong> In the scheduler interface, click <strong>Open via Direct Disk Sync</strong> and select the CSV file you have saved.</li>
+                </ol>
+            </div>
+
+            <!-- Features -->
+            <div class="dashboard-row">
+                <h3>✨ Core Platform Features</h3>
+                <ul>
+                    <li><strong>Drag and Drop functionality:</strong> Effortlessly arrange and schedule courses visually on the interactive grid.</li>
+                    <li><strong>Granular Course Controls:</strong> Edit complete course details or seamlessly use the <strong>ADD</strong> tag to introduce new courses from scratch.</li>
+                    <li><strong>Conflict Prevention Engine:</strong> Instantly detects and warns about potential classroom/room collisions and faculty over-allocations.</li>
+                    <li><strong>Capacity Fill Gradients:</strong> Color-coded visual tiles represent enrollment density thresholds at 75%, 90%, and 100% capacity.</li>
+                    <li><strong>Multi-Dimensional Groupings:</strong> View and filter the full weekly calendar matrix by <em>Week, Classroom, Professor, Campus, and Modality</em> views.</li>
+                    <li><strong>Direct Auto-Save Pipeline:</strong> Updates your schedule catalog file in real time with an automatic changes indicator track column.</li>
+                    <li><strong>Banner-Ready Outputs:</strong> Create completely new course matrices from an empty canvas and download perfectly structured CSV catalogs for Banner entry.</li>
+                </ul>
+            </div>
+
+            <!-- Updates -->
+            <div class="dashboard-row">
+                <h3>🚀 Future Roadmap & Lifecycle Updates</h3>
+                <ul>
+                    <li><strong>Multi-Term Supports:</strong> Active development is underway to support multiple separate parts of term concurrently.</li>
+                    <li><strong>Enhanced Weekly Highlights:</strong> Refinements are being rolled out to perfect the functionality and visual snap of the Highlight element across the full Weekly Grid layout.</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 Blinn College. All institutional rights reserved. Internal Administration Portal.
+    </footer>
+
+</body>
+</html>
