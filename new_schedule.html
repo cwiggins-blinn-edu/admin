@@ -51,7 +51,7 @@
 
     <!-- Blinn College Nav Header -->
     <header class="bg-[#003893] text-white shadow-md border-b-4 border-[#F2A900]">
-        <div class="max-w-7xl mx-auto px-4 py-3.5 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="w-full px-4 py-3.5 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="p-2 bg-[#002c7a] rounded-lg border border-[#F2A900]/30 shadow-inner">
                     <i data-lucide="shield-alert" class="w-6 h-6 text-[#F2A900]"></i>
@@ -80,7 +80,7 @@
     </header>
 
     <!-- Main Workspace Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-6">
+    <main class="flex-grow w-full px-4 py-6 sm:px-6 flex flex-col lg:flex-row gap-6">
         
         <!-- Left Sidebar: Connection, Stats, Legend & Placement Pools -->
         <aside class="w-full lg:w-80 flex flex-col gap-6 shrink-0">
@@ -229,26 +229,20 @@
                         <button id="viewCampusBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-r border-slate-200 hover:bg-slate-50 transition">
                             By Campus
                         </button>
-                        <button id="viewModalityBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border-t border-b border-slate-200 hover:bg-slate-50 transition">
+                        <button id="viewModalityBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-r-md transition">
                             By Modality
                         </button>
-                        <button id="viewDeCoursesBtn" class="px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-r-md transition flex items-center gap-1.5">
-                            <span>DE Courses</span>
-                            <span id="deBadgeCount" class="bg-[#003893]/10 text-[#003893] text-[10px] font-extrabold px-1.5 py-0.2 rounded-full">0</span>
-                        </button>
+
                     </div>
                 </div>
 
-                <!-- Active day filter for Side-by-Side Track Views -->
-                <div id="dayToggleContainer" class="hidden flex items-center gap-1">
-                    <span class="text-xs font-semibold text-slate-500 mr-1.5">View Day:</span>
-                    <div class="inline-flex rounded-md shadow-sm">
-                        <button data-day="M" class="day-tab px-2.5 py-1 text-xs font-bold bg-[#003893] text-white border border-[#003893] rounded-l-md">M</button>
-                        <button data-day="T" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50">T</button>
-                        <button data-day="W" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50">W</button>
-                        <button data-day="R" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r hover:bg-slate-50">R</button>
-                        <button data-day="F" class="day-tab px-2.5 py-1 text-xs font-bold bg-white text-slate-700 border-t border-b border-r rounded-r-md hover:bg-slate-50">F</button>
-                    </div>
+                <!-- Entity dropdown selector for grouped weekly views -->
+                <div id="groupedEntityContainer" class="hidden flex items-center gap-2 text-xs">
+                    <i data-lucide="filter" class="w-3.5 h-3.5 text-[#003893]"></i>
+                    <span class="font-semibold text-slate-500" id="groupedEntityLabel">Select:</span>
+                    <select id="groupedEntitySelector" class="border border-[#003893]/30 rounded-md px-2.5 py-1.5 bg-white font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#003893]/30 min-w-[180px]">
+                        <option value="">— Select —</option>
+                    </select>
                 </div>
 
                 <!-- Dynamic select filters (for the single Weekly Grid View) -->
@@ -306,16 +300,6 @@
                         <!-- Hour rows programmatically loaded here -->
                     </div>
                 </div>
-            </section>
-
-            <!-- Text Input Paste Options / Synchronization Output Panel -->
-            <section class="bg-white rounded-lg shadow border border-slate-200 p-5">
-                <h2 class="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-4.5 h-4.5 text-[#003893]"></i>
-                    <span>Real-Time schedule.csv Output</span>
-                </h2>
-                <p class="text-xs text-slate-500 mb-3">The CSV block below automatically syncs as schedules change. Copy this text or download the file above to save your changes.</p>
-                <textarea id="rawCsvOutput" readonly rows="6" class="w-full text-xs font-mono border border-slate-200 rounded p-3 bg-slate-50 focus:outline-none focus:ring-0" placeholder="CSV columns will load automatically once data changes..."></textarea>
             </section>
 
             <!-- Quick Course Creator block -->
@@ -380,7 +364,7 @@
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-600 mb-1">Instructor / Faculty</label>
-                        <input type="text" id="qcInstructor" class="w-full border rounded px-2.5 py-1.5 focus:outline-indigo-500 mb-1.5" placeholder="e.g. Tikum, Teboh" />
+                        <input type="text" id="qcInstructor" class="w-full border rounded px-2.5 py-1.5 focus:outline-indigo-500 mb-1.5" placeholder="e.g. Smith, John" />
                         <!-- Faculty quick clicks dynamic wrapper -->
                         <div id="qcFacultyBadgeContainer" class="flex flex-wrap gap-1 items-center min-h-[24px]">
                             <!-- Generated programmatically -->
@@ -479,7 +463,13 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1">Standard Presets (Common Start/Stop Times)</label>
                     <select id="modalPresets" class="w-full border border-slate-200 rounded px-2.5 py-1.5 text-xs bg-white font-medium focus:outline-none focus:border-indigo-500">
                         <option value="">-- Apply standard Blinn College preset time --</option>
-                        <optgroup label="MW / TR Standard Presets (75-min / 48/80 hours)">
+                        <optgroup label="48/80 Contact Hour Courses (MWF - 50 min)">
+                            <option value="07:45 AM-08:35 AM">07:45 AM - 08:35 AM</option>
+                            <option value="08:45 AM-09:35 AM">08:45 AM - 09:35 AM</option>
+                            <option value="09:45 AM-10:35 AM">09:45 AM - 10:35 AM</option>
+                            <option value="10:45 AM-11:35 AM">10:45 AM - 11:35 AM</option>
+                        </optgroup>
+                        <optgroup label="48/80/96 Contact Hour Courses (MW/TR - 75 min)">
                             <option value="07:45 AM-09:00 AM">07:45 AM - 09:00 AM</option>
                             <option value="09:10 AM-10:25 AM">09:10 AM - 10:25 AM</option>
                             <option value="10:35 AM-11:50 AM">10:35 AM - 11:50 AM</option>
@@ -487,19 +477,35 @@
                             <option value="01:25 PM-02:40 PM">01:25 PM - 02:40 PM</option>
                             <option value="02:50 PM-04:05 PM">02:50 PM - 04:05 PM</option>
                             <option value="04:15 PM-05:30 PM">04:15 PM - 05:30 PM</option>
+                            <option value="05:40 PM-06:55 PM">05:40 PM - 06:55 PM</option>
+                            <option value="07:05 PM-08:20 PM">07:05 PM - 08:20 PM</option>
+                            <option value="08:30 PM-09:45 PM">08:30 PM - 09:45 PM</option>
                         </optgroup>
-                        <optgroup label="MW / TR Block Presets (100-min / 64 contact hours)">
+                        <optgroup label="64 Contact Hour Courses (MWF - 75 min)">
+                            <option value="07:45 AM-09:00 AM">07:45 AM - 09:00 AM</option>
+                            <option value="09:10 AM-10:25 AM">09:10 AM - 10:25 AM</option>
+                            <option value="10:35 AM-11:50 AM">10:35 AM - 11:50 AM</option>
+                        </optgroup>
+                        <optgroup label="64 Contact Hour Courses (MW/TR - 100 min)">
+                            <option value="08:20 AM-10:00 AM">08:20 AM - 10:00 AM</option>
+                            <option value="10:10 AM-11:50 AM">10:10 AM - 11:50 AM</option>
                             <option value="12:00 PM-01:40 PM">12:00 PM - 01:40 PM</option>
                             <option value="01:50 PM-03:30 PM">01:50 PM - 03:30 PM</option>
                             <option value="03:40 PM-05:20 PM">03:40 PM - 05:20 PM</option>
+                            <option value="05:30 PM-07:10 PM">05:30 PM - 07:10 PM</option>
+                            <option value="07:20 PM-09:00 PM">07:20 PM - 09:00 PM</option>
                         </optgroup>
-                        <optgroup label="MWF Presets (50-min)">
-                            <option value="07:45 AM-08:35 AM">07:45 AM - 08:35 AM</option>
-                            <option value="08:45 AM-09:35 AM">08:45 AM - 09:35 AM</option>
-                            <option value="09:45 AM-10:35 AM">09:45 AM - 10:35 AM</option>
-                            <option value="10:45 AM-11:35 AM">10:45 AM - 11:35 AM</option>
-                            <option value="11:45 AM-12:35 PM">11:45 AM - 12:35 PM</option>
-                            <option value="12:45 PM-01:35 PM">12:45 PM - 01:35 PM</option>
+                        <optgroup label="96 Contact Hour Courses (MW/TR - 75 min)">
+                            <option value="07:45 AM-09:00 AM">07:45 AM - 09:00 AM</option>
+                            <option value="09:10 AM-10:25 AM">09:10 AM - 10:25 AM</option>
+                            <option value="10:35 AM-11:50 AM">10:35 AM - 11:50 AM</option>
+                            <option value="12:00 PM-01:15 PM">12:00 PM - 01:15 PM</option>
+                            <option value="01:25 PM-02:40 PM">01:25 PM - 02:40 PM</option>
+                            <option value="02:50 PM-04:05 PM">02:50 PM - 04:05 PM</option>
+                            <option value="04:15 PM-05:30 PM">04:15 PM - 05:30 PM</option>
+                            <option value="05:40 PM-06:55 PM">05:40 PM - 06:55 PM</option>
+                            <option value="07:05 PM-08:20 PM">07:05 PM - 08:20 PM</option>
+                            <option value="08:30 PM-09:45 PM">08:30 PM - 09:45 PM</option>
                         </optgroup>
                     </select>
                 </div>
@@ -643,9 +649,9 @@
         let courseIdToDelete = null; // Tracking block staged for active deletion
         
         // Dynamic faculty quick select memory state
-        let facultyQuickPicks = ['Tikum, Teboh', 'Wiggins, Carol', 'Sellountos, Dimitrios', 'Johnson, Darron'];
+        let facultyQuickPicks = []; // Populated from imported CSV only
 
-        // Views: 'weekly_grid', 'classroom', 'faculty', 'campus', 'modality', 'de_courses'
+        // Views: 'weekly_grid', 'classroom', 'faculty', 'campus', 'modality'
         let activeGroupingView = 'weekly_grid'; 
         let activeDayTab = 'M'; // active day for side-by-side track view
         let currentFilterSelection = 'all';
@@ -687,9 +693,9 @@
         const viewFacultyBtn = document.getElementById('viewFacultyBtn');
         const viewCampusBtn = document.getElementById('viewCampusBtn');
         const viewModalityBtn = document.getElementById('viewModalityBtn');
-        const viewDeCoursesBtn = document.getElementById('viewDeCoursesBtn');
         
-        const dayToggleContainer = document.getElementById('dayToggleContainer');
+        const groupedEntityContainer = document.getElementById('groupedEntityContainer');
+        // dayToggleContainer removed - replaced by groupedEntityContainer
         const filterSelectionContainer = document.getElementById('filterSelectionContainer');
         const filterSelector = document.getElementById('filterSelector');
         
@@ -698,13 +704,11 @@
         const tracksHeaderContainer = document.getElementById('tracksHeaderContainer');
         
         const calendarTimeline = document.getElementById('calendarTimeline');
-        const deBadgeCount = document.getElementById('deBadgeCount');
 
         const statTotal = document.getElementById('statTotal');
         const statScheduled = document.getElementById('statScheduled');
         const statPool = document.getElementById('statPool');
         const statConflicts = document.getElementById('statConflicts');
-        const rawCsvOutput = document.getElementById('rawCsvOutput');
 
         // --- Modal Dialog elements ---
         const classroomModal = document.getElementById('classroomModal');
@@ -736,6 +740,21 @@
 
         const OPERATIONAL_START_HOUR = 7; // 7:00 AM
         const OPERATIONAL_END_HOUR = 21;  // 9:00 PM
+
+        // Compute the last hour that actually has a scheduled course (for a given course list)
+        function getEffectiveEndHour(courses) {
+            let maxHour = OPERATIONAL_START_HOUR;
+            courses.forEach(c => {
+                if (!c.MEETING_TIME_1) return;
+                const tr = parseTimeRange(c.MEETING_TIME_1);
+                if (tr) {
+                    const endHour = Math.ceil(tr.end / 60);
+                    if (endHour > maxHour) maxHour = endHour;
+                }
+            });
+            // Always show at least one full hour past start, cap at OPERATIONAL_END_HOUR
+            return Math.min(Math.max(maxHour, OPERATIONAL_START_HOUR + 1), OPERATIONAL_END_HOUR);
+        }
 
         // --- Startup Bootstrap Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
@@ -868,6 +887,14 @@
 
         // --- Setup Core Listeners ---
         function setupEventListeners() {
+            // Quick Create form — prevent native page reload, call addNewCourse instead
+            if (quickCreateForm) {
+                quickCreateForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    addNewCourse();
+                });
+            }
+
             // Drag/drop listening to unschedule courses back into placement pool
             poolContainer.addEventListener('dragover', (e) => {
                 e.preventDefault();
@@ -924,7 +951,6 @@
             viewFacultyBtn.addEventListener('click', () => toggleView('faculty'));
             viewCampusBtn.addEventListener('click', () => toggleView('campus'));
             viewModalityBtn.addEventListener('click', () => toggleView('modality'));
-            viewDeCoursesBtn.addEventListener('click', () => toggleView('de_courses'));
 
             // Day sub-tabs
             document.querySelectorAll('.day-tab').forEach(btn => {
@@ -941,6 +967,12 @@
             // Dropdowns highlight filter
             filterSelector.addEventListener('change', (e) => {
                 currentFilterSelection = e.target.value;
+                renderCalendar();
+            });
+
+            // Grouped entity dropdown change
+            document.getElementById('groupedEntitySelector').addEventListener('change', (e) => {
+                activeGroupedEntity = e.target.value;
                 renderCalendar();
             });
 
@@ -1026,7 +1058,7 @@
                         saveStateToLocalStorage();
                         renderAll();
                         
-                        if (isAutosaveOn) triggerAutosave();
+                        triggerAutosave();
                     }
                 });
             }
@@ -1091,8 +1123,6 @@
         function saveStateToLocalStorage() {
             localStorage.setItem('academia_course_registry', JSON.stringify(courseRegistry));
             localStorage.setItem('academia_original_headers', JSON.stringify(originalHeaderRow));
-            localStorage.setItem('academia_faculty_quick_picks', JSON.stringify(facultyQuickPicks));
-            updateCsvOutput();
         }
 
         function loadStateFromLocalStorage() {
@@ -1101,14 +1131,6 @@
             localStorage.removeItem('academia_course_registry');
             localStorage.removeItem('academia_original_headers');
             
-            const facultyRaw = localStorage.getItem('academia_faculty_quick_picks');
-            if (facultyRaw) {
-                try {
-                    facultyQuickPicks = JSON.parse(facultyRaw);
-                } catch(e) {
-                    console.error("Failed to load faculty picks: ", e);
-                }
-            }
             updateSyncStatus();
         }
 
@@ -1143,8 +1165,13 @@
                     'MEETING_DAY_1', 'MEETING_TIME_1', 'MEETING_ROOM_1', 'SCHEDULE2', 'MEETING_DAY_2', 'MEETING_TIME_2', 
                     'MEETING_ROOM_2', 'SCHEDULE3', 'MEETING_DAY_3', 'MEETING_TIME_3', 'MEETING_ROOM_3', 'SCHEDULE4', 
                     'MEETING_DAY_4', 'MEETING_TIME_4', 'MEETING_ROOM_4', 'INTEGRATION_CODE', 'CAMPUS_RESTRICTION', 
-                    'SECTION_TEXT', 'LINK_IDENTIFIER', 'SSASYLB_SECTION_LONG_TEXT', 'LECTURE_HOURS', 'LAB_HOURS'
+                    'SECTION_TEXT', 'LINK_IDENTIFIER', 'SSASYLB_SECTION_LONG_TEXT', 'LECTURE_HOURS', 'LAB_HOURS',
+                    'SCHEDULE_MODIFIED'
                 ];
+            }
+            // Ensure SCHEDULE_MODIFIED column is always present
+            if (!headers.includes('SCHEDULE_MODIFIED')) {
+                headers = [...headers, 'SCHEDULE_MODIFIED'];
             }
             const csvRows = [headers.join(',')];
             courseRegistry.forEach(c => {
@@ -1196,13 +1223,6 @@
                 csvRows.push(lineValues.join(','));
             });
             return csvRows.join('\n');
-        }
-
-        function updateCsvOutput() {
-            const csvText = generateCsvString();
-            if (rawCsvOutput) {
-                rawCsvOutput.value = csvText;
-            }
         }
 
         // --- File handlers ---
@@ -1384,6 +1404,10 @@
                 courses.push(rowObj);
             }
 
+            // Ensure SCHEDULE_MODIFIED column is tracked in header row
+            if (originalHeaderRow && !originalHeaderRow.includes('SCHEDULE_MODIFIED')) {
+                originalHeaderRow.push('SCHEDULE_MODIFIED');
+            }
             courseRegistry = courses;
             renderFacultyBadges();
         }
@@ -1394,8 +1418,6 @@
             updateSyncStatus();
             renderCalendar();
             renderUnscheduledPool();
-            renderDistanceEducationPortal();
-            updateCsvOutput();
             lucide.createIcons();
 
             // Toggle empty screen overlay if courseRegistry is empty
@@ -1414,34 +1436,29 @@
             activeGroupingView = view;
             
             // Highlight Buttons using Blinn color accents
-            [viewWeeklyGridBtn, viewClassroomBtn, viewFacultyBtn, viewCampusBtn, viewModalityBtn, viewDeCoursesBtn].forEach(b => {
+            [viewWeeklyGridBtn, viewClassroomBtn, viewFacultyBtn, viewCampusBtn, viewModalityBtn].forEach(b => {
                 b.className = "px-3 py-1.5 text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition";
             });
 
             if (view === 'weekly_grid') {
                 viewWeeklyGridBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 rounded-l-md hover:bg-blue-100";
-                dayToggleContainer.classList.add('hidden');
+                groupedEntityContainer.classList.add('hidden');
                 filterSelectionContainer.classList.remove('hidden');
-                
                 weeklyGridHeader.classList.remove('hidden');
                 multiTrackHeader.classList.add('hidden');
-            } else if (view === 'de_courses') {
-                viewDeCoursesBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 rounded-r-md hover:bg-blue-100";
-                dayToggleContainer.classList.add('hidden');
-                filterSelectionContainer.classList.add('hidden');
-                
-                weeklyGridHeader.classList.add('hidden');
-                multiTrackHeader.classList.add('hidden');
             } else {
-                dayToggleContainer.classList.remove('hidden');
+                groupedEntityContainer.classList.remove('hidden');
                 filterSelectionContainer.classList.add('hidden');
-                weeklyGridHeader.classList.add('hidden');
-                multiTrackHeader.classList.remove('hidden');
+                weeklyGridHeader.classList.remove('hidden');
+                multiTrackHeader.classList.add('hidden');
 
-                if (view === 'classroom') viewClassroomBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
-                if (view === 'faculty') viewFacultyBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
-                if (view === 'campus') viewCampusBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
-                if (view === 'modality') viewModalityBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100";
+                const labelEl = document.getElementById('groupedEntityLabel');
+                if (view === 'classroom') { labelEl.textContent = 'Classroom:'; viewClassroomBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100"; }
+                if (view === 'faculty')    { labelEl.textContent = 'Professor:'; viewFacultyBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100"; }
+                if (view === 'campus')     { labelEl.textContent = 'Campus:';    viewCampusBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100"; }
+                if (view === 'modality')   { labelEl.textContent = 'Modality:';  viewModalityBtn.className = "px-3 py-1.5 text-xs font-bold bg-blue-50 text-[#003893] border border-[#003893]/30 hover:bg-blue-100"; }
+
+                buildGroupedEntityDropdown(view);
             }
 
             buildDropdownFilters();
@@ -1474,6 +1491,41 @@
             } else {
                 filterSelector.value = 'all';
                 currentFilterSelection = 'all';
+            }
+        }
+
+        // --- Build entity dropdown for grouped weekly views ---
+        let activeGroupedEntity = '';
+        function buildGroupedEntityDropdown(view) {
+            const sel = document.getElementById('groupedEntitySelector');
+            const prevVal = activeGroupedEntity;
+            sel.innerHTML = '<option value="">— Select —</option>';
+            const values = new Set();
+            courseRegistry.forEach(c => {
+                // Faculty and modality include all courses (even DE/online); classroom/campus skip online
+                if (view === 'faculty') {
+                    if (c.INSTRUCTOR_NAME) values.add(c.INSTRUCTOR_NAME);
+                } else if (view === 'modality') {
+                    if (c.INSTRUCTION_METHOD) values.add(c.INSTRUCTION_METHOD);
+                } else {
+                    if (isOnlineCourse(c)) return;
+                    if (view === 'classroom' && c.MEETING_ROOM_1) values.add(c.MEETING_ROOM_1);
+                    if (view === 'campus'    && c.CAMPUS)         values.add(c.CAMPUS);
+                }
+            });
+            Array.from(values).sort().forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v; opt.textContent = v;
+                sel.appendChild(opt);
+            });
+            // Restore previous selection if still valid
+            if (prevVal && Array.from(values).includes(prevVal)) {
+                sel.value = prevVal;
+                activeGroupedEntity = prevVal;
+            } else {
+                const first = Array.from(values)[0] || '';
+                sel.value = first;
+                activeGroupedEntity = first;
             }
         }
 
@@ -1672,9 +1724,10 @@
                 course.MEETING_DAY_1 = '';
                 course.MEETING_TIME_1 = '';
                 course.MEETING_ROOM_1 = '';
+                course.SCHEDULE_MODIFIED = 'Y';
                 saveStateToLocalStorage();
                 renderAll();
-                if (isAutosaveOn) triggerAutosave();
+                triggerAutosave();
             }
         }
 
@@ -1709,7 +1762,7 @@
                 const styles = getCapacityColorStyles(course);
                 const card = document.createElement('div');
                 card.draggable = true;
-                card.className = `course-card ${styles.bg} border ${styles.border} ${styles.text} rounded p-2.5 cursor-grab active:cursor-grabbing text-xs hover:shadow-sm`;
+                card.className = `course-card ${styles.bg} border border-l-4 ${styles.border} ${styles.text} rounded p-2.5 cursor-grab active:cursor-grabbing text-xs hover:shadow-sm`;
                 
                 const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
 
@@ -1748,81 +1801,31 @@
         }
 
         // --- Distance Education registry count display ---
-        function renderDistanceEducationPortal() {
-            const deCourses = courseRegistry.filter(c => isOnlineCourse(c));
-            const deBadgeCount = document.getElementById('deBadgeCount');
-            if (deBadgeCount) {
-                deBadgeCount.innerText = deCourses.length;
-            }
-        }
 
-        // --- Distance Education Registry view list rendering inside central board ---
-        function renderDeViewGrid() {
-            const deCourses = courseRegistry.filter(c => isOnlineCourse(c));
-
-            if (deCourses.length === 0) {
-                calendarTimeline.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-20 text-center">
-                        <div class="p-3 bg-blue-50 text-[#003893] rounded-full mb-3">
-                            <i data-lucide="globe" class="w-10 h-10"></i>
-                        </div>
-                        <p class="text-sm font-semibold text-slate-700">No Distance Education (DE) Courses found.</p>
-                        <p class="text-xs text-slate-400 mt-1 max-w-xs">Upload a spreadsheet containing DE campus/instructional method classes or create one manually.</p>
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
-            const grid = document.createElement('div');
-            grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4";
-
-            deCourses.forEach(course => {
-                const styles = getCapacityColorStyles(course);
-                const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
-                const card = document.createElement('div');
-                card.className = `rounded-lg border-2 ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-4 flex flex-col justify-between shadow-sm relative transition-all duration-150`;
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-extrabold text-[#003893] text-sm">${course.COURSE_ID}.${formatSection(course.SECTION || '001')}</span>
-                            <span class="text-[10px] bg-[#003893]/10 text-[#003893] px-2 py-0.5 rounded font-extrabold tracking-wider uppercase border border-[#003893]/20">${course.CAMPUS} ONLINE</span>
-                        </div>
-                        <h4 class="font-bold text-slate-800 text-xs mb-2 leading-tight">${course.COURSE_TITLE}</h4>
-                        <div class="grid grid-cols-2 gap-2 text-[10px] text-slate-500 mb-3 border-t border-b border-slate-200/50 py-2">
-                            <div>CRN: <strong class="text-slate-800">${crnLabel}</strong></div>
-                            <div>Credits: <strong class="text-slate-800">${course.CREDIT_HOURS || '3'} hrs</strong></div>
-                            <div>Modality: <strong class="text-slate-800">${course.INSTRUCTION_METHOD || 'DE'}</strong></div>
-                            <div>Classroom: <strong class="text-slate-800">${course.MEETING_ROOM_1 || 'Online'}</strong></div>
-                        </div>
-                        <div class="flex items-center gap-2 text-[11px] text-slate-600 mb-4">
-                            <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
-                            <span class="truncate">Instructor: <strong class="text-slate-800">${course.INSTRUCTOR_NAME || 'Staff'}</strong></span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-200/50 text-xs">
-                        <span class="font-bold text-[10px] text-slate-600 bg-white/80 px-2 py-1 rounded border border-slate-100 shadow-sm shrink-0">
-                            👥 Enrollment: ${course.ACTUAL_ENROLLMENT} / ${course.MAX_ENROLLMENT}
-                        </span>
-                        <div class="flex gap-2">
-                            <button class="text-rose-600 hover:text-rose-800 font-bold flex items-center gap-0.5 text-[10px]" onclick="deleteCourseDirect('${course.id}')">
-                                <i data-lucide="trash-2" class="w-3 h-3"></i> Delete
-                            </button>
-                            <button class="text-[#003893] hover:text-[#002570] font-bold flex items-center gap-0.5 text-[10px]" onclick="triggerManualConfig('${course.id}')">
-                                <i data-lucide="edit-3" class="w-3 h-3"></i> Manage
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            calendarTimeline.appendChild(grid);
-            lucide.createIcons();
-        }
 
         // --- Snapping Algorithm for Official Start/Stop Slots (Preserves day formats on drop) ---
+        // --- Drag-drop course placement handler (weekly grid) ---
+        function performCoursePlacementPrecise(courseId, day, startMinutes) {
+            const course = courseRegistry.find(c => String(c.id) === String(courseId));
+            if (!course) return;
+            const snapped = getSnappedSchedule(course, startMinutes, day);
+            const potentialConflicts = findPotentialConflicts(course, snapped.days, snapped.timeRange, course.MEETING_ROOM_1, course.CAMPUS, course.INSTRUCTOR_NAME);
+            const applyPlacement = () => {
+                course.MEETING_DAY_1 = snapped.days;
+                course.MEETING_TIME_1 = snapped.timeRange;
+                course.SCHEDULE_MODIFIED = 'Y';
+                saveStateToLocalStorage();
+                renderAll();
+                triggerAutosave();
+            };
+            if (potentialConflicts.length > 0) {
+                stagedPlacementAction = applyPlacement;
+                displayConflictModal(course, snapped.days, snapped.timeRange, potentialConflicts);
+            } else {
+                applyPlacement();
+            }
+        }
+
         function getSnappedSchedule(course, startMinutes, droppedDay) {
             let contactHours = parseInt(course.COURSE_CONTACT_HOURS) || 0;
             if (!contactHours) {
@@ -1928,21 +1931,19 @@
         // --- Weekly Calendar / Dynamic Track timeline renderer ---
         function renderCalendar() {
             calendarTimeline.innerHTML = '';
+            const existingBadge = document.getElementById('entitySummaryBadge');
+            if (existingBadge) existingBadge.remove();
 
-            // 1. Dedicated Asynchronous Distance Education view route
-            if (activeGroupingView === 'de_courses') {
-                weeklyGridHeader.classList.add('hidden');
-                multiTrackHeader.classList.add('hidden');
-                renderDeViewGrid();
-                return;
-            }
-
-            // 2. Classical 5-Day calendar render route with Side-by-Side placement
+            // Classical 5-Day calendar render route with Side-by-Side placement
             if (activeGroupingView === 'weekly_grid') {
                 multiTrackHeader.classList.add('hidden');
                 weeklyGridHeader.classList.remove('hidden');
 
-                for (let hour = OPERATIONAL_START_HOUR; hour <= OPERATIONAL_END_HOUR; hour++) {
+                // Only render hours up to the latest scheduled course end time
+                const weeklyVisibleCourses = courseRegistry.filter(c => !isOnlineCourse(c) && c.MEETING_DAY_1 && c.MEETING_TIME_1);
+                const weeklyEndHour = getEffectiveEndHour(weeklyVisibleCourses);
+
+                for (let hour = OPERATIONAL_START_HOUR; hour <= weeklyEndHour; hour++) {
                     const row = document.createElement('div');
                     row.className = "calendar-grid grid min-h-[60px] relative items-stretch group hover:bg-slate-50/50";
                     const timeLabel12 = hour === 12 ? '12:00 PM' : (hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`);
@@ -2070,7 +2071,7 @@
                         const styles = getCapacityColorStyles(course);
 
                         element.draggable = true;
-                        element.className = `absolute rounded border ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-grab active:cursor-grabbing overflow-hidden z-10 flex flex-col justify-between transition-all`;
+                        element.className = `absolute rounded border border-l-4 ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-grab active:cursor-grabbing overflow-hidden z-10 flex flex-col justify-between transition-all`;
                         
                         // Side-by-side calculated offset styles
                         const colWidth = 100 / item.totalCols;
@@ -2111,227 +2112,219 @@
                 });
 
             } else {
-                // 3. Dynamic multi-column layout for visual Side-by-Side tracks (with overlapping column layouts)
-                weeklyGridHeader.className = "hidden";
-                multiTrackHeader.classList.remove('hidden');
+                // 3. Full weekly calendar for grouped entity (professor/classroom/campus/modality)
+                weeklyGridHeader.classList.remove('hidden');
+                multiTrackHeader.classList.add('hidden');
 
-                const trackKeysSet = new Set();
-                courseRegistry.forEach(c => {
-                    if (isOnlineCourse(c)) return;
-                    if (activeGroupingView === 'classroom' && c.MEETING_ROOM_1) trackKeysSet.add(c.MEETING_ROOM_1);
-                    if (activeGroupingView === 'faculty' && c.INSTRUCTOR_NAME) trackKeysSet.add(c.INSTRUCTOR_NAME);
-                    if (activeGroupingView === 'campus' && c.CAMPUS) trackKeysSet.add(c.CAMPUS);
-                    if (activeGroupingView === 'modality' && c.INSTRUCTION_METHOD) trackKeysSet.add(c.INSTRUCTION_METHOD);
-                });
-
-                const trackKeys = Array.from(trackKeysSet).sort();
-                if (trackKeys.length === 0) {
-                    calendarTimeline.innerHTML = `<p class="text-xs text-slate-400 text-center py-12">No active scheduled items mapped for this track grouping view.</p>`;
+                if (!activeGroupedEntity) {
+                    calendarTimeline.innerHTML = `<p class="text-xs text-slate-400 text-center py-12">Select a value from the dropdown above to view its weekly schedule.</p>`;
                     return;
                 }
 
-                // Render dynamic header row (Includes dynamic Professor workload, Credits and ILUs calculation from ILUs.docx)
-                tracksHeaderContainer.innerHTML = '';
-                trackKeys.forEach(key => {
-                    const el = document.createElement('div');
-                    el.className = "flex-1 text-center font-bold bg-[#003893]/10 text-[#003893] py-1.5 px-2 rounded select-none border border-[#003893]/20 flex flex-col justify-center items-center gap-1 min-w-[130px] shrink-0 overflow-hidden";
-                    
-                    if (activeGroupingView === 'faculty') {
-                        // Gather professor metrics
-                        const profCourses = courseRegistry.filter(c => c.INSTRUCTOR_NAME === key);
-                        let totalCredits = 0;
-                        let totalILUs = 0;
-                        
-                        profCourses.forEach(c => {
-                            const credits = parseInt(c.CREDIT_HOURS) || 0;
-                            const secText = c.SECTION_TEXT || '';
-                            const { lec, lab } = parseHoursFromSectionText(secText, c);
-                            
-                            // ILUs formula from ILUs.docx: Lecture Hrs * 1.0 + Lab Hrs * 0.67
-                            const ilus = (lec * 1.0) + (lab * 0.67);
-                            totalCredits += credits;
-                            totalILUs += ilus;
-                        });
-                        
-                        el.innerHTML = `
-                            <span class="font-extrabold text-xs truncate max-w-full text-[#003893]">${key}</span>
-                            <div class="flex gap-1 justify-center flex-wrap select-none text-[9.5px]">
-                                <span class="bg-indigo-50 text-indigo-700 px-1 py-0.5 rounded border border-indigo-200/50 font-bold">Credits: ${totalCredits}</span>
-                                <span class="bg-emerald-50 text-emerald-700 px-1 py-0.5 rounded border border-emerald-200/50 font-bold">ILUs: ${totalILUs.toFixed(2)}</span>
-                            </div>
-                        `;
-                    } else {
-                        el.innerHTML = `<span class="font-extrabold text-xs text-[#003893]">${key}</span>`;
+                // Filter courses for the selected entity
+                // For modality: in-person courses shown on calendar; DE courses shown as cards below
+                const entityCourses = courseRegistry.filter(c => {
+                    if (activeGroupingView === 'modality') {
+                        // Include only schedulable (non-DE) courses for the weekly grid
+                        if (isOnlineCourse(c)) return false;
+                        if (!c.MEETING_DAY_1 || !c.MEETING_TIME_1) return false;
+                        return c.INSTRUCTION_METHOD === activeGroupedEntity;
                     }
-                    tracksHeaderContainer.appendChild(el);
+                    if (isOnlineCourse(c)) return false;
+                    if (!c.MEETING_DAY_1 || !c.MEETING_TIME_1) return false;
+                    if (activeGroupingView === 'faculty')    return c.INSTRUCTOR_NAME === activeGroupedEntity;
+                    if (activeGroupingView === 'classroom')  return c.MEETING_ROOM_1  === activeGroupedEntity;
+                    if (activeGroupingView === 'campus')     return c.CAMPUS           === activeGroupedEntity;
+                    return false;
                 });
 
-                // Generate timeline rows
-                for (let hour = OPERATIONAL_START_HOUR; hour <= OPERATIONAL_END_HOUR; hour++) {
-                    const row = document.createElement('div');
-                    row.className = "flex min-h-[60px] relative items-stretch group hover:bg-slate-50/50";
-                    const timeLabel12 = hour === 12 ? '12:00 PM' : (hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`);
-                    
-                    let columnsHtml = '';
-                    trackKeys.forEach(key => {
-                        columnsHtml += `<div class="flex-1 border-l border-slate-100 relative min-h-[60px] track-day-slot min-w-[130px] shrink-0" data-key="${key}" data-hour="${hour}"></div>`;
-                    });
+                // Check if this view has no in-person courses (DE-only professor or pure-DE modality)
+                const isDeOnlyProfessor = entityCourses.length === 0 && (activeGroupingView === 'faculty' || activeGroupingView === 'modality');
 
+                // Build entity summary badge in header
+                if (activeGroupingView === 'faculty') {
+                    let totalCredits = 0, totalILUs = 0;
+                    const profAll = courseRegistry.filter(c => c.INSTRUCTOR_NAME === activeGroupedEntity);
+                    profAll.forEach(c => {
+                        const credits = parseInt(c.CREDIT_HOURS) || 0;
+                        const secText = c.SECTION_TEXT || '';
+                        const { lec, lab } = parseHoursFromSectionText(secText, c);
+                        totalCredits += credits;
+                        totalILUs += (lec * 1.0) + (lab * 0.67);
+                    });
+                    const existingBadge = document.getElementById('entitySummaryBadge');
+                    if (existingBadge) existingBadge.remove();
+                    const badge = document.createElement('div');
+                    badge.id = 'entitySummaryBadge';
+                    badge.className = 'flex items-center gap-2 px-3 py-1.5 bg-[#003893]/5 border border-[#003893]/15 rounded-md text-[10px] font-bold text-[#003893] mb-2';
+                    const deOnlyTag = isDeOnlyProfessor ? `<span class="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">DE Only</span>` : '';
+                    badge.innerHTML = `<i data-lucide="user" class="w-3 h-3"></i><span>${activeGroupedEntity}</span><span class="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded">Credits: ${totalCredits}</span><span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">ILUs: ${totalILUs.toFixed(2)}</span>${deOnlyTag}`;
+                    calendarTimeline.before(badge);
+                    lucide.createIcons();
+                } else {
+                    const existingBadge = document.getElementById('entitySummaryBadge');
+                    if (existingBadge) existingBadge.remove();
+                }
+
+                // Hide/show the Mon-Fri column header based on whether we have a grid
+                if (isDeOnlyProfessor) {
+                    weeklyGridHeader.classList.add('hidden');
+                } else {
+                    weeklyGridHeader.classList.remove('hidden');
+                }
+
+                // Skip the weekly grid entirely for DE-only professors
+                if (!isDeOnlyProfessor) {
+
+                // Render hour rows using the standard weekly grid
+                const groupedEndHour = getEffectiveEndHour(entityCourses);
+
+                for (let hour = OPERATIONAL_START_HOUR; hour <= groupedEndHour; hour++) {
+                    const row = document.createElement('div');
+                    row.className = "calendar-grid grid min-h-[60px] relative items-stretch group hover:bg-slate-50/50";
+                    const timeLabel12 = hour === 12 ? '12:00 PM' : (hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`);
                     row.innerHTML = `
-                        <div class="w-20 shrink-0 text-[11px] font-semibold text-slate-400 py-2 pl-2 select-none">${timeLabel12}</div>
-                        <div class="flex-grow flex gap-4 overflow-x-auto">${columnsHtml}</div>
+                        <div class="text-[11px] font-semibold text-slate-400 py-2 pl-2 select-none">${timeLabel12}</div>
+                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="M" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="T" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="W" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="R" data-hour="${hour}"></div>
+                        <div class="border-l border-slate-100 relative min-h-[60px] day-slot" data-day="F" data-hour="${hour}"></div>
                     `;
                     calendarTimeline.appendChild(row);
                 }
 
-                // Set drop target events for parallel columns
-                calendarTimeline.querySelectorAll('.track-day-slot').forEach(cell => {
-                    cell.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        cell.classList.add('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
-                    });
-                    cell.addEventListener('dragleave', () => {
-                        cell.classList.remove('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
-                    });
+                // Drag/drop on grouped weekly grid
+                calendarTimeline.querySelectorAll('.day-slot').forEach(cell => {
+                    cell.addEventListener('dragover', (e) => { e.preventDefault(); cell.classList.add('bg-blue-50','ring-2','ring-[#003893]/30'); });
+                    cell.addEventListener('dragleave', () => { cell.classList.remove('bg-blue-50','ring-2','ring-[#003893]/30'); });
                     cell.addEventListener('drop', (e) => {
                         e.preventDefault();
-                        cell.classList.remove('bg-blue-50', 'ring-2', 'ring-[#003893]/30');
+                        cell.classList.remove('bg-blue-50','ring-2','ring-[#003893]/30');
                         const courseId = e.dataTransfer.getData('text/plain');
-                        const droppedKey = cell.getAttribute('data-key');
+                        const day = cell.getAttribute('data-day');
                         const startHour = parseInt(cell.getAttribute('data-hour'));
-                        
                         const rect = cell.getBoundingClientRect();
                         const dropY = e.clientY - rect.top;
                         const percentY = Math.max(0, Math.min(1, dropY / rect.height));
-                        const dropMinute = Math.round(percentY * 60);
-                        const startMinutes = (startHour * 60) + dropMinute;
-                        
-                        performTrackBasedPlacementPrecise(courseId, activeDayTab, droppedKey, startMinutes);
+                        const startMinutes = (startHour * 60) + Math.round(percentY * 60);
+                        performCoursePlacementPrecise(courseId, day, startMinutes);
                     });
                 });
 
-                // Filter current view day active scheduled courses
-                const dayFilteredScheduled = courseRegistry.filter(c => {
-                    if (isOnlineCourse(c)) return false;
-                    return c.MEETING_DAY_1 && c.MEETING_DAY_1.includes(activeDayTab) && c.MEETING_TIME_1;
-                });
-
-                // Render side-by-side overlaps per track key column of the active day
-                trackKeys.forEach(trackKey => {
-                    const trackCourses = dayFilteredScheduled.filter(c => {
-                        let checkKey = null;
-                        if (activeGroupingView === 'classroom') checkKey = c.MEETING_ROOM_1;
-                        if (activeGroupingView === 'faculty') checkKey = c.INSTRUCTOR_NAME;
-                        if (activeGroupingView === 'campus') checkKey = c.CAMPUS;
-                        if (activeGroupingView === 'modality') checkKey = c.INSTRUCTION_METHOD;
-                        return checkKey === trackKey;
-                    });
-
-                    const parsedTrackCourses = trackCourses.map(c => {
+                // Side-by-side collision layout per day
+                ['M','T','W','R','F'].forEach(day => {
+                    const dayCourses = entityCourses.filter(c => c.MEETING_DAY_1.includes(day));
+                    const parsed = dayCourses.map(c => {
                         const times = parseTimeRange(c.MEETING_TIME_1);
-                        return {
-                            course: c,
-                            start: times ? times.start : 0,
-                            end: times ? times.end : 0,
-                            duration: times ? (times.end - times.start) : 0
-                        };
-                    }).filter(item => item.start < item.end);
+                        return { course: c, start: times ? times.start : 0, end: times ? times.end : 0, duration: times ? (times.end - times.start) : 0 };
+                    }).filter(i => i.start < i.end);
 
-                    // Overlap grouping clusters for parallel tracks
                     let clusters = [];
-                    parsedTrackCourses.forEach(item => {
-                        let itemClusters = [];
-                        clusters.forEach((cluster, idx) => {
-                            let overlaps = cluster.some(other => {
-                                return (item.start < other.end && item.end > other.start);
-                            });
-                            if (overlaps) {
-                                itemClusters.push(idx);
-                            }
-                        });
-
-                        if (itemClusters.length === 0) {
-                            clusters.push([item]);
-                        } else if (itemClusters.length === 1) {
-                            clusters[itemClusters[0]].push(item);
-                        } else {
-                            let mergedCluster = [item];
-                            itemClusters.sort((a, b) => b - a);
-                            itemClusters.forEach(idx => {
-                                mergedCluster = mergedCluster.concat(clusters[idx]);
-                                clusters.splice(idx, 1);
-                            });
-                            clusters.push(mergedCluster);
+                    parsed.forEach(item => {
+                        let hits = [];
+                        clusters.forEach((cl, idx) => { if (cl.some(o => item.start < o.end && item.end > o.start)) hits.push(idx); });
+                        if (hits.length === 0) { clusters.push([item]); }
+                        else if (hits.length === 1) { clusters[hits[0]].push(item); }
+                        else {
+                            let merged = [item];
+                            hits.sort((a,b)=>b-a).forEach(idx => { merged = merged.concat(clusters[idx]); clusters.splice(idx,1); });
+                            clusters.push(merged);
                         }
                     });
-
-                    // Track columns spacing setup
-                    clusters.forEach(cluster => {
-                        cluster.sort((a, b) => a.start - b.start || b.end - a.end);
-                        let columns = [];
-                        cluster.forEach(item => {
-                            let colIndex = 0;
-                            while (colIndex < columns.length && columns[colIndex] > item.start) {
-                                colIndex++;
-                            }
-                            columns[colIndex] = item.end;
-                            item.colIndex = colIndex;
+                    clusters.forEach(cl => {
+                        cl.sort((a,b) => a.start-b.start || b.end-a.end);
+                        let cols = [];
+                        cl.forEach(item => {
+                            let ci = 0;
+                            while (ci < cols.length && cols[ci] > item.start) ci++;
+                            cols[ci] = item.end;
+                            item.colIndex = ci;
                         });
-
-                        let totalCols = columns.length;
-                        cluster.forEach(item => {
-                            item.totalCols = totalCols;
-                        });
+                        cl.forEach(item => item.totalCols = cols.length);
                     });
 
-                    // Plot the elements
-                    parsedTrackCourses.forEach(item => {
+                    parsed.forEach(item => {
                         const course = item.course;
-                        const cell = calendarTimeline.querySelector(`.track-day-slot[data-key="${trackKey}"][data-hour="${Math.floor(item.start / 60)}"]`);
+                        const cell = calendarTimeline.querySelector(`.day-slot[data-day="${day}"][data-hour="${Math.floor(item.start/60)}"]`);
                         if (!cell) return;
-
-                        const relativeTopPx = item.start - (Math.floor(item.start / 60) * 60);
+                        const relativeTopPx = item.start - (Math.floor(item.start/60)*60);
                         const element = document.createElement('div');
                         const styles = getCapacityColorStyles(course);
-
                         element.draggable = true;
-                        element.className = `absolute rounded border ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-grab active:cursor-grabbing overflow-hidden z-10 flex flex-col justify-between transition-all`;
-                        
+                        element.className = `absolute rounded border border-l-4 ${styles.border} ${styles.bg} ${styles.text} ${styles.hover} p-1.5 shadow-sm text-[10px] cursor-grab active:cursor-grabbing overflow-hidden z-10 flex flex-col justify-between transition-all`;
                         const colWidth = 100 / item.totalCols;
-                        element.style.left = `${item.colIndex * colWidth}%`;
-                        element.style.width = `calc(${colWidth}% - 4px)`;
-                        element.style.top = `${relativeTopPx}px`;
+                        element.style.left   = `${item.colIndex * colWidth}%`;
+                        element.style.width  = `calc(${colWidth}% - 4px)`;
+                        element.style.top    = `${relativeTopPx}px`;
                         element.style.height = `${item.duration}px`;
-
-                        // Displays formatted Course_ID.Section (Subject removed) and includes custom Campus in the room pill
                         element.innerHTML = `
                             <div class="font-bold flex items-center justify-between truncate leading-tight">
-                                <span>${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
-                                <span class="text-[8px] bg-white/70 px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} - ${course.MEETING_ROOM_1 || 'TBD'}</span>
+                                <span>${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION)}</span>
+                                <span class="text-[8px] bg-white/70 px-1.5 py-0.5 rounded font-bold shrink-0">${course.CAMPUS} - ${course.MEETING_ROOM_1||'TBD'}</span>
                             </div>
                             <p class="truncate leading-tight my-0.5 font-semibold opacity-90 text-slate-700">${course.COURSE_TITLE}</p>
                             <div class="flex justify-between items-center text-[9px] pt-1 mt-auto border-t border-slate-200/40 opacity-80">
-                                <span>Credits: ${course.CREDIT_HOURS || '3'} hrs</span>
+                                <span class="truncate italic">${course.INSTRUCTOR_NAME||'Staff'}</span>
                                 <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
                             </div>
-                            <div class="flex justify-between items-center text-[8.5px] opacity-75">
-                                <span class="shrink-0 font-semibold">${course.MEETING_TIME_1}</span>
-                            </div>
+                            <div class="text-[8.5px] opacity-75 font-semibold">${course.MEETING_TIME_1}</div>
                         `;
-
-                        element.addEventListener('dragstart', (e) => {
-                            e.dataTransfer.setData('text/plain', course.id);
-                            e.dataTransfer.effectAllowed = 'move';
-                        });
-
-                        element.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            triggerManualConfig(course.id);
-                        });
-
+                        element.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', course.id); e.dataTransfer.effectAllowed='move'; });
+                        element.addEventListener('click', (e) => { e.stopPropagation(); triggerManualConfig(course.id); });
                         cell.appendChild(element);
                     });
                 });
+
+                } // end !isDeOnlyProfessor grid block
+
+                // For faculty and modality views: append DE courses list below the weekly grid
+                if (activeGroupingView === 'faculty' || activeGroupingView === 'modality') {
+                    const deCourses = courseRegistry.filter(c => {
+                        if (!isOnlineCourse(c)) return false;
+                        if (activeGroupingView === 'faculty') return c.INSTRUCTOR_NAME === activeGroupedEntity;
+                        if (activeGroupingView === 'modality') return c.INSTRUCTION_METHOD === activeGroupedEntity;
+                        return false;
+                    });
+                    if (deCourses.length > 0) {
+                        const deSection = document.createElement('div');
+                        deSection.className = 'mt-4 border-t border-slate-200 pt-4';
+                        deSection.innerHTML = `
+                            <h4 class="text-xs font-bold text-slate-600 flex items-center gap-1.5 mb-3">
+                                <i data-lucide="monitor" class="w-3.5 h-3.5 text-[#003893]"></i>
+                                Distance Education (DE) Courses — ${deCourses.length} section${deCourses.length !== 1 ? 's' : ''}
+                            </h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2" id="deCoursesList"></div>
+                        `;
+                        calendarTimeline.appendChild(deSection);
+
+                        const deGrid = deSection.querySelector('#deCoursesList');
+                        deCourses.forEach(course => {
+                            const styles = getCapacityColorStyles(course);
+                            const crnLabel = course.COURSE_REFERENCE_NUMBER || 'ADD';
+                            const card = document.createElement('div');
+                            card.className = `${styles.bg} border border-l-4 ${styles.border} ${styles.text} rounded p-2.5 text-[10px] flex flex-col gap-1 cursor-pointer hover:shadow-sm transition-all`;
+                            card.innerHTML = `
+                                <div class="flex items-center justify-between">
+                                    <span class="font-extrabold text-[#003893]">${course.SUBJECT} ${course.COURSE_ID}.${formatSection(course.SECTION||'00')}</span>
+                                    <span class="text-[9px] bg-[#003893]/10 text-[#003893] px-1.5 py-0.5 rounded font-bold">${course.CAMPUS} ONLINE</span>
+                                </div>
+                                <p class="font-semibold text-slate-700 truncate">${course.COURSE_TITLE}</p>
+                                <div class="flex justify-between text-slate-500 text-[9px]">
+                                    <span>CRN: <strong class="text-slate-700">${crnLabel}</strong></span>
+                                    <span>${course.CREDIT_HOURS||'3'} cr hrs</span>
+                                </div>
+                                <div class="flex justify-between text-slate-500 text-[9px]">
+                                    <span class="italic">${course.INSTRUCTION_METHOD||'DE'}</span>
+                                    <span class="font-bold">👥 ${course.ACTUAL_ENROLLMENT}/${course.MAX_ENROLLMENT}</span>
+                                </div>
+                            `;
+                            card.addEventListener('click', () => triggerManualConfig(course.id));
+                            deGrid.appendChild(card);
+                        });
+                        lucide.createIcons();
+                    }
+                }
             }
         }
 
@@ -2548,8 +2541,7 @@
                 // Append new instructor to picks if modified and not existing
                 if (tentativeInstructor && tentativeInstructor !== 'Staff' && !facultyQuickPicks.includes(tentativeInstructor)) {
                     facultyQuickPicks.push(tentativeInstructor);
-                    localStorage.setItem('academia_faculty_quick_picks', JSON.stringify(facultyQuickPicks));
-                    renderFacultyBadges();
+                            renderFacultyBadges();
                 }
 
                 const commitModalChanges = () => {
@@ -2562,11 +2554,12 @@
                     course.CREDIT_HOURS = tentativeCredits;
                     course.MEETING_DAY_1 = tentativeDaysStr;
                     course.MEETING_TIME_1 = tentativeTimeRange;
+                    course.SCHEDULE_MODIFIED = 'Y';
 
                     saveStateToLocalStorage();
                     renderAll();
                     closeModal();
-                    if (isAutosaveOn) triggerAutosave();
+                    triggerAutosave();
                 };
 
                 if (tentativeDaysStr && tentativeTimeRange && tentativeInstrMethod !== 'DE' && tentativeCampus !== 'DE') {
@@ -2600,12 +2593,12 @@
             // Append new instructor to picks if modified and not existing
             if (inst && inst !== 'Staff' && !facultyQuickPicks.includes(inst)) {
                 facultyQuickPicks.push(inst);
-                localStorage.setItem('academia_faculty_quick_picks', JSON.stringify(facultyQuickPicks));
-                renderFacultyBadges();
+                    renderFacultyBadges();
             }
 
             const newObj = {
                 id: `course-user-${Date.now()}`,
+                SCHEDULE_MODIFIED: 'Y',
                 TERM: "202710",
                 CAMPUS: camp,
                 SUBJECT: sub,
@@ -2641,6 +2634,7 @@
 
             saveStateToLocalStorage();
             renderAll();
+            triggerAutosave();
         }
 
         // --- Export Courses back to structured CSV file ---
@@ -2665,33 +2659,51 @@
         let autosaveTimer = null;
         let isWriting = false;
         async function triggerAutosave() {
-            if (!isAutosaveOn) return;
-            
+            // Always write to disk when a file handle is connected, regardless of autosave toggle
+            // (autosave toggle only controls the badge flash UX)
+            if (!fileHandle) return;
+
             if (autosaveTimer) clearTimeout(autosaveTimer);
             autosaveTimer = setTimeout(async () => {
+                // Flash the autosave button to signal a write is happening
                 const badge = document.getElementById('toggleAutosave');
                 if (badge) {
                     badge.classList.add('bg-emerald-700');
-                    setTimeout(() => {
-                        badge.classList.remove('bg-emerald-700');
-                    }, 400);
+                    setTimeout(() => badge.classList.remove('bg-emerald-700'), 600);
                 }
 
-                if (fileHandle && !isWriting) {
-                    isWriting = true;
-                    try {
-                        const writable = awaaileHandle.createWritable();
-                        const csvContent = generateCsvString();
-                        await writable.write(csvContent);
-                        await writable.close();
-                        console.log("Dynamically autosaved back to local disk!");
-                    } catch (err) {
-                        console.error("Direct autosave back to disk failed:", err);
-                    } finally {
-                        isWriting = false;
-                    }
+                if (isWriting) return;
+                isWriting = true;
+                try {
+                    const csvContent = generateCsvString();
+                    if (!csvContent) return;
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(csvContent);
+                    await writable.close();
+                    console.log('[DirectSync] CSV written to disk successfully.');
+                } catch (err) {
+                    console.error('[DirectSync] Write failed:', err);
+                    // If permission was lost, show a subtle notification
+                    showNotification('Sync Error', 'Could not write to the linked file. Re-open it via Direct Disk Sync to reconnect.');
+                } finally {
+                    isWriting = false;
                 }
-            }, 600);
+            }, 500);
+        }
+
+        // Immediately write to disk (no debounce) — used after file open to verify handle works
+        async function writeToDiskNow() {
+            if (!fileHandle) return;
+            try {
+                const csvContent = generateCsvString();
+                if (!csvContent) return;
+                const writable = await fileHandle.createWritable();
+                await writable.write(csvContent);
+                await writable.close();
+                console.log('[DirectSync] Immediate write OK.');
+            } catch (err) {
+                console.error('[DirectSync] Immediate write failed:', err);
+            }
         }
     </script>
 </body>
